@@ -1,0 +1,159 @@
+{
+  "executives": [
+    {
+      "id": "ketos",
+      "role": "STUDENT COUNCIL PRESIDENT",
+      "name": "Levi Janice Lie",
+      "image": "KETOS (LEVI).png",
+      "quote": "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
+    },
+    {
+      "id": "waketos",
+      "role": "VICE PRESIDENT",
+      "name": "Asher Yang",
+      "image": "WAKETOS (ASHER).png",
+      "quote": "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member."
+    },
+    {
+      "id": "bendahara",
+      "role": "TREASURER // BENDAHARA",
+      "name": "Michelle Abigail Zalukhu",
+      "image": "BENDAHARA (MICHELLE)(SEAN).png",
+      "quote": "True integrity is being accountable for the smallest details, ensuring trust is maintained."
+    },
+    {
+      "id": "sekretaris",
+      "role": "SECRETARY // SEKRETARIS",
+      "name": "Sean Arcelia Zega",
+      "image": "SEKRE (SEAN).png",
+      "quote": "A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality."
+    }
+  ],
+  "departments": [
+    {
+      "dept_id": "01",
+      "dept_title": "DEPT 01 // SEKBID KEROHANIAN",
+      "grid_cols": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+      "members": [
+        {
+          "role": "KOORDINATOR",
+          "name": "Sepdyanta Sitepu",
+          "image": "KOORDINATOR(IAN).png",
+          "is_coordinator": true
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Gabriel Oktavianus S.",
+          "image": "ANGGOTA(BIEL).png",
+          "is_coordinator": false
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Nuela Elshana Tova S.",
+          "image": "ANGGOTA(SHANA).png",
+          "is_coordinator": false
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Christania Sonia Gozali",
+          "image": "ANGGOTA(SONIA).png",
+          "is_coordinator": false
+        }
+      ]
+    },
+    {
+      "dept_id": "02",
+      "dept_title": "DEPT 02 // SEKBID PENDIDIKAN & KARAKTER",
+      "grid_cols": "grid-cols-1 sm:grid-cols-3",
+      "members": [
+        {
+          "role": "KOORDINATOR",
+          "name": "Fedora Ananta Quinselle",
+          "image": "KOORDINATOR(FEDORA).png",
+          "is_coordinator": true
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Angelyne Aiko Kiroyan",
+          "image": "ANGGOTA(ANGEL).png",
+          "is_coordinator": false
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Cliff Benedict Lim",
+          "image": "ANGGOTA(CLIFF).png",
+          "is_coordinator": false
+        }
+      ]
+    },
+    {
+      "dept_id": "03",
+      "dept_title": "DEPT 03 // SEKBID MEDIA & TEKNOLOGI",
+      "grid_cols": "grid-cols-1 sm:grid-cols-3",
+      "members": [
+        {
+          "role": "KOORDINATOR",
+          "name": "Scarlett Sophie Harper",
+          "image": "KOORDINATOR (SCARLETT).png",
+          "is_coordinator": true
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Jashon Imanuel Yahya",
+          "image": "ANGGOTA(JASHON).png",
+          "is_coordinator": false
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Guido Bryan Nugroho",
+          "image": "ANGGOTA(GUIDO).png",
+          "is_coordinator": false
+        }
+      ]
+    },
+    {
+      "dept_id": "04",
+      "dept_title": "DEPT 04 // SEKBID OLAHRAGA & PERALATAN",
+      "grid_cols": "grid-cols-1 sm:grid-cols-3",
+      "members": [
+        {
+          "role": "KOORDINATOR",
+          "name": "Xavier Aurelius",
+          "image": "KOORDINATOR (IER).png",
+          "is_coordinator": true
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Samuel Rusli",
+          "image": "ANGGOTA (SAMUEL).png",
+          "is_coordinator": false
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Maxwell Zega",
+          "image": "ANGGOTA (MAXWELL).png",
+          "is_coordinator": false
+        }
+      ]
+    },
+    {
+      "dept_id": "05",
+      "dept_title": "DEPT 05 // SEKBID KEBUDAYAAN & SENI",
+      "grid_cols": "grid-cols-1 sm:grid-cols-2 max-w-md mx-auto",
+      "members": [
+        {
+          "role": "KOORDINATOR",
+          "name": "Ashley Louisa N.",
+          "image": "KOORDINATOR (ASHLEY).png",
+          "is_coordinator": true
+        },
+        {
+          "role": "ANGGOTA",
+          "name": "Monique Calista",
+          "image": "ANGGOTA (MONIQ).png",
+          "is_coordinator": false
+        }
+      ]
+    }
+  ]
+}
