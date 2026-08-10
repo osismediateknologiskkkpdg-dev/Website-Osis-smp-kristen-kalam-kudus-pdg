@@ -1,1131 +1,941 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSIS SMP Kalam Kudus Padang</title>
+    <title>OSIS SMP Kalam Kudus Padang — Official Web Portal</title>
+    
+    <!-- Google Fonts: Inter (Sans) & JetBrains Mono (Code/Labels) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Lucide Icons CDN (untuk ikon) -->
+    <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- AOS Animation Library CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgDeep: '#020203',
+                        bgBase: '#050506',
+                        bgElevated: '#0a0a0c',
+                        surface: 'rgba(255, 255, 255, 0.05)',
+                        surfaceHover: 'rgba(255, 255, 255, 0.08)',
+                        fg: '#EDEDEF',
+                        fgMuted: '#8A8F98',
+                        fgSubtle: 'rgba(255, 255, 255, 0.60)',
+                        accent: '#5E6AD2',
+                        accentBright: '#6872D9',
+                        accentGlow: 'rgba(94, 106, 210, 0.3)',
+                        borderDefault: 'rgba(255, 255, 255, 0.06)',
+                        borderHover: 'rgba(255, 255, 255, 0.12)',
+                        borderAccent: 'rgba(94, 106, 210, 0.30)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    borderRadius: {
+                        '3xl': '24px',
+                        '2xl': '16px',
+                        'xl': '12px',
+                        'lg': '8px',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* Custom styles for smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Hide scrollbar for aesthetic purposes, but allow scrolling */
+        /* Custom Smooth Scrollbar & Base Reset */
         body {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-        }
-        
-        body::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-        
-        /* Ensure the main content pushes down for fixed header */
-        .main-content-wrapper section:not(#hero) {
-            padding-top: 6rem; /* Adjust based on header height */
-        }
-        
-        .main-content-wrapper #hero {
-            min-height: calc(100vh - 6rem); /* Adjust for header height */
-            padding-top: 6rem; /* Push content below fixed header */
-        }
-        
-        /* Pastikan semua link dapat diklik */
-        a {
-            cursor: pointer;
+            background-color: #050506;
+            color: #EDEDEF;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Tambahkan z-index untuk memastikan elemen dapat diklik */
-        section {
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020203;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5E6AD2;
+        }
+
+        /* Ambient Animations */
+        @keyframes float-primary {
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(2deg) scale(1.05); }
+        }
+        @keyframes float-secondary {
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(25px) rotate(-3deg) scale(0.95); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-float-1 {
+            animation: float-primary 10s ease-in-out infinite;
+        }
+        .animate-float-2 {
+            animation: float-secondary 12s ease-in-out infinite;
+        }
+        .animate-shimmer {
+            background: linear-gradient(90deg, #5E6AD2 0%, #a5b4fc 50%, #5E6AD2 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            animation: shimmer 6s linear infinite;
+        }
+
+        /* Multi-layer Shadow & Inner Edge Utility */
+        .card-linear {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.04),
+                0 4px 20px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-linear:hover {
+            border-color: rgba(255, 255, 255, 0.14);
+            transform: translateY(-4px);
+            box-shadow: 
+                0 0 0 1px rgba(94, 106, 210, 0.3),
+                0 12px 40px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(94, 106, 210, 0.15),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-primary-glow {
+            background-color: #5E6AD2;
+            box-shadow: 
+                0 0 0 1px rgba(94, 106, 210, 0.5),
+                0 4px 16px rgba(94, 106, 210, 0.4),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+            transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-primary-glow:hover {
+            background-color: #6872D9;
+            box-shadow: 
+                0 0 0 1px rgba(104, 114, 217, 0.8),
+                0 6px 24px rgba(94, 106, 210, 0.6),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Mouse Tracking Spotlight Card Wrapper */
+        .spotlight-card {
             position: relative;
-            z-index: 1;
+            overflow: hidden;
         }
-
-        /* Perbaiki overlay z-index */
-        #sidebar-overlay {
-            z-index: 40;
-        }
-
-        /* Perbaiki sidebar z-index */
-        #mobile-sidebar {
-            z-index: 50;
-        }
-
-        /* Perbaiki header z-index */
-        header {
-            z-index: 60;
-        }
-        
-        /* Untuk memastikan iframe responsif */
-        .google-chart-container {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 75%; /* Rasio aspek 4:3 */
-        }
-
-        .google-chart-container iframe {
+        .spotlight-card::before {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 0.5rem;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(94, 106, 210, 0.15), transparent 80%);
+            opacity: 0;
+            transition: opacity 300ms ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .spotlight-card:hover::before {
+            opacity: 1;
         }
 
-        /* Custom Floating Animation untuk Logo */
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
+        /* Image Aspect Frames */
+        .img-card-frame {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background-color: #0a0a0c;
+        }
+        .img-card-frame img {
+            transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 300ms ease;
+        }
+        .img-card-frame:hover img {
+            transform: scale(1.05);
         }
 
-        .animate-float {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        /* Custom Gradient Backgrounds */
-        .bg-gradient-premium {
-            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+        /* Focus Ring */
+        a:focus-visible, button:focus-visible {
+            outline: none !important;
+            box-shadow: 0 0 0 2px #050506, 0 0 0 4px rgba(94, 106, 210, 0.8) !important;
         }
     </style>
 </head>
 
-<body class="min-h-screen bg-gradient-premium font-sans text-gray-800 overflow-x-hidden">
+<body class="bg-bgBase text-fg relative min-h-screen">
 
-    <!-- Header Navigasi dengan efek Glassmorphism -->
-    <header class="bg-white/80 backdrop-blur-md shadow-lg py-4 px-6 md:px-12 fixed w-full z-10 top-0 rounded-b-xl border-b border-white/20 transition-all duration-300">
-        <nav class="container mx-auto flex items-center">
+    <!-- ==================== BACKGROUND LIGHTING SYSTEM ==================== -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <!-- Layer 1: Base Radial Gradient -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#0a0a0f_0%,#050506_60%,#020203_100%)]"></div>
+        
+        <!-- Layer 2: Animated Ambient Blobs -->
+        <div class="absolute -top-[200px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-accent/20 rounded-full blur-[160px] animate-float-1"></div>
+        <div class="absolute top-[40%] -left-[200px] w-[700px] h-[500px] bg-indigo-900/15 rounded-full blur-[140px] animate-float-2"></div>
+        <div class="absolute top-[70%] -right-[200px] w-[650px] h-[550px] bg-purple-900/10 rounded-full blur-[150px] animate-float-1"></div>
+
+        <!-- Layer 3: Noise Texture Overlay -->
+        <div class="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml,%3Csvg%20viewBox=%220%200%20256%20256%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter%20id=%22noise%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%220.8%22%20numOctaves=%224%22%20stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect%20width=%22100%25%22%20height=%22100%25%22%20filter=%22url(%23noise)%22/%3E%3C/svg%3E')]"></div>
+
+        <!-- Layer 4: Technical Grid Overlay -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+    </div>
+
+    <!-- ==================== HEADER NAVIGATION ==================== -->
+    <header class="sticky top-0 z-50 w-full bg-bgBase/80 backdrop-blur-xl border-b border-borderDefault">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between relative z-10">
             
-            <!-- Tombol Hamburger untuk mobile & desktop -->
-            <button id="sidebar-toggle" class="text-gray-600 hover:text-indigo-700 focus:outline-none mr-4 transition-transform hover:scale-110">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-            </button>
+            <!-- Logo & Title -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="w-10 h-10 rounded-xl bg-surface border border-white/10 flex items-center justify-center group-hover:border-accent/50 transition-colors">
+                    <img src="https://i.ibb.co.com/whKDsQ5L/image.png" alt="Logo OSIS" class="w-6 h-6 object-contain filter drop-shadow">
+                </div>
+                <div>
+                    <span class="font-bold text-base tracking-tight block text-fg group-hover:text-white transition-colors">OSIS SMP KKK</span>
+                    <span class="font-mono text-[10px] text-fgMuted tracking-wider uppercase">PADANG // 2026-2027</span>
+                </div>
+            </a>
 
-            <!-- Logo/Nama Portofolio dengan ikon dan gaya menarik -->
-            <div class="text-2xl md:text-3xl font-extrabold text-pink-800 flex items-center transform hover:scale-105 transition duration-300 ease-in-out cursor-default">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase mr-3 text-indigo-600"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> 
-                <span class="hidden sm:inline">Welcome to OSIS SMP 2026/27: Where Ideas Meet Action.</span>
-                <span class="sm:hidden">OSIS SMP 26/27</span>
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center space-x-1 bg-surface p-1.5 rounded-full border border-borderDefault">
+                <a href="#about-us" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Tentang</a>
+                <a href="#vision-mission" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Visi & Misi</a>
+                <a href="#structure" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Pengurus</a>
+                <a href="#gallery" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Galeri</a>
+                <a href="#events" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Agenda</a>
+                <a href="#quiz" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Trivia</a>
+            </nav>
+
+            <!-- Actions & Mobile Menu Toggle -->
+            <div class="flex items-center space-x-3">
+                <a href="#contact-us" class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white bg-surface hover:bg-white/10 border border-borderDefault hover:border-borderHover transition-all">
+                    <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-accent"></i> Kontak
+                </a>
+                
+                <button id="mobile-toggle" aria-label="Toggle Menu" class="md:hidden p-2.5 rounded-lg bg-surface border border-borderDefault text-fg hover:text-white">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
             </div>
+        </div>
 
-            <!-- Navigasi desktop - disembunyikan karena sidebar akan selalu ada -->
-            <ul class="hidden space-x-6 ml-auto">
-                <li><a href="#about-us" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">About Us</a></li>
-                <li><a href="#school-vision-mission" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">School Vision & Mission</a></li>
-                <li><a href="#osis-vision-mission" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">OSIS Vision & Mission</a></li>
-                <li><a href="#organization-structure" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">Organization Structure</a></li>
-                <li><a href="#ice-breaking" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">Ice Breaking</a></li>
-                <li><a href="#events" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">Events</a></li>
-                <li><a href="#gallery" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">Gallery</a></li>
-                <li><a href="#news" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300">News</a></li>
-                <li>
-                    <a 
-                        href="javascript:void(0);" 
-                        onclick="event.preventDefault(); document.getElementById('contact-us').scrollIntoView({ behavior: 'smooth', block: 'start' });"
-                        class="text-gray-600 hover:text-indigo-700 font-medium transition duration-300 flex items-center group relative focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md px-2 py-1"
-                        aria-label="Gulir ke bagian Contact Us"
-                        role="button"
-                    >
-                        <span class="relative z-10">Contact Us</span>
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 ease-in-out group-hover:w-full"></span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <!-- Mobile Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-bgElevated/95 backdrop-blur-2xl border-b border-borderDefault px-6 py-6 space-y-4">
+            <a href="#about-us" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Tentang OSIS</a>
+            <a href="#vision-mission" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Visi & Misi</a>
+            <a href="#structure" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Struktur Pengurus</a>
+            <a href="#gallery" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Galeri Foto</a>
+            <a href="#events" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Agenda & Berita</a>
+            <a href="#quiz" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Kuis Trivia</a>
+            <a href="#contact-us" class="inline-flex w-full items-center justify-center px-4 py-3 rounded-lg text-xs font-bold text-white btn-primary-glow mt-2">
+                HUBUNGI KAMI
+            </a>
+        </div>
     </header>
 
-    <!-- Sidebar (Mobile & Desktop) -->
-    <div id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-950 text-white shadow-2xl z-50 transform transition-transform duration-500 ease-in-out -translate-x-full overflow-y-auto border-r border-indigo-800">
-        <div class="p-6">
-            <!-- Tombol tutup sidebar (selalu ada di sidebar) -->
-            <button id="sidebar-close" class="absolute top-4 right-4 text-white hover:text-pink-400 focus:outline-none transition-transform hover:rotate-90 duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-            <h2 class="text-3xl font-extrabold mb-8 mt-10 tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-indigo-300">Explore</h2>
-            <nav>
-                <ul class="space-y-3">
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#about-us"><i data-lucide="info" class="w-5 h-5 mr-3 text-indigo-300"></i>About Us</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#performa-akademik"><i data-lucide="book-open" class="w-5 h-5 mr-3 text-indigo-300"></i>School Vision & Mission</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#visi-misi"><i data-lucide="target" class="w-5 h-5 mr-3 text-indigo-300"></i>OSIS Vision & Mission</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#organization-structure"><i data-lucide="users" class="w-5 h-5 mr-3 text-indigo-300"></i>Organization Structure</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#ice-breaking"><i data-lucide="gamepad-2" class="w-5 h-5 mr-3 text-indigo-300"></i>Ice Breaking</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#events"><i data-lucide="calendar" class="w-5 h-5 mr-3 text-indigo-300"></i>Events</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#gallery"><i data-lucide="image" class="w-5 h-5 mr-3 text-indigo-300"></i>Gallery</a></li>
-                    <li><a class="flex items-center text-lg py-2 px-4 rounded-lg hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30" href="#news"><i data-lucide="newspaper" class="w-5 h-5 mr-3 text-indigo-300"></i>News</a></li>
-                    <li>
-                        <a 
-                            href="javascript:void(0);"
-                            onclick="event.preventDefault(); document.getElementById('contact-us').scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('sidebar-toggle').click();"
-                            class="flex items-center text-lg py-3 px-4 rounded-xl hover:bg-indigo-800/50 hover:translate-x-2 transition-all duration-300 sidebar-link border border-transparent hover:border-indigo-500/30 group cursor-pointer focus:outline-none focus:bg-indigo-800/60"
-                            aria-label="Navigasi ke bagian Contact Us dan tutup menu"
-                            role="button"
-                        >
-                            <i data-lucide="mail" class="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white transition-colors duration-300"></i>
-                            <span class="font-medium tracking-wide">Contact Us</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
-    
-    <!-- Overlay untuk sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300"></div>
-    
-    <!-- Wrapper untuk Konten Utama (digeser saat sidebar terbuka) -->
-    <div id="main-content-wrapper" class="transition-all duration-500 ease-in-out">
-        
-        <!-- Bagian Hero/Tentang Saya -->
-        <section id="hero" class="relative pt-24 pb-16 md:pt-32 md:pb-24 flex items-center justify-center min-h-screen">
-            <!-- Decorative background elements -->
-            <div class="absolute top-20 left-10 w-32 h-32 bg-pink-300 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob"></div>
-            <div class="absolute top-40 right-10 w-32 h-32 bg-indigo-300 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob animation-delay-2000"></div>
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="relative z-10">
+
+        <!-- HERO SECTION -->
+        <section class="pt-20 pb-32 px-4 sm:px-8 max-w-7xl mx-auto text-center relative">
             
-            <div class="container mx-auto text-center px-4 relative z-10" data-aos="zoom-in" data-aos-duration="1200">
-                <div class="bg-white/90 backdrop-blur-sm p-8 md:p-14 rounded-[2.5rem] shadow-2xl max-w-4xl mx-auto transform hover:shadow-indigo-500/20 transition-all duration-500 ease-in-out border border-white/50">
-                    <div class="w-36 h-36 md:w-48 md:h-48 rounded-full mx-auto overflow-hidden border-4 border-indigo-100 shadow-xl mb-8 animate-float bg-white">
-                        <img
-                            src="https://i.ibb.co.com/whKDsQ5L/image.png"
-                            alt="Logo OSIS SMP"
-                            class="w-full h-full object-contain p-3"
-                            loading="lazy"
-                        />
+            <!-- Category Badge -->
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-surface border border-accent/30 mb-8 backdrop-blur-md" data-aos="fade-down">
+                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                <span class="font-mono text-xs text-indigo-200 tracking-wider font-medium">OFFICIAL STUDENT COUNCIL // 2026-2027</span>
+            </div>
+
+            <!-- Main Headline -->
+            <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-white/95 to-white/60 max-w-5xl mx-auto leading-[1.08] mb-8" data-aos="fade-up" data-aos-delay="100">
+                Where Big Ideas Meet <span class="animate-shimmer">Bold Action.</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-lg sm:text-xl text-fgMuted max-w-2xl mx-auto font-normal leading-relaxed mb-10" data-aos="fade-up" data-aos-delay="200">
+                Pusat kepemimpinan, aksi, dan inovasi siswa SMP Kristen Kalam Kudus Padang. Membangun masa depan sekolah yang berintegritas, aktif, dan berdampak.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
+                <a href="#structure" class="px-8 py-4 rounded-xl font-semibold text-sm text-white btn-primary-glow inline-flex items-center">
+                    Lihat Pengurus <i data-lucide="users" class="w-4 h-4 ml-2"></i>
+                </a>
+                <a href="#gallery" class="px-8 py-4 rounded-xl font-semibold text-sm text-fg bg-surface hover:bg-white/10 border border-borderDefault hover:border-borderHover transition-all inline-flex items-center">
+                    Dokumentasi Galeri <i data-lucide="image" class="w-4 h-4 ml-2"></i>
+                </a>
+            </div>
+
+            <!-- Hero Feature Surface -->
+            <div class="mt-20 max-w-5xl mx-auto p-3 rounded-3xl bg-white/[0.02] border border-white/[0.08] shadow-2xl backdrop-blur-xl" data-aos="zoom-in" data-aos-delay="400">
+                <div class="bg-bgElevated rounded-2xl p-6 sm:p-10 border border-white/5 text-left grid md:grid-cols-3 gap-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-semibold text-white mb-1">Integritas Tinggi</h2>
+                            <p class="text-xs text-fgMuted leading-relaxed">Kepemimpinan yang transparan, jujur, dan bertanggung jawab di setiap lini.</p>
+                        </div>
                     </div>
-                    <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-indigo-800 mb-6 leading-tight">
-                        Where Big Ideas Meet Bold Actions.
-                    </h1>
-                    <p class="text-xl md:text-2xl text-gray-600 mb-10 leading-relaxed font-light">
-                        Step into the central hub of student leadership. We are here to bridge aspirations, spark innovation, and create unforgettable milestones for our school community this period.
+
+                    <div class="flex items-start space-x-4">
+                        <div class="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent">
+                            <i data-lucide="vote" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-semibold text-white mb-1">Demokrasi Siswa</h2>
+                            <p class="text-xs text-fgMuted leading-relaxed">Kotak suara dan voting terbuka untuk setiap event dan pilihan lomba.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent">
+                            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-semibold text-white mb-1">Bebas Perundungan</h2>
+                            <p class="text-xs text-fgMuted leading-relaxed">Forum aduan mingguan yang aman untuk menciptakan sekolah ramah anak.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== ABOUT US SECTION ==================== -->
+        <section id="about-us" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto">
+            
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 01 // MANIFESTO ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Tentang OSIS Kalam Kudus</h2>
+            </div>
+
+            <!-- Bento Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Large Highlight Card -->
+                <div class="md:col-span-2 card-linear spotlight-card p-8 sm:p-10 rounded-2xl flex flex-col justify-between" data-aos="fade-right">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="font-mono text-xs text-accent font-semibold">TENTANG KAMI</span>
+                            <i data-lucide="sparkles" class="w-5 h-5 text-accent"></i>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4 leading-snug">
+                            Wadah Resmi Pembentukan Karakter & Kepemimpinan
+                        </h3>
+                        <p class="text-fgMuted text-base sm:text-lg leading-relaxed font-normal">
+                            OSIS Periode 2026/2027 hadir sebagai wadah resmi untuk membangun karakter siswa yang disiplin, responsif, dan penuh tanggung jawab. Kami berkomitmen menciptakan lingkungan sekolah yang demokratis, di mana setiap acara dan pilihan lomba didiskusikan bersama agar suara seluruh siswa/i selalu terdengar.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-white/5 flex flex-wrap gap-6 font-mono text-xs text-fgSubtle">
+                        <div><strong class="text-white block text-lg font-mono">100%</strong> Transparansi Suara</div>
+                        <div><strong class="text-white block text-lg font-mono">24/7</strong> Tanggap Laporan</div>
+                        <div><strong class="text-white block text-lg font-mono">0%</strong> Toleransi Perundungan</div>
+                    </div>
+                </div>
+
+                <!-- Secondary Card -->
+                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col justify-between" data-aos="fade-left">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-6">
+                            <i data-lucide="target" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3">Fokus & Visi Utama</h3>
+                        <p class="text-fgMuted text-sm leading-relaxed">
+                            Mewujudkan lingkungan belajar yang adil, ramah anak, dan bebas perundungan melalui inovasi teknologi serta aksi nyata berkelanjutan.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-white/5">
+                        <span class="text-xs font-mono text-accent flex items-center">
+                            SMP KKK Padang <i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-1"></i>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== VISION & MISSION ==================== -->
+        <section id="vision-mission" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
+            
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 02 // FOUNDATION ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Visi & Misi Strategis</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- School Vision & Mission Card -->
+                <div class="card-linear spotlight-card p-8 sm:p-10 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="p-2.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
+                            <i data-lucide="school" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-mono text-xs font-bold text-accent tracking-wider uppercase">SEKOLAH</span>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-white mb-4">Visi Sekolah</h3>
+                    <blockquote class="p-4 rounded-xl bg-white/[0.02] border-l-2 border-accent text-fg text-sm italic mb-8">
+                        "Terbangunnya manusia utuh yang takut akan Tuhan, mandiri dan berguna bagi dunia."
+                    </blockquote>
+
+                    <h4 class="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">Misi Sekolah:</h4>
+                    <ul class="space-y-3 text-sm text-fgMuted">
+                        <li class="flex items-start"><i data-lucide="check-circle-2" class="w-4 h-4 text-accent mr-3 mt-0.5 flex-shrink-0"></i>Memiliki hati yang takut akan Tuhan.</li>
+                        <li class="flex items-start"><i data-lucide="check-circle-2" class="w-4 h-4 text-accent mr-3 mt-0.5 flex-shrink-0"></i>Mengasihi sesama manusia dan menghargai alam ciptaan-Nya.</li>
+                        <li class="flex items-start"><i data-lucide="check-circle-2" class="w-4 h-4 text-accent mr-3 mt-0.5 flex-shrink-0"></i>Bertumbuh menjadi manusia sehat mental dan berbudi pekerti luhur.</li>
+                        <li class="flex items-start"><i data-lucide="check-circle-2" class="w-4 h-4 text-accent mr-3 mt-0.5 flex-shrink-0"></i>Melengkapi keterampilan berkualitas sesuai kebutuhan & potensi.</li>
+                    </ul>
+                </div>
+
+                <!-- OSIS Vision & Mission Card -->
+                <div class="card-linear spotlight-card p-8 sm:p-10 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="p-2.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
+                            <i data-lucide="award" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-mono text-xs font-bold text-accent tracking-wider uppercase">OSIS 2026/2027</span>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-white mb-4">Visi OSIS</h3>
+                    <p class="p-4 rounded-xl bg-white/[0.02] border-l-2 border-accent text-fg text-sm mb-8">
+                        Mewujudkan karakter yang lebih disiplin, penuh tanggung jawab, dan membangkitkan semangat siswa untuk lebih berani berpendapat.
                     </p>
-                    <a
-                        href="javascript:void(0);"
-                        onclick="event.preventDefault(); document.getElementById('contact-us').scrollIntoView({ behavior: 'smooth', block: 'start' });"
-                        class="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-4 rounded-full text-lg font-bold shadow-[0_10px_20px_rgba(79,70,229,0.3)] hover:shadow-[0_15px_30px_rgba(79,70,229,0.5)] hover:from-indigo-700 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300 ease-in-out ring-2 ring-transparent hover:ring-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 group"
-                        role="button"
-                        aria-label="Hubungi kami sekarang"
-                    >
-                        <span class="tracking-wide">Contact Us</span> 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase ml-3 transition-transform group-hover:scale-110">
-                        <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
-                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                    </svg>
+
+                    <h4 class="text-sm font-semibold text-white mb-4 font-mono uppercase tracking-wider">Misi Utama OSIS:</h4>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-xl bg-bgElevated border border-white/5">
+                            <span class="font-mono text-xs text-accent font-bold">PROGRAM 01</span>
+                            <p class="text-sm text-fgMuted mt-1">Menggunakan kotak suara/voting terbuka untuk setiap keputusan lomba & acara sekolah.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-bgElevated border border-white/5">
+                            <span class="font-mono text-xs text-accent font-bold">PROGRAM 02</span>
+                            <p class="text-sm text-fgMuted mt-1">Mengoperasikan forum pelaporan mingguan ramah sekolah untuk penanganan anti-bullying.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== STRUCTURE SECTION (ALL PHOTOS PRESERVED) ==================== -->
+        <section id="structure" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
+            
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 03 // OFFICERS & GALLERY ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Struktur Kabinet Pengurus</h2>
+                <p class="text-sm text-fgMuted mt-2">Seluruh jajaran pimpinan dan koordinator pengurus OSIS Periode 2026/2027.</p>
+            </div>
+
+            <!-- CORE EXECUTIVES (Presiden & Wakil) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                
+                <!-- President (Levi) -->
+                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center" data-aos="fade-right">
+                    <div class="w-36 h-44 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/xqPq0chZ/KETOS-LEVI-2.png" alt="Ketua OSIS Levi Janice Lie" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-xs text-accent font-bold uppercase">STUDENT COUNCIL PRESIDENT</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Levi Janice Lie</h3>
+                        <p class="text-xs text-fgMuted italic mt-3 leading-relaxed border-l-2 border-accent pl-3">
+                            "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Vice President (Asher) -->
+                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center" data-aos="fade-left">
+                    <div class="w-36 h-44 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/2zqkWks/WAKETOS-ASHER-1.png" alt="Wakil Ketos Asher Yang" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-xs text-accent font-bold uppercase">VICE PRESIDENT</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Asher Yang</h3>
+                        <p class="text-xs text-fgMuted italic mt-3 leading-relaxed border-l-2 border-accent pl-3">
+                            "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member."
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TREASURER & SECRETARY -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <!-- Treasurer (Michelle) -->
+                <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5" data-aos="fade-right">
+                    <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/sJkJ6M15/BENDAHARA-MICHELLE-SEAN-1.png" alt="Bendahara Michelle Abigail Zalukhu" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">TREASURER // BENDAHARA</span>
+                        <h3 class="text-lg font-bold text-white">Michelle Abigail Zalukhu</h3>
+                        <p class="text-xs text-fgMuted mt-2 italic leading-relaxed">
+                            "True integrity is being accountable for the smallest details, ensuring trust is maintained."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Secretary (Sean) -->
+                <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5" data-aos="fade-left">
+                    <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/LX5yWsQ1/SEKRE-SEAN-1.png" alt="Sekretaris Sean Arcelia Zega" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">SECRETARY // SEKRETARIS</span>
+                        <h3 class="text-lg font-bold text-white">Sean Arcelia Zega</h3>
+                        <p class="text-xs text-fgMuted mt-2 italic leading-relaxed">
+                            "A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 01: KEROHANIAN (ALL MEMBERS WITH PHOTOS) -->
+            <div class="mb-16">
+                <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">DEPT 01 // SEKBID KEROHANIAN</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Ian (Koordinator) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/Rpk7mGgX/KOORDINATOR-IAN.png" alt="Ian" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Sepdyanta Sitepu</h4>
+                    </div>
+
+                    <!-- Biel (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/nqFLLMQ0/ANGGOTA-BIEL-1.png" alt="Biel" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Gabriel Oktavianus S.</h4>
+                    </div>
+
+                    <!-- Shana (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/mCpbHLQr/ANGGOTA-SHANA-1.png" alt="Shana" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Nuela Elshana Tova S.</h4>
+                    </div>
+
+                    <!-- Sonia (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/gZtHhn4B/ANGGOTA-SONIA-1.png" alt="Sonia" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Christania Sonia Gozali</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 02: PENDIDIKAN & KARAKTER -->
+            <div class="mb-16">
+                <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">DEPT 02 // SEKBID PENDIDIKAN & KARAKTER</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Fedora (Koordinator) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/DPn0NyTK/KOORDINATOR-FEDORA-1.png" alt="Fedora" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Fedora Ananta Quinselle</h4>
+                    </div>
+
+                    <!-- Angel (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/XkY6GPrm/ANGGOTA-ANGEL-1.png" alt="Angel" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Angelyne Aiko Kiroyan</h4>
+                    </div>
+
+                    <!-- Cliff (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/XgPxPP0/ANGGOTA-CLIFF-1.png" alt="Cliff" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Cliff Benedict Lim</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 03: MEDIA & TEKNOLOGI -->
+            <div class="mb-16">
+                <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">DEPT 03 // SEKBID MEDIA & TEKNOLOGI</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Scarlett (Koordinator) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/Ngx3VMSj/KOORDINATOR-SCARLETT-1.png" alt="Scarlett" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Scarlett Sophie Harper</h4>
+                    </div>
+
+                    <!-- Jashon (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/d0pjgT3F/ANGGOTA-JASHON-1.png" alt="Jashon" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Jashon Imanuel Yahya</h4>
+                    </div>
+
+                    <!-- Guido (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/bgzFzXVL/ANGGOTA-GUIDO-1.png" alt="Guido" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Guido Bryan Nugroho</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 04 & 05: OLAHRAGA & KEBUDAYAAN -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Sekbid Olahraga -->
+                <div class="p-6 rounded-2xl bg-bgElevated border border-white/5">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase block mb-6 border-b border-white/5 pb-2">DEPT 04 // SEKBID OLAHRAGA & PERALATAN</span>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/tTdjFpLT/KOORDINATOR-IER-1.png" alt="Xavier" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-accent font-bold block">KOORDINATOR</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Xavier Aurelius</h5>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/hRVF7skS/ANGGOTA-SAMUEL-1.png" alt="Samuel" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-fgMuted font-bold block">ANGGOTA</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Samuel Rusli</h5>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/Zy0QF5z/ANGGOTA-MAXWELL.png" alt="Maxwell" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-fgMuted font-bold block">ANGGOTA</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Maxwell Zega</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sekbid Kebudayaan -->
+                <div class="p-6 rounded-2xl bg-bgElevated border border-white/5">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase block mb-6 border-b border-white/5 pb-2">DEPT 05 // SEKBID KEBUDAYAAN & SENI</span>
+                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/qL9qWb79/KOORDINATOR-ASHLEY-1.png" alt="Ashley" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-accent font-bold block">KOORDINATOR</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Ashley Louisa N.</h5>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/4whBCJhy/ANGGOTA-MONIQ-1.png" alt="Monique" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-fgMuted font-bold block">ANGGOTA</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Monique Calista</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== GALLERY SECTION ==================== -->
+        <section id="gallery" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
+            
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 04 // ARCHIVE GALLERY ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Dokumentasi Kegiatan</h2>
+                <p class="text-sm text-fgMuted mt-2">Momen-momen kebersamaan dan kegiatan sekolah yang terekam.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Gallery Item 1 -->
+                <div class="card-linear spotlight-card p-4 rounded-2xl group" data-aos="fade-right">
+                    <div class="w-full aspect-[16/10] img-card-frame mb-4">
+                        <img src="https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg" alt="Ibadah Paskah" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-mono text-xs text-accent font-bold">PERAYAAN PASKAH</span>
+                            <span class="font-mono text-[10px] text-fgMuted">DOKUMENTASI #01</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">Ibadah Paskah Siswa/i</h3>
+                        <p class="text-xs text-fgMuted mt-1">Refleksi dan ucapan syukur dalam momen kebangkitan Tuhan Yesus.</p>
+                    </div>
+                </div>
+
+                <!-- Gallery Item 2 -->
+                <div class="card-linear spotlight-card p-4 rounded-2xl group" data-aos="fade-left">
+                    <div class="w-full aspect-[16/10] img-card-frame mb-4">
+                        <img src="https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg" alt="Nonton Bersama" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-mono text-xs text-accent font-bold">KEBERSAMAAN</span>
+                            <span class="font-mono text-[10px] text-fgMuted">DOKUMENTASI #02</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">Nonton Bersama (The Last Supper)</h3>
+                        <p class="text-xs text-fgMuted mt-1">Kegiatan mendalami makna Paskah melalui pemutaran film edukatif.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==================== TRIVIA QUIZ SECTION ==================== -->
+        <section id="quiz" class="py-24 px-4 sm:px-8 max-w-4xl mx-auto border-t border-white/5">
+            
+            <div class="mb-12 text-center" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 05 // INTERACTIVE ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Kuis Trivia Kepemimpinan</h2>
+            </div>
+
+            <!-- Quiz Card -->
+            <div class="card-linear p-8 sm:p-12 rounded-3xl relative overflow-hidden" data-aos="fade-up">
+                
+                <!-- Start Screen -->
+                <div id="quiz-start-screen" class="text-center py-6">
+                    <div class="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mx-auto mb-6">
+                        <i data-lucide="brain" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Uji Wawasan Organisasi Anda</h3>
+                    <p class="text-fgMuted text-sm max-w-md mx-auto mb-8">
+                        5 Pertanyaan interaktif seputar prinsip kepemimpinan, manajemen waktu, dan struktur OSIS.
+                    </p>
+                    <button onclick="startQuiz()" class="px-8 py-3.5 rounded-xl font-semibold text-xs text-white btn-primary-glow font-mono uppercase tracking-wider">
+                        MULAI KUIS SEKARANG →
+                    </button>
+                </div>
+
+                <!-- Active Quiz Screen -->
+                <div id="quiz-active-screen" class="hidden">
+                    <div class="flex justify-between items-center mb-6 font-mono text-xs text-fgMuted border-b border-white/5 pb-4">
+                        <span id="quiz-progress" class="text-accent font-bold">PERTANYAAN 1/5</span>
+                        <span id="quiz-score" class="px-3 py-1 rounded-full bg-white/5 border border-white/10">SKOR: 0</span>
+                    </div>
+
+                    <h3 id="quiz-question" class="text-xl sm:text-2xl font-bold text-white mb-8 leading-snug">
+                        Loading pertanyaan...
+                    </h3>
+
+                    <div id="quiz-options" class="space-y-3 font-sans">
+                        <!-- JS generated options -->
+                    </div>
+
+                    <!-- Explanation -->
+                    <div id="quiz-explanation-box" class="hidden mt-8 p-6 rounded-2xl bg-bgElevated border border-white/10">
+                        <span class="font-mono text-xs text-accent font-bold block mb-2">FAKTA EDUKATIF:</span>
+                        <p id="quiz-explanation-text" class="text-sm text-fgMuted leading-relaxed mb-6"></p>
+                        <button onclick="nextQuestion()" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs font-bold uppercase transition-all">
+                            Lanjut ke Pertanyaan Berikutnya →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="quiz-result-screen" class="hidden text-center py-6">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto mb-6">
+                        <i data-lucide="trophy" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Kuis Selesai!</h3>
+                    <p class="text-fgMuted text-xs font-mono uppercase mb-4">Skor Akhir Anda:</p>
+                    <div class="text-6xl font-mono font-extrabold text-accent mb-6">
+                        <span id="final-score-text">0</span>/100
+                    </div>
+                    <p id="quiz-feedback-message" class="text-sm text-fg max-w-md mx-auto mb-8 font-medium"></p>
+                    <button onclick="resetQuiz()" class="px-8 py-3.5 rounded-xl font-semibold text-xs text-white bg-surface hover:bg-white/10 border border-white/10 font-mono uppercase">
+                        Ulangi Kuis
+                    </button>
+                </div>
+
+                <!-- Progress Line Bar -->
+                <div class="h-1 w-full bg-white/5 absolute bottom-0 left-0">
+                    <div id="quiz-progress-bar" class="h-full bg-accent w-0 transition-all duration-300"></div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==================== EVENTS & BULLETIN ==================== -->
+        <section id="events" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
+            
+            <div class="mb-16 text-center" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 06 // AGENDA & BULLETIN ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Kegiatan & Berita Terkini</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Upcoming Event -->
+                <div class="card-linear p-8 rounded-2xl" data-aos="fade-right">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="font-mono text-xs text-accent font-bold uppercase">AGENDA MENDATANG</span>
+                        <span class="font-mono text-xs text-fgMuted px-2.5 py-1 rounded-full bg-white/5">09 APRIL 2026</span>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-white mb-2">Perayaan Paskah Sekolah</h3>
+                    <p class="text-sm text-fgMuted mb-6">Acara kebangkitan Tuhan Yesus & kebersamaan seluruh siswa/i SMP KKK Padang.</p>
+
+                    <div class="space-y-3 font-sans text-xs">
+                        <div class="p-3 rounded-lg bg-bgElevated border border-white/5 flex items-center">
+                            <i data-lucide="film" class="w-4 h-4 text-accent mr-3"></i> Nonton Bersama "The Last Supper"
+                        </div>
+                        <div class="p-3 rounded-lg bg-bgElevated border border-white/5 flex items-center">
+                            <i data-lucide="qr-code" class="w-4 h-4 text-accent mr-3"></i> Treasure Hunt Challenge (QR Code Hunt)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulletin -->
+                <div class="card-linear p-8 rounded-2xl" data-aos="fade-left">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="font-mono text-xs text-accent font-bold uppercase">BERITA & PENGUMUMAN</span>
+                        <span class="font-mono text-xs text-fgMuted px-2.5 py-1 rounded-full bg-white/5">BULLETIN</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-xl bg-bgElevated border border-white/5">
+                            <h4 class="text-sm font-bold text-white mb-1">SPMB 2026/2027</h4>
+                            <p class="text-xs text-fgMuted">Sistem Penerimaan Murid Baru melayani setiap hari kerja pukul 09.00 - 13.00 WIB.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-bgElevated border border-white/5">
+                            <h4 class="text-sm font-bold text-white mb-1">MPLS 2026</h4>
+                            <p class="text-xs text-fgMuted">Masa Pengenalan Lingkungan Sekolah diselenggarakan 13 - 17 Juli 2026.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== CONTACT SECTION ==================== -->
+        <section id="contact-us" class="py-24 px-4 sm:px-8 max-w-4xl mx-auto border-t border-white/5 text-center">
+            
+            <div data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07 // CONTACT ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2 mb-4">Hubungi Kami</h2>
+                <p class="text-sm text-fgMuted max-w-md mx-auto mb-10">
+                    Tertarik untuk berkolaborasi atau ingin tahu lebih banyak? Silakan terhubung melalui media sosial resmi OSIS.
+                </p>
+
+                <div class="card-linear p-8 rounded-3xl max-w-md mx-auto inline-block w-full">
+                    <span class="font-mono text-xs text-fgMuted uppercase block mb-4">INSTAGRAM RESMI</span>
+                    <a href="https://www.instagram.com/osis_smpkkkpdg?igsh=MXQzMGY4ZDNybHQzZg==" target="_blank" rel="noopener noreferrer" class="w-full py-4 rounded-xl font-bold text-xs text-white btn-primary-glow inline-flex items-center justify-center font-mono">
+                        <i data-lucide="instagram" class="w-4 h-4 mr-2"></i> @OSIS_SMPKKKPDG
                     </a>
                 </div>
             </div>
+
         </section>
 
-        <!-- Bagian Tentang OSIS (Detail) -->
-        <section id="about-us" class="py-16 md:py-24 bg-white relative overflow-hidden">
-            <div class="container mx-auto px-4" data-aos="fade-up" data-aos-duration="1000">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-12 flex items-center justify-center">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user text-indigo-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    About Us
-                </h2>
-                <div class="max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 p-10 rounded-3xl shadow-xl border border-blue-100 transform hover:scale-[1.02] transition-transform duration-500">
-                    <p class="text-lg md:text-xl text-gray-700 leading-loose text-justify font-medium">
-                        OSIS Periode 2026/2027 hadir sebagai wadah resmi untuk membangun karakter siswa yang disiplin dan bertanggung jawab. Kami berkomitmen menciptakan lingkungan sekolah yang demokratis, di mana setiap acara dan pilihan lomba didiskusikan bersama agar suara seluruh siswa/i selalu terdengar. 
-                        Dengan memanfaatkan teknologi, kami juga menyediakan forum laporan mingguan untuk menjaga sekolah tetap aman, damai, dan bebas dari perundungan (bullying). Bersama OSIS, mari kita wujudkan sekolah yang adil, aktif, dan berprestasi!
-                    </p>
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="py-12 border-t border-white/5 bg-bgDeep text-fgMuted font-mono text-xs relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-surface border border-white/10 flex items-center justify-center">
+                    <img src="https://i.ibb.co.com/whKDsQ5L/image.png" alt="Logo" class="w-5 h-5 object-contain">
                 </div>
-            </div>
-        </section>
-
-        <!-- Bagian Visi & Misi Sekolah -->
-        <section id="performa-akademik" class="py-20 md:py-28 bg-gradient-to-br from-indigo-50 via-white to-blue-50 relative">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-16 flex items-center justify-center" data-aos="fade-down">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target text-indigo-600"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-                    </div>
-                    School Vision & Mission
-                </h2>
-                <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
-                    
-                    <!-- Vision Card -->
-                    <div class="bg-white p-10 rounded-3xl shadow-xl border-t-4 border-indigo-500 hover:-translate-y-2 transition-transform duration-300" data-aos="fade-right" data-aos-duration="1000">
-                        <div class="flex items-center mb-6">
-                            <i data-lucide="eye" class="w-8 h-8 text-indigo-500 mr-3"></i>
-                            <h3 class="text-3xl font-bold text-gray-900">Vision</h3>
-                        </div>
-                        <p class="text-xl text-gray-700 leading-relaxed font-medium italic bg-indigo-50 p-6 rounded-2xl border-l-4 border-indigo-400">
-                            "Terbangunnya manusia utuh yang takut akan Tuhan, mandiri dan berguna bagi dunia."
-                        </p>
-                    </div>
-                    
-                    <!-- Mission Card -->
-                    <div class="bg-white p-10 rounded-3xl shadow-xl border-t-4 border-pink-500 hover:-translate-y-2 transition-transform duration-300" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                        <div class="flex items-center mb-6">
-                            <i data-lucide="rocket" class="w-8 h-8 text-pink-500 mr-3"></i>
-                            <h3 class="text-3xl font-bold text-gray-900">Mission</h3>
-                        </div>
-                        <ul class="space-y-4">
-                            <li class="flex items-start">
-                                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1"></i>
-                                <span class="text-lg text-gray-700 leading-relaxed">Mengajak murid, tenaga pendidik, dan tenaga kependidikan untuk memiliki hati yang takut akan Tuhan.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1"></i>
-                                <span class="text-lg text-gray-700 leading-relaxed">Membimbing murid, tenaga pendidik, dan tenaga kependidikan supaya mengasihi sesama manusia dan menghargai lingkungan alam ciptaan Tuhan.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1"></i>
-                                <span class="text-lg text-gray-700 leading-relaxed">Membina murid, tenaga pendidik, dan tenaga kependidikan bertumbuh menjadi manusia yang sehat mental, berbudi pekerti luhur dan bertanggung jawab sesuai nilai kebenaran.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1"></i>
-                                <span class="text-lg text-gray-700 leading-relaxed">Melengkapi murid, tenaga pendidik, dan tenaga kependidikan dengan keterampilan yang berkualitas sesuai kebutuhan dan potensi untuk pengembangan dirinya.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1"></i>
-                                <span class="text-lg text-gray-700 leading-relaxed">Menjaga kesehatan fisik dan mental agar selalu siap menghadapi tantangan.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1"></i>
-                                <span class="text-lg text-gray-700 leading-relaxed">Memberdayakan semua yang berkepentingan untuk menjadi insan pendidikan.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Bagian Visi & Misi OSIS -->
-        <section id="visi-misi" class="py-20 md:py-28 bg-white relative">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-16 flex items-center justify-center" data-aos="fade-up">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star text-indigo-600"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    </div>
-                    OSIS Vision & Mission
-                </h2>
-                
-                <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
-                    
-                    <!-- OSIS Vision Card -->
-                    <div class="bg-gradient-to-br from-indigo-50 to-blue-100 p-10 rounded-3xl shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-indigo-100" data-aos="zoom-in-right" data-aos-duration="1000">
-                        <div class="flex items-center mb-6">
-                            <i data-lucide="lightbulb" class="w-8 h-8 text-indigo-600 mr-3"></i>
-                            <h3 class="text-3xl font-bold text-gray-900">Vision</h3>
-                        </div>
-                        <p class="text-xl text-gray-800 leading-relaxed font-medium bg-white/60 p-6 rounded-2xl backdrop-blur-sm border border-white">
-                            Untuk mewujudkan karakter yang lebih disiplin, penuh tanggung jawab, dan membangkitkan semangat banyak siswa agar lebih berani berpendapat.
-                        </p>
-                    </div>
-                    
-                    <!-- OSIS Mission Card -->
-                    <div class="bg-gradient-to-br from-pink-50 to-red-50 p-10 rounded-3xl shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-pink-100" data-aos="zoom-in-left" data-aos-duration="1000" data-aos-delay="200">
-                        <div class="flex items-center mb-6">
-                            <i data-lucide="flag" class="w-8 h-8 text-pink-600 mr-3"></i>
-                            <h3 class="text-3xl font-bold text-gray-900">Mission</h3>
-                        </div>
-                        <ul class="space-y-5">
-                            <li class="flex items-start bg-white/60 p-4 rounded-xl backdrop-blur-sm border border-white">
-                                <div class="bg-pink-100 p-2 rounded-full mr-4 flex-shrink-0 mt-1">
-                                    <span class="text-pink-600 font-bold">1</span>
-                                </div>
-                                <span class="text-lg text-gray-800 leading-relaxed">Dengan membuat kotak suara ketika ingin membuat event, pilihan lomba sudah didiskusikan dulu bersama anggota OSIS, dengan begitu pendapat dari semua siswa/i terdengar tidak berasal hanya dari anggota OSIS.</span>
-                            </li>
-                            <li class="flex items-start bg-white/60 p-4 rounded-xl backdrop-blur-sm border border-white">
-                                <div class="bg-pink-100 p-2 rounded-full mr-4 flex-shrink-0 mt-1">
-                                    <span class="text-pink-600 font-bold">2</span>
-                                </div>
-                                <span class="text-lg text-gray-800 leading-relaxed">Memanfaatkan teknologi untuk membuat forum laporan ramah sekolah tiap minggunya seperti apakah ada terjadi bullying di sekitarnya, ataupun terhadap diri dia sendiri. Kami tentu saja akan mendengarkan dari kedua bilah pihak, dan memberi sanksi.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Bagian Struktur Organisasi -->
-        <section id="organization-structure" class="py-20 bg-gradient-premium">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl md:text-5xl font-extrabold text-center text-indigo-900 mb-16 flex items-center justify-center" data-aos="fade-down">
-                    <div class="bg-white p-3 rounded-2xl mr-4 shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users text-indigo-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    </div>
-                    Organization Structure
-                </h2>
-                
-                <div class="space-y-12">
-                    <!-- ==================== 1. KARTU KETUA OSIS ==================== -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-indigo-50 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-indigo-500 to-purple-500"></div>
-                            
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Student Council President</h3>
-                                <p class="text-lg text-indigo-600 font-bold mt-1">Levi Janice Lie</p>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden border-2 border-indigo-100 shadow-md group-hover:border-indigo-300 transition-colors duration-300">
-                                        <img src="https://i.ibb.co.com/xqPq0chZ/KETOS-LEVI-2.png" alt="Ketos Levi" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 z-10">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center relative">
-                                    <i data-lucide="quote" class="absolute top-4 right-4 w-8 h-8 text-indigo-100"></i>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-indigo-400 tracking-widest uppercase mb-3 flex items-center">
-                                            <i data-lucide="compass" class="w-4 h-4 mr-2"></i> Leadership Philosophy
-                                        </h4>
-                                        <p class="text-gray-700 text-lg md:text-xl leading-relaxed italic font-serif">
-                                            "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
-                                        </p>
-                                    </div>
-                                    <div class="text-sm text-indigo-800/60 font-semibold pt-6 mt-auto border-t border-gray-100 flex items-center">
-                                        <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> SMP Kristen Kalam Kudus Padang • 2026/2027
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- ==================== 2. KARTU WAKIL KETUA OSIS ==================== -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-indigo-50 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-400 to-indigo-500"></div>
-                            
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Student Council Vice President</h3>
-                                <p class="text-lg text-blue-600 font-bold mt-1">Asher Yang</p>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden border-2 border-blue-100 shadow-md group-hover:border-blue-300 transition-colors duration-300">
-                                        <img src="https://i.ibb.co.com/2zqkWks/WAKETOS-ASHER-1.png" alt="Waketos Asher" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 z-10">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center relative">
-                                    <i data-lucide="quote" class="absolute top-4 right-4 w-8 h-8 text-blue-100"></i>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-blue-400 tracking-widest uppercase mb-3 flex items-center">
-                                            <i data-lucide="compass" class="w-4 h-4 mr-2"></i> Leadership Philosophy
-                                        </h4>
-                                        <p class="text-gray-700 text-lg md:text-xl leading-relaxed italic font-serif">
-                                            "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member and push our boundaries."
-                                        </p>
-                                    </div>
-                                    <div class="text-sm text-blue-800/60 font-semibold pt-6 mt-auto border-t border-gray-100 flex items-center">
-                                        <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> SMP Kristen Kalam Kudus Padang • 2026/2027
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== 3. KARTU BENDAHARA OSIS (ERROR FIXED) ==================== -->
-                    <!-- Memperbaiki atribut img src dan alt yang rusak pada kode asli -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="200">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-green-50 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-green-400 to-teal-500"></div>
-                            
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Student Council Treasurer</h3>
-                                <p class="text-lg text-teal-600 font-bold mt-1">Michelle Abigail Zalukhu</p>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden border-2 border-teal-100 shadow-md group-hover:border-teal-300 transition-colors duration-300">
-                                        <!-- Perbaikan Sintaks HTML disini -->
-                                        <img src="https://i.ibb.co.com/sJkJ6M15/BENDAHARA-MICHELLE-SEAN-1.png" alt="Bendahara Michelle" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 z-10">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center relative">
-                                    <i data-lucide="quote" class="absolute top-4 right-4 w-8 h-8 text-teal-100"></i>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-teal-400 tracking-widest uppercase mb-3 flex items-center">
-                                            <i data-lucide="compass" class="w-4 h-4 mr-2"></i> Leadership Philosophy
-                                        </h4>
-                                        <p class="text-gray-700 text-lg md:text-xl leading-relaxed italic font-serif">
-                                            "True integrity is being accountable for the smallest details, ensuring that trust is maintained and every plan is fully supported."
-                                        </p>
-                                    </div>
-                                    <div class="text-sm text-teal-800/60 font-semibold pt-6 mt-auto border-t border-gray-100 flex items-center">
-                                        <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> SMP Kristen Kalam Kudus Padang • 2026/2027
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== 4. KARTU SEKRETARIS OSIS ==================== -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="300">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-yellow-50 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-yellow-400 to-orange-500"></div>
-                            
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Student Council Secretary</h3>
-                                <p class="text-lg text-orange-600 font-bold mt-1">Sean Arcelia Zega</p>
-                            </div>
-
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden border-2 border-orange-100 shadow-md group-hover:border-orange-300 transition-colors duration-300">
-                                        <img src="https://i.ibb.co.com/LX5yWsQ1/SEKRE-SEAN-1.png" alt="Sekretaris Sean" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 z-10">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center relative">
-                                    <i data-lucide="quote" class="absolute top-4 right-4 w-8 h-8 text-orange-100"></i>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-orange-400 tracking-widest uppercase mb-3 flex items-center">
-                                            <i data-lucide="compass" class="w-4 h-4 mr-2"></i> Leadership Philosophy
-                                        </h4>
-                                        <p class="text-gray-700 text-lg md:text-xl leading-relaxed italic font-serif">
-                                            "More than just a record-keeper, a secretary is the pulse of every meeting. I am here to listen, write, and blend actively with the team, ensuring our ideas transition smoothly from notes to reality."
-                                        </p>
-                                    </div>
-                                    <div class="text-sm text-orange-800/60 font-semibold pt-6 mt-auto border-t border-gray-100 flex items-center">
-                                        <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> SMP Kristen Kalam Kudus Padang • 2026/2027
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== DIVIDER KEROHANIAN ==================== -->
-                    <div class="pt-10 pb-4" data-aos="fade-in">
-                        <div class="flex items-center justify-center space-x-4">
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                            <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest"><i data-lucide="heart" class="inline w-5 h-5 mr-2 text-red-400"></i>Spiritual Affairs</h3>
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== KARTU KETUA KEROHANIAN ==================== -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-500 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-red-400"></div>
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Spiritual Affairs Coordinator</h3>
-                                <p class="text-lg text-red-500 font-bold mt-1">Sepdyanta Sitepu</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden border-2 border-red-50 shadow-sm group-hover:border-red-200 transition-colors duration-300">
-                                        <img src="https://i.ibb.co.com/Rpk7mGgX/KOORDINATOR-IAN.png" alt="Koordinator Ian" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110 z-10">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100 flex flex-col justify-center">
-                                    <h4 class="text-sm font-bold text-red-300 tracking-widest uppercase mb-3">Leadership Philosophy</h4>
-                                    <p class="text-gray-700 text-lg leading-relaxed italic font-serif">"True leadership is found when we choose not to be served, but to serve others with a gentle spirit."</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ANGGOTA KEROHANIAN GRID -->
-                    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
-                        <!-- Biel -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-red-300" data-aos="zoom-in" data-aos-delay="100">
-                            <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-5">
-                                <img src="https://i.ibb.co.com/nqFLLMQ0/ANGGOTA-BIEL-1.png" alt="Anggota Biel" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 text-center">Gabriel Oktavianus Sihombing</h3>
-                            <p class="text-sm text-red-500 font-semibold text-center mb-4">Member</p>
-                            <p class="text-sm text-gray-600 italic text-center px-2">"As a member, I am here to walk beside you with a humble heart..."</p>
-                        </div>
-                        
-                        <!-- Shana -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-red-300" data-aos="zoom-in" data-aos-delay="200">
-                            <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-5">
-                                <img src="https://i.ibb.co.com/mCpbHLQr/ANGGOTA-SHANA-1.png" alt="Anggota Shana" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 text-center">Nuela Elshana Tova Sitorus</h3>
-                            <p class="text-sm text-red-500 font-semibold text-center mb-4">Member</p>
-                            <p class="text-sm text-gray-600 italic text-center px-2">"I am dedicated to lifting others up and strengthening our spiritual journey..."</p>
-                        </div>
-                        
-                        <!-- Sonia -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-red-300" data-aos="zoom-in" data-aos-delay="300">
-                            <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-5">
-                                <img src="https://i.ibb.co.com/gZtHhn4B/ANGGOTA-SONIA-1.png" alt="Anggota Sonia" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 text-center">Christania Sonia Gozali</h3>
-                            <p class="text-sm text-red-500 font-semibold text-center mb-4">Member</p>
-                            <p class="text-sm text-gray-600 italic text-center px-2">"Through humble actions, I want to help build a school community that stays rooted in faith."</p>
-                        </div>
-                    </div>
-
-                    <!-- ==================== DIVIDER PENDIDIKAN ==================== -->
-                    <div class="pt-16 pb-4" data-aos="fade-in">
-                        <div class="flex items-center justify-center space-x-4">
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                            <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest"><i data-lucide="book" class="inline w-5 h-5 mr-2 text-blue-500"></i>Education & Character</h3>
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KETUA PENDIDIKAN -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-500 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Education & Character Coordinator</h3>
-                                <p class="text-lg text-blue-600 font-bold mt-1">Fedora Ananta Quinselle</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden shadow-sm">
-                                        <img src="https://i.ibb.co.com/DPn0NyTK/KOORDINATOR-FEDORA-1.png" alt="Koordinator Fedora" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col justify-center">
-                                    <h4 class="text-sm font-bold text-blue-400 tracking-widest uppercase mb-3">Leadership Philosophy</h4>
-                                    <p class="text-gray-700 text-lg leading-relaxed italic font-serif">"Leadership is an example, not an exhibition. I am here to bring high passion, ensure our work is flawless, and build a character that speaks louder than words!"</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- ANGGOTA PENDIDIKAN GRID -->
-                    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                        <!-- Angel -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-blue-400 flex" data-aos="fade-right">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/XkY6GPrm/ANGGOTA-ANGEL-1.png" alt="Anggota Angel" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Angelyne Aiko Kiroyan</h3>
-                                <p class="text-xs text-blue-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic line-clamp-4">"A title doesn't make us superior; it makes us responsible. We lead by high-energy action..."</p>
-                            </div>
-                        </div>
-                        <!-- Cliff -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-blue-400 flex" data-aos="fade-left">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/XgPxPP0/ANGGOTA-CLIFF-1.png" alt="Anggota Cliff" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Cliff Benedict Lim</h3>
-                                <p class="text-xs text-blue-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic line-clamp-4">"A title doesn't make us superior; it makes us responsible. We lead by high-energy action..."</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== DIVIDER DOKUMENTASI ==================== -->
-                    <div class="pt-16 pb-4" data-aos="fade-in">
-                        <div class="flex items-center justify-center space-x-4">
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                            <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest"><i data-lucide="camera" class="inline w-5 h-5 mr-2 text-purple-500"></i>Media & Technology</h3>
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KETUA DOKUMENTASI -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-500 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-purple-500"></div>
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Media & Technology Coordinator</h3>
-                                <p class="text-lg text-purple-600 font-bold mt-1">Scarlett Sophie Harper</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden shadow-sm">
-                                        <img src="https://i.ibb.co.com/Ngx3VMSj/KOORDINATOR-SCARLETT-1.png" alt="Koordinator Scarlett" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col justify-center">
-                                    <h4 class="text-sm font-bold text-purple-400 tracking-widest uppercase mb-3">Leadership Philosophy</h4>
-                                    <p class="text-gray-700 text-lg leading-relaxed italic font-serif">"Leadership means moving together in perfect order. I strive to divide our work neatly, keep our team highly responsible, meet every deadline, and ensure our media represents and respects every student in our school."</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- ANGGOTA DOKUMENTASI GRID -->
-                    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                        <!-- Jashon -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-purple-400 flex" data-aos="fade-right">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/d0pjgT3F/ANGGOTA-JASHON-1.png" alt="Anggota Jashon" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Jashon Imanuel Yahya</h3>
-                                <p class="text-xs text-purple-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic">"Behind every screen, we work as one. I am committed to handling my tasks neatly, finishing on schedule..."</p>
-                            </div>
-                        </div>
-                        <!-- Guido -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-purple-400 flex" data-aos="fade-left">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/bgzFzXVL/ANGGOTA-GUIDO-1.png" alt="Anggota Guido" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Guido Bryan Nugroho</h3>
-                                <p class="text-xs text-purple-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic">"We share the workload, respect deadlines, and value people. I am ready to complete my tasks responsibly..."</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== DIVIDER OLAHRAGA ==================== -->
-                    <div class="pt-16 pb-4" data-aos="fade-in">
-                        <div class="flex items-center justify-center space-x-4">
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                            <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest"><i data-lucide="activity" class="inline w-5 h-5 mr-2 text-green-500"></i>Sports & Equipment</h3>
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KETUA OLAHRAGA -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-500 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Sports & Equipment Coordinator</h3>
-                                <p class="text-lg text-green-600 font-bold mt-1">Xavier Aurelius Chaya Dharma</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden shadow-sm">
-                                        <img src="https://i.ibb.co.com/tTdjFpLT/KOORDINATOR-IER-1.png" alt="Koordinator Xavier" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col justify-center">
-                                    <h4 class="text-sm font-bold text-green-400 tracking-widest uppercase mb-3">Leadership Philosophy</h4>
-                                    <p class="text-gray-700 text-lg leading-relaxed italic font-serif">"Champions are built on teamwork and preparation. As coordinator, I am here to ignite our athletic spirit while ensuring every detail and equipment is flawlessly ready for action!"</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- ANGGOTA OLAHRAGA GRID -->
-                    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                        <!-- Samuel -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-green-400 flex" data-aos="fade-right">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/hRVF7skS/ANGGOTA-SAMUEL-1.png" alt="Anggota Samuel" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Samuel Rusli</h3>
-                                <p class="text-xs text-green-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic">"No game can be won without great preparation. As a member, I am committed to working hard behind the scenes..."</p>
-                            </div>
-                        </div>
-                        <!-- Maxwell -->
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-green-400 flex" data-aos="fade-left">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/Zy0QF5z/ANGGOTA-MAXWELL.png" alt="Anggota Maxwell" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Maxwell Marchianos Daniel Zega</h3>
-                                <p class="text-xs text-green-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic">"We bring high energy to the field and perfect order to the equipment. Together with the team..."</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ==================== DIVIDER KEBUDAYAAN ==================== -->
-                    <div class="pt-16 pb-4" data-aos="fade-in">
-                        <div class="flex items-center justify-center space-x-4">
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                            <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest"><i data-lucide="palette" class="inline w-5 h-5 mr-2 text-pink-500"></i>Culture & Arts</h3>
-                            <div class="h-px bg-gray-300 w-1/4"></div>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KETUA KEBUDAYAAN -->
-                    <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                        <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-500 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-pink-500"></div>
-                            <div class="mb-6 border-b border-gray-100 pb-4 pl-4">
-                                <h3 class="text-2xl font-black text-gray-900 tracking-wide uppercase">Culture & Arts Coordinator</h3>
-                                <p class="text-lg text-pink-600 font-bold mt-1">Ashley Louisa Napitapulu</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-8 items-stretch pl-4">
-                                <div class="w-full sm:w-56 flex-shrink-0">
-                                    <div class="relative w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden shadow-sm">
-                                        <img src="https://i.ibb.co.com/qL9qWb79/KOORDINATOR-ASHLEY-1.png" alt="Koordinator Ashley" class="absolute inset-0 w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110">
-                                    </div>
-                                </div>
-                                <div class="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col justify-center">
-                                    <h4 class="text-sm font-bold text-pink-400 tracking-widest uppercase mb-3">Leadership Philosophy</h4>
-                                    <p class="text-gray-700 text-lg leading-relaxed italic font-serif">"Art connects us, and culture defines us. As coordinator, I am here to fuel our school’s creativity with high passion and ensure every project is flawlessly executed!"</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- ANGGOTA KEBUDAYAAN -->
-                    <div class="max-w-4xl mx-auto pt-4" data-aos="fade-up">
-                        <div class="bg-white p-5 rounded-3xl shadow-md hover:shadow-xl transition-all duration-500 group border-b-4 border-pink-400 flex md:w-1/2 mx-auto">
-                            <div class="w-1/3 relative aspect-[4/5] rounded-xl overflow-hidden">
-                                <img src="https://i.ibb.co.com/4whBCJhy/ANGGOTA-MONIQ-1.png" alt="Anggota Moniq" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            </div>
-                            <div class="w-2/3 pl-5 flex flex-col justify-center">
-                                <h3 class="text-lg font-bold text-gray-900">Monique Calista</h3>
-                                <p class="text-xs text-pink-500 font-semibold mb-2">Member</p>
-                                <p class="text-xs text-gray-600 italic">"Turning creative vision into reality. We strive to build a vibrant platform for student talents while ensuring our teamwork is spotless and beautifully finished."</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== BAGIAN ICE BREAKING (KUIS EDUKATIF) ==================== -->
-    <section id="ice-breaking" class="py-20 md:py-28 bg-white relative overflow-hidden border-t border-gray-100">
-    <!-- Ornamen Background -->
-    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 transform translate-x-1/2 -translate-y-1/2"></div>
-    <div class="absolute bottom-0 left-0 w-64 h-64 bg-pink-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 transform -translate-x-1/2 translate-y-1/2"></div>
-
-    <div class="container mx-auto px-4 relative z-10" data-aos="fade-up" data-aos-duration="1000">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-6 flex items-center justify-center">
-            <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gamepad-2 text-indigo-600"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
-            </div>
-            Ice Breaking Zone
-        </h2>
-        <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12 text-lg">
-            Uji pengetahuanmu seputar kepemimpinan, wawasan umum, dan fakta unik dalam kuis edukatif singkat ini!
-        </p>
-
-        <!-- Container Kuis Utama -->
-        <div class="max-w-3xl mx-auto bg-gradient-to-br from-indigo-900 to-purple-900 rounded-[2.5rem] shadow-2xl overflow-hidden text-white relative">
-            
-            <!-- Layar Awal Kuis (Start Screen) -->
-            <div id="quiz-start-screen" class="p-10 md:p-16 text-center transition-opacity duration-500">
-                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/20">
-                    <i data-lucide="brain-circuit" class="w-12 h-12 text-pink-300"></i>
-                </div>
-                <h3 class="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-indigo-300">Trivia Kepemimpinan</h3>
-                <p class="text-indigo-100/80 mb-8 text-lg">5 Pertanyaan • Edukatif • Menyenangkan</p>
-                <button onclick="startQuiz()" class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-pink-500/50 transform hover:-translate-y-1 transition-all duration-300 text-lg w-full sm:w-auto">
-                    Mulai Kuis Sekarang
-                </button>
-            </div>
-
-            <!-- Layar Kuis Aktif (Question Screen) -->
-            <div id="quiz-active-screen" class="hidden p-8 md:p-12 transition-opacity duration-500">
-                <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-                    <span id="quiz-progress" class="text-sm font-bold text-pink-300 uppercase tracking-wider">Pertanyaan 1/5</span>
-                    <span id="quiz-score" class="text-sm font-bold text-indigo-300 bg-white/10 px-4 py-1 rounded-full">Skor: 0</span>
-                </div>
-                
-                <h3 id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 leading-tight">Pertanyaan akan muncul di sini?</h3>
-                
-                <div id="quiz-options" class="space-y-4">
-                    <!-- Opsi jawaban akan di-generate oleh JavaScript -->
-                </div>
-
-                <!-- Penjelasan (Muncul setelah menjawab) -->
-                <div id="quiz-explanation-box" class="hidden mt-8 p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-                    <h4 class="text-pink-300 font-bold mb-2 flex items-center"><i data-lucide="info" class="w-5 h-5 mr-2"></i> Fakta Menarik:</h4>
-                    <p id="quiz-explanation-text" class="text-indigo-50 text-sm md:text-base leading-relaxed">Penjelasan akan muncul di sini.</p>
-                    <button onclick="nextQuestion()" class="mt-6 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl w-full transition-colors duration-300">
-                        Lanjut ke Pertanyaan Berikutnya
-                    </button>
+                <div>
+                    <span class="text-white font-bold block">OSIS SMP KALAM KUDUS PADANG</span>
+                    <span class="text-[10px] text-fgSubtle">DESIGN SYSTEM: LINEAR / MODERN DARK</span>
                 </div>
             </div>
 
-            <!-- Layar Hasil Akhir (Result Screen) -->
-            <div id="quiz-result-screen" class="hidden p-10 md:p-16 text-center transition-opacity duration-500">
-                <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30">
-                    <i data-lucide="trophy" class="w-12 h-12 text-white"></i>
-                </div>
-                <h3 class="text-4xl font-bold mb-2 text-white">Kuis Selesai!</h3>
-                <p class="text-indigo-200 mb-8 text-lg">Skor Akhir Kamu:</p>
-                <div class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-400 mb-8 drop-shadow-lg">
-                    <span id="final-score-text">0</span>/100
-                </div>
-                <p id="quiz-feedback-message" class="text-white text-xl mb-10 font-medium italic">Pesan feedback akan muncul di sini.</p>
-                
-                <button onclick="resetQuiz()" class="bg-white/20 hover:bg-white/30 text-white font-bold py-4 px-10 rounded-full backdrop-blur-sm border border-white/30 transition-all duration-300 mr-4">
-                    Ulangi Kuis
-                </button>
-            </div>
-
-            <!-- Indikator Loading Bar -->
-            <div class="h-1.5 w-full bg-white/10 absolute bottom-0 left-0">
-                <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-pink-500 to-purple-500 w-0 transition-all duration-500 ease-out"></div>
+            <div class="text-center md:text-right text-[11px]">
+                <p>&copy; <span id="current-year">2026</span> OSIS SMP Kalam Kudus Padang. All Rights Reserved.</p>
+                <p class="mt-1 text-fgSubtle">Padang, West Sumatra, Indonesia</p>
             </div>
         </div>
-    </div>
-</section>
+    </footer>
 
-        <!-- Bagian Events -->
-        <section id="events" class="py-20 md:py-28 bg-gradient-to-br from-indigo-50 to-blue-50 relative">
-            <div class="container mx-auto px-4" data-aos="zoom-in">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-12 flex items-center justify-center">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar text-indigo-600"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    </div>
-                    Events
-                </h2>
-                <div class="flex justify-center">
-                    <div class="bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 max-w-2xl w-full border border-indigo-50 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-indigo-500 text-white py-1 px-4 rounded-bl-xl font-bold shadow-md">9 April 2026</div>
-                        <h3 class="text-3xl font-bold text-gray-900 mb-2 mt-4">Paskah</h3>
-                        <p class="text-indigo-600 font-bold mb-6 text-lg bg-indigo-50 inline-block py-1 px-3 rounded-lg">Acara kebangkitan Tuhan Yesus</p>
-                        <ul class="space-y-3">
-                            <li class="flex items-center text-gray-700 text-lg">
-                                <i data-lucide="film" class="w-5 h-5 mr-3 text-indigo-400"></i> Nonton bersama (The Last Supper)
-                            </li>
-                            <li class="flex items-center text-gray-700 text-lg">
-                                <i data-lucide="scan-line" class="w-5 h-5 mr-3 text-indigo-400"></i> Mencari QR Code (Treasure Hunt Challenge)
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bagian Gallery -->
-        <section id="gallery" class="py-20 bg-white">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-12 flex items-center justify-center" data-aos="fade-down">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image text-indigo-600"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                    </div>
-                    Gallery
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <!-- Gallery Item 1 -->
-                    <div class="bg-white p-4 rounded-3xl shadow-lg border border-gray-100 group hover:shadow-2xl transition-all duration-300" data-aos="fade-right">
-                        <div class="w-full h-64 overflow-hidden rounded-2xl mb-4 relative">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 z-10"></div>
-                            <img src="https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg" alt="Ibadah Paskah" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2 px-2">Paskah</h3>
-                        <ul class="list-disc list-inside text-gray-600 px-2">
-                            <li>Ibadah Paskah</li>
-                        </ul>
-                    </div>
-
-                    <!-- Gallery Item 2 -->
-                    <div class="bg-white p-4 rounded-3xl shadow-lg border border-gray-100 group hover:shadow-2xl transition-all duration-300" data-aos="fade-left">
-                        <div class="w-full h-64 overflow-hidden rounded-2xl mb-4 relative">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 z-10"></div>
-                            <img src="https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg" alt="Nonton Bersama" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2 px-2">Paskah</h3>
-                        <ul class="list-disc list-inside text-gray-600 px-2">
-                            <li>Nonton bersama</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bagian News -->
-        <section id="news" class="py-20 md:py-28 bg-gradient-to-br from-indigo-50 to-blue-50">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-12 flex items-center justify-center" data-aos="fade-down">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-newspaper text-indigo-600"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
-                    </div>
-                    News
-                </h2>
-                
-                <div class="max-w-4xl mx-auto space-y-10">
-                    <!-- SPMB -->
-                    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 border-l-8 border-indigo-500" data-aos="fade-right">
-                        <h3 class="text-3xl font-bold text-gray-900 mb-2">SPMB</h3>
-                        <p class="text-indigo-600 font-bold mb-6 text-lg bg-indigo-50 inline-block py-1 px-3 rounded-lg">Sistem Penerimaan Murid Baru</p>
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <i data-lucide="map-pin" class="w-5 h-5 text-indigo-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span class="text-gray-700 text-lg"><strong>Lokasi Pelayanan:</strong> Gedung SMP/SMA Kristen Kalam Kudus Padang</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="clock" class="w-5 h-5 text-indigo-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span class="text-gray-700 text-lg"><strong>Waktu Operasional:</strong> Setiap Hari Kerja, Pukul 09.00 - 13.00 WIB</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span class="text-gray-700 text-lg"><strong>Agenda Kegiatan:</strong> Konsultasi program, pengisian formulir, penyerahan berkas.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- MPLS -->
-                    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 border-l-8 border-pink-500" data-aos="fade-left">
-                        <h3 class="text-3xl font-bold text-gray-900 mb-2">MPLS</h3>
-                        <p class="text-pink-600 font-bold mb-6 text-lg bg-pink-50 inline-block py-1 px-3 rounded-lg">Masa Pengenalan Lingkungan Sekolah</p>
-                        <ul class="space-y-3">
-                            <li class="flex items-start">
-                                <i data-lucide="map-pin" class="w-5 h-5 text-pink-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span class="text-gray-700 text-lg"><strong>Tempat:</strong> Gedung Gereja Kristen Kalam Kudus Padang</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="calendar-days" class="w-5 h-5 text-pink-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span class="text-gray-700 text-lg"><strong>Waktu:</strong> Senin, 13 Juli 2026 - Jumat 17 Juli 2026</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i data-lucide="clipboard-list" class="w-5 h-5 text-pink-400 mr-3 mt-1 flex-shrink-0"></i>
-                                <span class="text-gray-700 text-lg"><strong>Agenda Kegiatan:</strong> -</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bagian Contact Us -->
-        <section id="contact-us" class="py-20 bg-white border-t border-gray-100">
-            <div class="container mx-auto text-center px-4" data-aos="zoom-in" data-aos-duration="1000">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-12 flex items-center justify-center">
-                    <div class="bg-indigo-100 p-3 rounded-2xl mr-4 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail text-indigo-600"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                    </div>
-                    Contact Us
-                </h2>
-                <div class="max-w-2xl mx-auto bg-gradient-to-br from-indigo-50 to-blue-50 p-10 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out border border-indigo-100">
-                    <p class="text-xl text-gray-700 mb-8 font-medium">
-                        Tertarik untuk berkolaborasi atau ingin tahu lebih banyak? Jangan ragu untuk menghubungi kami!
-                    </p>
-                    <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm inline-block">
-                        <h3 class="text-lg font-bold text-gray-500 uppercase tracking-widest mb-6">Temukan Kami di Sosial Media</h3>
-                        <div class="flex justify-center">
-                            <a href="https://www.instagram.com/osis_smpkkkpdg?igsh=MXQzMGY4ZDNybHQzZg==" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-4 rounded-full text-white hover:scale-110 hover:shadow-lg transition duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.5" y1="6.5" y2="6.5"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-gray-400 py-10 text-center rounded-t-[3rem] shadow-inner mt-10">
-            <div class="container mx-auto px-4 flex flex-col items-center">
-                <div class="flex items-center mb-4 text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase mr-2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                    <span class="font-bold text-xl tracking-wider">OSIS SMP Kalam Kudus Padang</span>
-                </div>
-                <p>&copy; <span id="current-year"></span> Website OSIS SMP Kalam Kudus Padang. Hak Cipta Dilindungi.</p>
-                <div class="w-16 h-1 bg-indigo-600 rounded mt-4"></div>
-            </div>
-        </footer>
-    </div> <!-- End of main-content-wrapper -->
-
+    <!-- ==================== JAVASCRIPT ENGINE ==================== -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
     <script>
-        // =========================================================================
-        // 1. INISIALISASI ANIMASI & SIDEBAR
-        // =========================================================================
-        
-        // Inisialisasi library animasi AOS
+        // AOS Animation Init
         AOS.init({
             once: true,
-            offset: 100,
-            duration: 800,
-            easing: 'ease-out-cubic',
+            duration: 400,
+            easing: 'ease-out-quad',
         });
 
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarClose = document.getElementById('sidebar-close');
-        const mobileSidebar = document.getElementById('mobile-sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const mainContentWrapper = document.getElementById('main-content-wrapper');
-        const header = document.querySelector('header');
-        
-        // Efek transparan pada header saat scroll
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('shadow-md');
-                header.classList.replace('bg-white/80', 'bg-white/95');
-            } else {
-                header.classList.remove('shadow-md');
-                header.classList.replace('bg-white/95', 'bg-white/80');
-            }
-        });
+        // Mobile Menu Toggle
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if(mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
 
-        function openSidebar() {
-            mobileSidebar.classList.remove('-translate-x-full');
-            mobileSidebar.classList.add('translate-x-0');
-            sidebarOverlay.classList.remove('hidden');
-            if (window.innerWidth >= 1024) {
-                mainContentWrapper.style.marginLeft = '256px';
-            }
-        }
-        
-        function closeSidebar() {
-            mobileSidebar.classList.remove('translate-x-0');
-            mobileSidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-            mainContentWrapper.style.marginLeft = '0';
-        }
-        
-        if(sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
-        if(sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-        if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-        
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                
-                if (targetElement) {
-                    const headerHeight = document.querySelector('header').offsetHeight;
-                    const targetPosition = targetElement.offsetTop - headerHeight;
-                    
-                    if (window.innerWidth < 1024) closeSidebar();
-                    
-                    setTimeout(() => {
-                        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                    }, window.innerWidth < 1024 ? 300 : 0);
-                }
+        // Spotlight Mouse Tracking Effect
+        document.querySelectorAll('.spotlight-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
             });
         });
-        
-        function handleResize() {
-            if (window.innerWidth >= 1024) {
-                mobileSidebar.classList.remove('-translate-x-full');
-                mobileSidebar.classList.add('translate-x-0');
-                sidebarOverlay.classList.add('hidden');
-                mainContentWrapper.style.marginLeft = '256px';
-            } else {
-                mobileSidebar.classList.remove('translate-x-0');
-                mobileSidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                mainContentWrapper.style.marginLeft = '0';
-            }
-        }
-        
-        window.addEventListener('load', handleResize);
-        window.addEventListener('resize', handleResize);
-        
+
+        // Current Year Update
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
 
-        // =========================================================================
-        // 2. LOGIKA ICE BREAKING QUIZ (Standar Global untuk Google Sites)
-        // =========================================================================
-        
+        // Quiz Engine Logic
         const quizData = [
             {
                 question: "Seorang pemimpin yang baik harus memiliki sikap empati. Apa arti sebenarnya dari empati?",
@@ -1136,7 +946,7 @@
                     "Membiarkan anggota menyelesaikan masalahnya sendiri"
                 ],
                 correctAnswer: 1,
-                explanation: "Empati adalah kemampuan menempatkan diri pada posisi orang lain, memahami perasaan mereka, dan memberikan respons suportif. Ini kunci membangun kepercayaan."
+                explanation: "Empati adalah kemampuan menempatkan diri pada posisi orang lain, memahami perasaan mereka, dan memberikan respons suportif."
             },
             {
                 question: "Dalam struktur organisasi OSIS, apa fungsi utama dari seorang Sekretaris?",
@@ -1147,10 +957,10 @@
                     "Menyiapkan peralatan olahraga dan budaya"
                 ],
                 correctAnswer: 2,
-                explanation: "Sekretaris mengelola segala bentuk administrasi, seperti membuat proposal, surat menyurat, dan mencatat hasil rapat (notulensi) agar program kerja berjalan tertata."
+                explanation: "Sekretaris mengelola administrasi, proposal, persuratan, serta pencatatan hasil rapat."
             },
             {
-                question: "Jika terjadi perbedaan pendapat yang memanas saat rapat OSIS, langkah paling tepat sebagai pemimpin adalah...",
+                question: "Jika terjadi perbedaan pendapat yang memanas saat rapat OSIS, langkah paling tepat adalah...",
                 options: [
                     "Memihak pada pendapat yang didukung anggota terbanyak",
                     "Membubarkan rapat dan menunda keputusan",
@@ -1158,7 +968,7 @@
                     "Menggunakan hak veto untuk memaksakan pendapat pribadi"
                 ],
                 correctAnswer: 2,
-                explanation: "Pemimpin demokratis harus bisa meredam konflik dengan menjadi mediator yang objektif, mendengarkan semua sisi, dan mencari solusi yang menguntungkan bersama."
+                explanation: "Pemimpin yang bijak bertindak sebagai mediator objektif demi mufakat."
             },
             {
                 question: "Apa kepanjangan resmi dari OSIS?",
@@ -1169,183 +979,136 @@
                     "Organisasi Sosial Intra Sekolah"
                 ],
                 correctAnswer: 0,
-                explanation: "OSIS singkatan dari Organisasi Siswa Intra Sekolah. 'Intra' berarti berada di dalam dan menyatu dengan kehidupan sekolah tersebut."
+                explanation: "OSIS merupakan singkatan resmi dari Organisasi Siswa Intra Sekolah."
             },
             {
-                question: "Dalam manajemen waktu yang sering digunakan oleh siswa berprestasi, terdapat istilah 'Skala Prioritas'. Apa maksudnya?",
+                question: "Dalam manajemen waktu, terdapat istilah 'Skala Prioritas'. Apa maksudnya?",
                 options: [
-                    "Mengerjakan semua tugas secara bersamaan (multitasking)",
+                    "Mengerjakan semua tugas secara bersamaan",
                     "Mengerjakan tugas yang paling disukai terlebih dahulu",
                     "Menyusun urutan pekerjaan berdasarkan tingkat urgensi dan kepentingan",
                     "Menyerahkan tugas yang sulit kepada teman lain"
                 ],
                 correctAnswer: 2,
-                explanation: "Skala prioritas adalah metode mengelompokkan tugas berdasarkan 'Penting & Mendesak'. Ini membantu mengelola waktu dengan sangat efektif dan profesional."
+                explanation: "Skala prioritas menyusun tugas berdasarkan tingkat urgensi dan dampaknya."
             }
         ];
 
-        // Variabel Status Kuis
         let currentQuestionIndex = 0;
         let score = 0;
         let isAnswered = false;
 
-        // Deklarasi Elemen DOM (akan diisi setelah halaman dimuat)
-        let startScreen, activeScreen, resultScreen, questionEl, optionsEl;
-        let explanationBox, explanationText, progressEl, scoreEl, progressBar;
+        const startScreen = document.getElementById('quiz-start-screen');
+        const activeScreen = document.getElementById('quiz-active-screen');
+        const resultScreen = document.getElementById('quiz-result-screen');
+        const questionEl = document.getElementById('quiz-question');
+        const optionsEl = document.getElementById('quiz-options');
+        const explanationBox = document.getElementById('quiz-explanation-box');
+        const explanationText = document.getElementById('quiz-explanation-text');
+        const progressEl = document.getElementById('quiz-progress');
+        const scoreEl = document.getElementById('quiz-score');
+        const progressBar = document.getElementById('quiz-progress-bar');
 
-        // =========================================================================
-        // 3. FUNGSI-FUNGSI KUIS DENGAN WINDOW BINDING
-        // =========================================================================
-        // Menggunakan 'window.' memastikan HTML selalu bisa menemukan fungsi ini 
-        // meskipun dieksekusi di dalam iframe Google Sites yang ketat.
-
-        window.startQuiz = function() {
+        function startQuiz() {
             currentQuestionIndex = 0;
             score = 0;
-            
-            if(startScreen) startScreen.classList.add('hidden');
-            if(resultScreen) resultScreen.classList.add('hidden');
-            if(activeScreen) activeScreen.classList.remove('hidden');
-            
-            window.loadQuestion();
-            window.updateScoreDisplay();
-        };
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            activeScreen.classList.remove('hidden');
+            loadQuestion();
+            updateScoreDisplay();
+        }
 
-        window.loadQuestion = function() {
+        function loadQuestion() {
             isAnswered = false;
-            if(explanationBox) explanationBox.classList.add('hidden');
-            
+            explanationBox.classList.add('hidden');
             const currentQuiz = quizData[currentQuestionIndex];
-            if(questionEl) questionEl.textContent = currentQuiz.question;
+            questionEl.textContent = currentQuiz.question;
             
-            if(optionsEl) {
-                optionsEl.innerHTML = '';
-                currentQuiz.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-pink-300/50 transition-all duration-300 text-indigo-50 font-medium group flex items-center';
-                    
-                    const letter = String.fromCharCode(65 + index); // A, B, C, D
-                    
-                    button.innerHTML = `
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mr-4 text-pink-300 font-bold group-hover:bg-pink-500 group-hover:text-white transition-colors">
-                            ${letter}
-                        </span>
-                        <span class="flex-1">${option}</span>
-                    `;
-                    
-                    // Event listener dipasang langsung melalui JavaScript, bukan HTML
-                    button.addEventListener('click', () => window.selectAnswer(index, button));
-                    optionsEl.appendChild(button);
-                });
-            }
+            optionsEl.innerHTML = '';
+            currentQuiz.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-xl bg-bgElevated border border-white/5 hover:border-accent/50 hover:bg-white/5 transition-all flex items-center justify-between text-sm text-fg font-medium group';
+                const letter = String.fromCharCode(65 + index);
+                btn.innerHTML = `
+                    <span><strong class="font-mono text-accent mr-3 font-bold">[${letter}]</strong> ${option}</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-fgMuted opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                `;
+                btn.onclick = () => selectAnswer(index, btn);
+                optionsEl.appendChild(btn);
+            });
 
-            if(progressEl) progressEl.textContent = `Pertanyaan ${currentQuestionIndex + 1}/${quizData.length}`;
-            if(progressBar) {
-                const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
-                progressBar.style.width = `${progressPercent}%`;
-            }
-            
-            setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 50);
-        };
+            progressEl.textContent = `PERTANYAAN ${currentQuestionIndex + 1}/${quizData.length}`;
+            progressBar.style.width = `${((currentQuestionIndex) / quizData.length) * 100}%`;
+            if (window.lucide) lucide.createIcons();
+        }
 
-        window.selectAnswer = function(selectedIndex, selectedButton) {
+        function selectAnswer(selectedIndex, selectedBtn) {
             if (isAnswered) return;
             isAnswered = true;
 
             const currentQuiz = quizData[currentQuestionIndex];
-            const allButtons = optionsEl.children;
+            const allBtns = optionsEl.children;
 
             if (selectedIndex === currentQuiz.correctAnswer) {
-                selectedButton.classList.remove('bg-white/5', 'border-white/10', 'hover:bg-white/10');
-                selectedButton.classList.add('bg-green-500/20', 'border-green-400');
-                selectedButton.innerHTML += `<i data-lucide="check-circle" class="w-6 h-6 text-green-400 ml-2"></i>`;
-                score += 20; 
-                window.updateScoreDisplay();
+                selectedBtn.className = 'w-full text-left p-4 rounded-xl bg-emerald-500/10 border-2 border-emerald-500 text-white font-medium flex items-center justify-between text-sm';
+                selectedBtn.innerHTML += ' <span class="font-mono text-xs text-emerald-400">[ BENAR ]</span>';
+                score += 20;
+                updateScoreDisplay();
             } else {
-                selectedButton.classList.remove('bg-white/5', 'border-white/10', 'hover:bg-white/10');
-                selectedButton.classList.add('bg-red-500/20', 'border-red-400');
-                selectedButton.innerHTML += `<i data-lucide="x-circle" class="w-6 h-6 text-red-400 ml-2"></i>`;
+                selectedBtn.className = 'w-full text-left p-4 rounded-xl bg-rose-500/10 border-2 border-rose-500 text-white font-medium flex items-center justify-between text-sm line-through opacity-70';
+                selectedBtn.innerHTML += ' <span class="font-mono text-xs text-rose-400">[ SALAH ]</span>';
                 
-                const correctButton = allButtons[currentQuiz.correctAnswer];
-                if(correctButton) {
-                    correctButton.classList.remove('bg-white/5', 'border-white/10');
-                    correctButton.classList.add('bg-green-500/20', 'border-green-400');
+                const correctBtn = allBtns[currentQuiz.correctAnswer];
+                if (correctBtn) {
+                    correctBtn.className = 'w-full text-left p-4 rounded-xl bg-emerald-500/10 border-2 border-emerald-500 text-white font-medium flex items-center justify-between text-sm';
+                    correctBtn.innerHTML += ' <span class="font-mono text-xs text-emerald-400">[ JAWABAN BENAR ]</span>';
                 }
             }
 
-            Array.from(allButtons).forEach(btn => {
-                btn.classList.add('cursor-not-allowed', 'opacity-80');
-                btn.style.pointerEvents = 'none'; // Memastikan tidak bisa diklik lagi
-            });
+            Array.from(allBtns).forEach(b => b.onclick = null);
+            explanationText.textContent = currentQuiz.explanation;
+            explanationBox.classList.remove('hidden');
+        }
 
-            if(explanationText) explanationText.textContent = currentQuiz.explanation;
-            if(explanationBox) explanationBox.classList.remove('hidden');
-            
-            setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 50);
-        };
-
-        window.nextQuestion = function() {
+        function nextQuestion() {
             currentQuestionIndex++;
             if (currentQuestionIndex < quizData.length) {
-                window.loadQuestion();
+                loadQuestion();
             } else {
-                window.showResults();
+                showResults();
             }
-        };
+        }
 
-        window.showResults = function() {
-            if(activeScreen) activeScreen.classList.add('hidden');
-            if(resultScreen) resultScreen.classList.remove('hidden');
-            if(progressBar) progressBar.style.width = '100%';
+        function showResults() {
+            activeScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            progressBar.style.width = '100%';
             
-            const finalScoreEl = document.getElementById('final-score-text');
+            document.getElementById('final-score-text').textContent = score;
             const feedbackEl = document.getElementById('quiz-feedback-message');
             
-            let currentScore = 0;
-            const timer = setInterval(() => {
-                if (currentScore >= score) {
-                    clearInterval(timer);
-                    if (score === 100) {
-                        if(feedbackEl) feedbackEl.textContent = "Luar Biasa! Kamu memiliki jiwa kepemimpinan yang sempurna.";
-                    } else if (score >= 60) {
-                        if(feedbackEl) feedbackEl.textContent = "Kerja bagus! Pengetahuanmu tentang organisasi sangat solid.";
-                    } else {
-                        if(feedbackEl) feedbackEl.textContent = "Awal yang baik! Tetap semangat belajar berorganisasi.";
-                    }
-                } else {
-                    currentScore += 5;
-                    if(finalScoreEl) finalScoreEl.textContent = currentScore;
-                }
-            }, 50);
-        };
+            if (score === 100) {
+                feedbackEl.textContent = "Sempurna! Anda memiliki jiwa kepemimpinan dan pemahaman organisasi yang sangat unggul.";
+            } else if (score >= 60) {
+                feedbackEl.textContent = "Sangat Baik! Pengetahuan dasar kepemimpinan dan organisasi Anda teruji dengan baik.";
+            } else {
+                feedbackEl.textContent = "Awal yang baik! Tetap semangat memperdalam wawasan organisasi.";
+            }
+        }
 
-        window.resetQuiz = function() {
-            window.startQuiz();
-        };
+        function resetQuiz() {
+            startQuiz();
+        }
 
-        window.updateScoreDisplay = function() {
-            if(scoreEl) scoreEl.textContent = `Skor: ${score}`;
-        };
+        function updateScoreDisplay() {
+            scoreEl.textContent = `SKOR: ${score}`;
+        }
 
-        // =========================================================================
-        // 4. EVENT LISTENER UTAMA (Memuat semua elemen setelah render selesai)
-        // =========================================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            // Tangkap elemen kuis dengan aman
-            startScreen = document.getElementById('quiz-start-screen');
-            activeScreen = document.getElementById('quiz-active-screen');
-            resultScreen = document.getElementById('quiz-result-screen');
-            questionEl = document.getElementById('quiz-question');
-            optionsEl = document.getElementById('quiz-options');
-            explanationBox = document.getElementById('quiz-explanation-box');
-            explanationText = document.getElementById('quiz-explanation-text');
-            progressEl = document.getElementById('quiz-progress');
-            scoreEl = document.getElementById('quiz-score');
-            progressBar = document.getElementById('quiz-progress-bar');
-
-            // Jalankan ikon SVG
-            if(window.lucide) lucide.createIcons();
-        });
+        // Initialize Lucide Icons
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     </script>
 </body>
 </html>
