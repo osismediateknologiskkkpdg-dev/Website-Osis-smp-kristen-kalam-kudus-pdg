@@ -4,28 +4,28 @@
       "id": "ketos",
       "role": "STUDENT COUNCIL PRESIDENT",
       "name": "Levi Janice Lie",
-      "image": "KETOS_LEVI.png",
+      "image": "KETOS-LEVI.png",
       "quote": "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
     },
     {
       "id": "waketos",
       "role": "VICE PRESIDENT",
       "name": "Asher Yang",
-      "image": "WAKETOS_ASHER.png",
+      "image": "WAKETOS-ASHER.png",
       "quote": "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member."
     },
     {
       "id": "bendahara",
       "role": "TREASURER // BENDAHARA",
       "name": "Michelle Abigail Zalukhu",
-      "image": "BENDAHARA_MICHELLE.png",
+      "image": "BENDAHARA-MICHELLE.png",
       "quote": "True integrity is being accountable for the smallest details, ensuring trust is maintained."
     },
     {
       "id": "sekretaris",
       "role": "SECRETARY // SEKRETARIS",
       "name": "Sean Arcelia Zega",
-      "image": "SEKRE_SEAN.png",
+      "image": "SEKRE-SEAN.png",
       "quote": "A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality."
     }
   ],
@@ -38,25 +38,25 @@
         {
           "role": "KOORDINATOR",
           "name": "Sepdyanta Sitepu",
-          "image": "KOORDINATOR_IAN.png",
+          "image": "KOORDINATOR-IAN.png",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Gabriel Oktavianus S.",
-          "image": "ANGGOTA_BIEL.png",
+          "image": "ANGGOTA-BIEL.png",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Nuela Elshana Tova S.",
-          "image": "ANGGOTA_SHANA.png",
+          "image": "ANGGOTA-SHANA.png",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Christania Sonia Gozali",
-          "image": "ANGGOTA_SONIA.png",
+          "image": "ANGGOTA-SONIA.png",
           "is_coordinator": false
         }
       ]
@@ -69,19 +69,19 @@
         {
           "role": "KOORDINATOR",
           "name": "Fedora Ananta Quinselle",
-          "image": "KOORDINATOR_FEDORA.png",
+          "image": "KOORDINATOR-FEDORA.png",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Angelyne Aiko Kiroyan",
-          "image": "ANGGOTA_ANGEL.png",
+          "image": "ANGGOTA-ANGEL.png",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Cliff Benedict Lim",
-          "image": "ANGGOTA_CLIFF.png",
+          "image": "ANGGOTA-CLIFF.png",
           "is_coordinator": false
         }
       ]
@@ -94,19 +94,19 @@
         {
           "role": "KOORDINATOR",
           "name": "Scarlett Sophie Harper",
-          "image": "KOORDINATOR_SCARLETT.png",
+          "image": "KOORDINATOR-SCARLETT.png",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Jashon Imanuel Yahya",
-          "image": "ANGGOTA_JASHON.png",
+          "image": "ANGGOTA-JASHON.png",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Guido Bryan Nugroho",
-          "image": "ANGGOTA_GUIDO.png",
+          "image": "ANGGOTA-GUIDO.png",
           "is_coordinator": false
         }
       ]
@@ -119,19 +119,19 @@
         {
           "role": "KOORDINATOR",
           "name": "Xavier Aurelius",
-          "image": "KOORDINATOR_IER.png",
+          "image": "KOORDINATOR-IER.png",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Samuel Rusli",
-          "image": "ANGGOTA_SAMUEL.png",
+          "image": "ANGGOTA-SAMUEL.png",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Maxwell Zega",
-          "image": "ANGGOTA_MAXWELL.png",
+          "image": "ANGGOTA-MAXWELL.png",
           "is_coordinator": false
         }
       ]
@@ -144,13 +144,13 @@
         {
           "role": "KOORDINATOR",
           "name": "Ashley Louisa N.",
-          "image": "KOORDINATOR_ASHLEY.png",
+          "image": "KOORDINATOR-ASHLEY.png",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Monique Calista",
-          "image": "ANGGOTA_MONIQ.png",
+          "image": "ANGGOTA-MONIQ.png",
           "is_coordinator": false
         }
       ]
