@@ -813,13 +813,13 @@
 
         </section>
 
-        <!-- ==================== DYNAMIC BRAINSTORMING & TRIVIA QUIZ SECTION ==================== -->
+        <!-- ==================== DYNAMIC BRAINSTORMING & TRIVIA QUIZ SECTION (10 QUESTIONS) ==================== -->
         <section id="quiz" class="py-24 px-4 sm:px-8 max-w-4xl mx-auto border-t border-white/5">
             
             <div class="mb-12 text-center" data-aos="fade-up">
-                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 05 // DYNAMIC BRAINSTORMING ]</span>
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 05 // DYNAMIC BRAINSTORMING - 10 SOAL ]</span>
                 <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Kuis & Simulator Kepemimpinan</h2>
-                <p class="text-sm text-fgMuted mt-2">Soal dan urutan opsi diacak secara dinamis setiap kali dimainkan. Uji pemahaman organisasi tanpa pola hafalan!</p>
+                <p class="text-sm text-fgMuted mt-2">10 Pertanyaan acak ditarik dari 25 bank soal skenario. Urutan soal dan opsi diacak total setiap kali dimainkan!</p>
             </div>
 
             <!-- Quiz Card Surface -->
@@ -828,14 +828,14 @@
                 <!-- Start Screen -->
                 <div id="quiz-start-screen" class="text-center py-6">
                     <div class="w-20 h-20 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mx-auto mb-6 shadow-inner">
-                        <i data-lucide="shuffle" class="w-10 h-10 animate-pulse"></i>
+                        <i data-lucide="brain-circuit" class="w-10 h-10 animate-pulse"></i>
                     </div>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">Tantangan Otak Pemimpin Muda</h3>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">Tantangan Otak Pemimpin Muda (10 Soal)</h3>
                     <p class="text-fgMuted text-sm max-w-md mx-auto mb-8 leading-relaxed">
-                        Sistem akan memilih **5 soal acak** dari bank soal kepemimpinan, anti-bullying, manajemen waktu, dan dinamika OSIS. Posisi opsi jawaban juga akan diacak otomatis!
+                        Uji wawasan kepemimpinan, manajemen konflik, anti-bullying, dan dinamika OSIS. Sistem akan mengacak **10 soal komprehensif** dan posisi jawaban `[A] - [D]` secara dinamis.
                     </p>
                     <button onclick="startQuiz()" class="px-8 py-4 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase tracking-wider inline-flex items-center">
-                        <i data-lucide="play" class="w-4 h-4 mr-2"></i> MULAI SESI ACAK BARU
+                        <i data-lucide="play" class="w-4 h-4 mr-2"></i> MULAI SESI 10 SOAL ACAK
                     </button>
                 </div>
 
@@ -844,7 +844,7 @@
                     <div class="flex flex-wrap justify-between items-center mb-6 font-mono text-xs text-fgMuted border-b border-white/5 pb-4 gap-2">
                         <div class="flex items-center space-x-2">
                             <span id="quiz-category-badge" class="px-2.5 py-0.5 rounded-md bg-accent/20 border border-accent/40 text-accent font-bold uppercase tracking-wider text-[10px]"></span>
-                            <span id="quiz-progress" class="text-white font-bold">SOAL 1/5</span>
+                            <span id="quiz-progress" class="text-white font-bold">SOAL 1/10</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <span id="quiz-score" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 font-bold text-accent">SKOR: 0</span>
@@ -878,7 +878,7 @@
                         <i data-lucide="trophy" class="w-10 h-10"></i>
                     </div>
                     <h3 class="text-2xl sm:text-3xl font-bold text-white mb-2">Sesi Brainstorming Selesai!</h3>
-                    <p class="text-fgMuted text-xs font-mono uppercase tracking-wider mb-4">Skor Evaluasi Kepemimpinan Anda:</p>
+                    <p class="text-fgMuted text-xs font-mono uppercase tracking-wider mb-4">Skor Evaluasi Kepemimpinan Anda (10 Soal):</p>
                     <div class="text-6xl font-mono font-extrabold text-accent mb-6 tracking-tight">
                         <span id="final-score-text">0</span><span class="text-2xl text-fgMuted">/100</span>
                     </div>
@@ -886,7 +886,7 @@
                     
                     <div class="flex flex-wrap justify-center gap-4">
                         <button onclick="resetQuiz()" class="px-8 py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase tracking-wider inline-flex items-center">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i> ACAK SOAL BARU & ULANGI
+                            <i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i> ACAK 10 SOAL BARU & ULANGI
                         </button>
                     </div>
                 </div>
@@ -1102,10 +1102,12 @@
         });
 
         // =========================================================================
-        // COMPREHENSIVE DYNAMIC TRIVIA & BRAINSTORMING ENGINE (WITH SHUFFLE)
+        // COMPREHENSIVE DYNAMIC TRIVIA & BRAINSTORMING ENGINE (25 POOL / 10 ACTIVE)
         // =========================================================================
         
-        // Master Question Pool (15 Diverse Leadership & Organizational Questions)
+        /**
+         * Master Question Pool containing 25 scenario-based leadership questions
+         */
         const masterQuizPool = [
             {
                 category: "Karakter Pemimpin",
@@ -1271,10 +1273,123 @@
                     { text: "Agar anggaran dana bisa dicairkan ganda", isCorrect: false }
                 ],
                 explanation: "Perencanaan tertulis (proposal) yang matang menjamin legalitas, keamanan, serta keteraturan acara."
+            },
+            {
+                category: "Manajemen Krisis",
+                question: "Saat listrik tiba-tiba padam saat pembukaan acara Pensi di aula, tindakan tercepat seorang pemimpin adalah...",
+                options: [
+                    { text: "Panik dan menyalahkan seksi peralatan di hadapan penonton", isCorrect: false },
+                    { text: "Tetap tenang, menenangkan audiens, dan menjalankan rencana cadangan (SOP genset)", isCorrect: true },
+                    { text: "Meninggalkan panggung dan langsung pulang ke rumah", isCorrect: false },
+                    { text: "Menyuruh penonton untuk membubarkan diri secara paksa", isCorrect: false }
+                ],
+                explanation: "Sikap tenang pemimpin di situasi darurat memberikan rasa aman pada tim dan memungkinkan rencana cadangan berjalan cepat."
+            },
+            {
+                category: "Komunikasi Efektif",
+                question: "Metode komunikasi terbaik ketika memberikan masukan kritis kepada rekan kerja di OSIS adalah...",
+                options: [
+                    { text: "Menyampaikan kritik di depan umum agar rekan tersebut merasa malu", isCorrect: false },
+                    { text: "Menyampaikan secara empat mata dengan pendekatan konstruktif (solutif)", isCorrect: true },
+                    { text: "Membicarakan keburukannya di belakang kepada anggota lain", isCorrect: false },
+                    { text: "Mendiamkan kesalahan tersebut sampai acara mengalami kegagalan", isCorrect: false }
+                ],
+                explanation: "Kritik membangun (empat mata) menjaga martabat rekan kerja serta mendorong perbaikan tanpa merusak hubungan tim."
+            },
+            {
+                category: "Pengambilan Keputusan",
+                question: "Ketika harus mengambil keputusan cepat di saat darurat tanpa sempat melakukan rapat pleno, presidium harus...",
+                options: [
+                    { text: "Mengambil keputusan terukur berdasar asas kemaslahatan bersama & berkonsultasi singkat ke Pembina", isCorrect: true },
+                    { text: "Menunggu hingga minggu depan sampai seluruh anggota hadir rapat", isCorrect: false },
+                    { text: "Melempar koin untuk menentukan keputusan secara acak", isCorrect: false },
+                    { text: "Mengabaikan masalah tersebut sampai selesai dengan sendirinya", isCorrect: false }
+                ],
+                explanation: "Diskresi kepemimpinan darurat berfokus pada keselamatan bersama, koordinasi singkat ke pembina, dan akuntabilitas."
+            },
+            {
+                category: "Logistik & Operasional",
+                question: "Tindakan bijak Sekbid Peralatan dalam merawat inventaris peralatan OSIS adalah...",
+                options: [
+                    { text: "Menyimpan peralatan di sembarang tempat tanpa catatan peminjaman", isCorrect: false },
+                    { text: "Melakukan inventarisasi berkala dan menerapkan logbook peminjaman teratur", isCorrect: true },
+                    { text: "Menjual peralatan lama tanpa sepengetahuan sekolah", isCorrect: false },
+                    { text: "Hanya memeriksa peralatan ketika barang tersebut sudah rusak total", isCorrect: false }
+                ],
+                explanation: "Pencatatan logbook dan perawatan rutin memastikan aset sekolah tetap terawat dan siap pakai setiap saat."
+            },
+            {
+                category: "Kepemimpinan Servan",
+                question: "Filosofi 'Servant Leadership' (Pemimpin yang Melayani) berarti seorang pengurus OSIS...",
+                options: [
+                    { text: "Merasa dirinya lebih tinggi posisinya dibandingkan siswa biasa", isCorrect: false },
+                    { text: "Hadir untuk memfasilitasi kebutuhan, mengayomi, dan memajukan potensi sesama siswa", isCorrect: true },
+                    { text: "Menyuruh anggota bawahannya melakukan pekerjaan pribadi pimpinan", isCorrect: false },
+                    { text: "Hanya ingin tampil di depan kamera media sekolah", isCorrect: false }
+                ],
+                explanation: "Servant leadership menempatkan pertumbuhan dan kesejahteraan anggota serta audiens sebagai prioritas utama."
+            },
+            {
+                category: "Motivasi Tim",
+                question: "Bagaimana cara efektif membangkitkan kembali semangat tim OSIS yang lelah pasca-event besar?",
+                options: [
+                    { text: "Langsung memberikan tugas baru yang lebih berat tanpa jeda istirahat", isCorrect: false },
+                    { text: "Memberikan apresiasi tulus atas kerja keras mereka dan mengadakan sesi refleksi santai", isCorrect: true },
+                    { text: "Mengkritik hal-hal kecil yang kurang sempurna secara berlebihan", isCorrect: false },
+                    { text: "Membubarkan kepengurusan secara sepihak", isCorrect: false }
+                ],
+                explanation: "Apresiasi yang jujur serta jeda pemulihan moral menjaga motivasi dan kesehatan mental seluruh anggota tim."
+            },
+            {
+                category: "Kerjasama Tim",
+                question: "Prinsip dasar 'Synergy' (Sinergi) dalam kepengurusan OSIS menekankan bahwa...",
+                options: [
+                    { text: "Hasil kerja individu jauh lebih bernilai dibanding hasil kerja kelompok", isCorrect: false },
+                    { text: "Kombinasi kekuatan dan keberagaman anggota menghasilkan dampak yang lebih besar dibanding bekerja sendiri", isCorrect: true },
+                    { text: "Setiap anggota harus memiliki pemikiran dan bakat yang persis seragam", isCorrect: false },
+                    { text: "Anggota yang kurang menonjol tidak perlu diikutsertakan dalam tugas", isCorrect: false }
+                ],
+                explanation: "Sinergi memanfaatkan perbedaan bakat setiap individu untuk menciptakan hasil kolektif yang berlipat ganda."
+            },
+            {
+                category: "Cyberbullying",
+                question: "Langkah terarah OSIS saat menemukan ujaran kebencian di kolom komentar akun sosial media sekolah adalah...",
+                options: [
+                    { text: "Membalas komentar tersebut dengan kata-kata kasar yang setara", isCorrect: false },
+                    { text: "Menghapus komentar toksik, mengamankan bukti, dan melaporkan secara prosedural ke pihak pembina", isCorrect: true },
+                    { text: "Menutup seluruh akun sosial media OSIS selamanya", isCorrect: false },
+                    { text: "Pura-pura tidak tahu agar tidak repot", isCorrect: false }
+                ],
+                explanation: "Menjaga ruang digital sekolah tetap aman membutuhkan ketegasan penanganan sesuai prosedur dan etika internet."
+            },
+            {
+                category: "Pengembangan Diri",
+                question: "Ciri pengurus OSIS yang memiliki 'Growth Mindset' (Pola Pikir Bertumbuh) adalah...",
+                options: [
+                    { text: "Takut mencoba hal baru karena takut mengalami kegagalan", isCorrect: false },
+                    { text: "Melihat kegagalan sebagai kesempatan belajar dan terus mengasah keterampilan baru", isCorrect: true },
+                    { text: "Merasa sudah paling pintar sehingga menolak masukan dari orang lain", isCorrect: false },
+                    { text: "Menyerah saat menghadapi tugas organisasi yang sulit", isCorrect: false }
+                ],
+                explanation: "Growth mindset memandang tantangan dan kegagalan sebagai bahan bakar evaluasi untuk tumbuh menjadi lebih tangguh."
+            },
+            {
+                category: "Keuangan Organisasi",
+                question: "Sistem pencatatan kas kecil (petty cash) yang disiplin bermanfaat untuk...",
+                options: [
+                    { text: "Membuat pengeluaran dana terlihat seolah-olah lebih besar dari aslinya", isCorrect: false },
+                    { text: "Mencegah defisit tak terduga dan memastikan kelancaran operasional harian OSIS", isCorrect: true },
+                    { text: "Membatasi pengeluaran hingga tidak ada kegiatan yang boleh jalan", isCorrect: false },
+                    { text: "Menimbun uang di rekening bendahara tanpa transparansi", isCorrect: false }
+                ],
+                explanation: "Manajemen kas harian yang tertib memberikan kepastian operasional serta mencegah potensi kebocoran dana."
             }
         ];
 
-        // Fisher-Yates Array Shuffle Utility Function
+        /**
+         * Fisher-Yates Array Shuffle Utility Algorithm
+         * Ensures non-biased uniform random distribution
+         */
         function shuffleArray(array) {
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -1284,7 +1399,7 @@
             return shuffled;
         }
 
-        // Quiz State Variables
+        // Quiz State Variables (Strictly 10 Questions Active)
         let activeQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
@@ -1303,9 +1418,9 @@
         const categoryBadgeEl = document.getElementById('quiz-category-badge');
 
         function startQuiz() {
-            // 1. Shuffle master pool & pick 5 random questions
+            // 1. Shuffle master pool & pick 10 random questions
             const shuffledPool = shuffleArray(masterQuizPool);
-            activeQuestions = shuffledPool.slice(0, 5).map(q => {
+            activeQuestions = shuffledPool.slice(0, 10).map(q => {
                 // 2. Shuffle options for each selected question dynamically
                 return {
                     ...q,
@@ -1369,7 +1484,7 @@
             if (selectedOption.isCorrect) {
                 selectedBtn.className = 'w-full text-left p-4 rounded-xl bg-emerald-500/10 border-2 border-emerald-500 text-white font-medium flex items-center justify-between text-sm shadow-lg shadow-emerald-500/10';
                 selectedBtn.innerHTML += ' <span class="font-mono text-xs text-emerald-400 font-bold flex-shrink-0 ml-2">[ BENAR ]</span>';
-                score += 20;
+                score += 10; // 10 questions * 10 points = 100 maximum score
                 updateScoreDisplay();
             } else {
                 selectedBtn.className = 'w-full text-left p-4 rounded-xl bg-rose-500/10 border-2 border-rose-500 text-white font-medium flex items-center justify-between text-sm opacity-80';
@@ -1412,11 +1527,13 @@
             const feedbackEl = document.getElementById('quiz-feedback-message');
             
             if (score === 100) {
-                feedbackEl.textContent = "Luar Biasa! Anda memiliki wawasan organisasi yang utuh, empati tinggi, serta jiwa kepemimpinan strategis yang siap menginspirasi!";
+                feedbackEl.textContent = "Sempurna! (100/100) Anda memiliki wawasan kepemimpinan yang luar biasa, berintegritas, dan siap menjadi penggerak utama organisasi!";
+            } else if (score >= 80) {
+                feedbackEl.textContent = "Sangat Unggul! Pemahaman organisasi dan kepemimpinan Anda sudah sangat matang dan teruji.";
             } else if (score >= 60) {
-                feedbackEl.textContent = "Sangat Baik! Pemahaman dasar kepemimpinan dan manajerial Anda sudah terbentuk dengan solid. Terus kembangkan diri!";
+                feedbackEl.textContent = "Cukup Baik! Dasar-dasar kepemimpinan sudah terbentuk. Silakan ulangi sesi acak baru untuk memperdalam wawasan.";
             } else {
-                feedbackEl.textContent = "Awal yang bagus! Kepemimpinan adalah proses belajar berkelanjutan. Silakan coba sesi acak baru untuk memperdalam wawasan.";
+                feedbackEl.textContent = "Awal yang bagus! Kepemimpinan adalah proses belajar. Cobalah sesi 10 soal acak baru untuk melatih pola pikir organisasimu!";
             }
 
             if (window.lucide) lucide.createIcons();
