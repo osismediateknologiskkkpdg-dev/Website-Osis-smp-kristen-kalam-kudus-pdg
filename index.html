@@ -31,51 +31,42 @@
         }
 
         /* ==========================================================================
-           OPTIMASI KUALITAS GAMBAR / HD CRISP RENDERING (CEGAH BLUR)
+           PERBAIKAN RENDER GAMBAR HD & SMOOTH (TIDAK PECAH & TIDAK BLUR)
            ========================================================================== */
         img {
-            /* Mencegah gambar menjadi kabur/blur saat scaling */
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
+            /* Mengaktifkan pemulusan gambar (smooth interpolation) saat diperbesar */
+            image-rendering: auto;
             image-rendering: smooth;
+            image-rendering: -webkit-optimize-contrast;
             
-            /* Hardware Acceleration untuk rendering yang tajam */
+            /* Menjaga rasio foto agar tidak tertarik atau distorsi */
+            max-width: 100%;
+            
+            /* Akselerasi perangkat keras GPU agar tetap halus saat animasi/hover */
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             transform: translateZ(0);
-            
-            /* Optimasi pemrosesan grafis */
-            will-change: transform, filter;
-            filter: contrast(101%) saturate(102%);
         }
 
-        /* Kelas khusus untuk penajaman gambar tingkat lanjut */
+        /* Kelas untuk ketajaman foto profil & galeri */
         .hd-crisp-image {
             object-fit: cover;
-            object-position: center top;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+            object-position: center;
+            /* Filter alami tanpa memicu artifact/pecah */
+            filter: brightness(100%) contrast(100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
         }
 
         .hd-crisp-image:hover {
-            filter: contrast(103%) saturate(105%) brightness(102%);
+            filter: brightness(102%) contrast(102%);
         }
 
-        /* Container gambar dengan efek pemuat halus */
+        /* Container tempat gambar */
         .img-container-hd {
             position: relative;
             overflow: hidden;
             background-color: #f3f4f6;
             cursor: pointer;
-        }
-
-        .img-container-hd::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-            pointer-events: none;
-            border-radius: inherit;
         }
         
         /* Ensure the main content pushes down for fixed header */
@@ -162,9 +153,12 @@
             opacity: 1;
             visibility: visible;
         }
+        /* Perbaikan Tampilan Modal Lightbox Full-HD */
         #hd-lightbox-image {
             max-height: 85vh;
             max-width: 90vw;
+            object-fit: contain; /* Memastikan foto penuh tanpa terpotong/membesar paksa */
+            image-rendering: smooth;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
         }
     </style>
