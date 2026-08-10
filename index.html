@@ -19,6 +19,7 @@
     <!-- AOS Animation Library CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
+    <!-- Tailwind Config Customization -->
     <script>
         tailwind.config = {
             theme: {
@@ -78,7 +79,7 @@
             background: #5E6AD2;
         }
 
-        /* Ambient Animations */
+        /* Ambient Keyframe Animations */
         @keyframes float-primary {
             0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
             50% { transform: translateY(-30px) rotate(2deg) scale(1.05); }
@@ -106,7 +107,7 @@
             animation: shimmer 6s linear infinite;
         }
 
-        /* Multi-layer Shadow & Inner Edge Utility */
+        /* Multi-layer Shadow & Linear Cards */
         .card-linear {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -443,22 +444,26 @@
             </div>
         </section>
 
-        <!-- ==================== STRUCTURE SECTION (VISUAL HIERARCHY UPDATED) ==================== -->
+        <!-- ==================== STRUCTURE SECTION (WITH INTERACTIVE PREVIEW LISTENERS) ==================== -->
         <section id="structure" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
             
             <div class="mb-16 text-center" data-aos="fade-up">
                 <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 03 // OFFICERS DIRECTORY ]</span>
                 <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Struktur Kabinet Pengurus</h2>
-                <p class="text-sm text-fgMuted mt-2">BPH Inti & Koordinator Bidang tampil menonjol, didukung jajaran anggota divisi yang terstruktur rapi.</p>
+                <p class="text-sm text-fgMuted mt-2">Klik foto atau kartu pengurus manapun untuk menampilkan pratinjau gambar besar dan detail profil.</p>
             </div>
 
             <!-- CORE EXECUTIVES: PRESIDIUM (Ketua & Wakil - UKURAN PALING BESAR) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 
                 <!-- President (Levi) -->
-                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center border-accent/40 bg-accent/5" data-aos="fade-right">
-                    <div class="w-36 h-48 img-card-frame flex-shrink-0 shadow-xl border-accent/30">
+                <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KETOS-LEVI.png', 'Levi Janice Lie', 'STUDENT COUNCIL PRESIDENT', 'Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice.')" 
+                     class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center border-accent/40 bg-accent/5 cursor-pointer group hover:scale-[1.01] transition-all" data-aos="fade-right">
+                    <div class="w-36 h-48 img-card-frame flex-shrink-0 shadow-xl border-accent/30 relative">
                         <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KETOS-LEVI.png" alt="Ketua OSIS Levi Janice Lie" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow"></i>
+                        </div>
                     </div>
                     <div>
                         <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-accent/20 border border-accent/40 text-accent mb-2">
@@ -473,9 +478,13 @@
                 </div>
 
                 <!-- Vice President (Asher) -->
-                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center border-accent/40 bg-accent/5" data-aos="fade-left">
-                    <div class="w-36 h-48 img-card-frame flex-shrink-0 shadow-xl border-accent/30">
+                <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/WAKETOS-ASHER.png', 'Asher Yang', 'VICE PRESIDENT', 'Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member.')" 
+                     class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center border-accent/40 bg-accent/5 cursor-pointer group hover:scale-[1.01] transition-all" data-aos="fade-left">
+                    <div class="w-36 h-48 img-card-frame flex-shrink-0 shadow-xl border-accent/30 relative">
                         <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/WAKETOS-ASHER.png" alt="Wakil Ketos Asher Yang" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow"></i>
+                        </div>
                     </div>
                     <div>
                         <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-accent/20 border border-accent/40 text-accent mb-2">
@@ -494,9 +503,13 @@
             <!-- CORE EXECUTIVES: BPH (Bendahara & Sekretaris - UKURAN BESAR) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                 <!-- Treasurer (Michelle) -->
-                <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5 border-white/10" data-aos="fade-right">
-                    <div class="w-28 h-36 img-card-frame flex-shrink-0">
+                <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/BENDAHARA-MICHELLE.png', 'Michelle Abigail Zalukhu', 'TREASURER // BENDAHARA', 'True integrity is being accountable for the smallest details, ensuring trust is maintained.')" 
+                     class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5 border-white/10 cursor-pointer group hover:scale-[1.01] transition-all" data-aos="fade-right">
+                    <div class="w-28 h-36 img-card-frame flex-shrink-0 relative">
                         <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/BENDAHARA-MICHELLE.png" alt="Bendahara Michelle Abigail Zalukhu" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-5 h-5 text-white drop-shadow"></i>
+                        </div>
                     </div>
                     <div>
                         <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">TREASURER // BENDAHARA</span>
@@ -508,9 +521,13 @@
                 </div>
 
                 <!-- Secretary (Sean) -->
-                <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5 border-white/10" data-aos="fade-left">
-                    <div class="w-28 h-36 img-card-frame flex-shrink-0">
+                <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/SEKRE-SEAN.png', 'Sean Arcelia Zega', 'SECRETARY // SEKRETARIS', 'A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality.')" 
+                     class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5 border-white/10 cursor-pointer group hover:scale-[1.01] transition-all" data-aos="fade-left">
+                    <div class="w-28 h-36 img-card-frame flex-shrink-0 relative">
                         <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/SEKRE-SEAN.png" alt="Sekretaris Sean Arcelia Zega" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-5 h-5 text-white drop-shadow"></i>
+                        </div>
                     </div>
                     <div>
                         <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">SECRETARY // SEKRETARIS</span>
@@ -531,9 +548,13 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                     <!-- Koordinator (UTAMA & UTUH) -->
-                    <div class="card-linear spotlight-card p-5 rounded-2xl border-accent/30 bg-accent/5 md:col-span-1 flex items-center space-x-4">
-                        <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                    <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-IAN.png', 'Sepdyanta Sitepu', 'KOORDINATOR // SEKBID KEROHANIAN', 'Membimbing spiritualitas dan integritas iman seluruh siswa di lingkungan sekolah.')" 
+                         class="card-linear spotlight-card p-5 rounded-2xl border-accent/30 bg-accent/5 md:col-span-1 flex items-center space-x-4 cursor-pointer group hover:border-accent/60 transition-all">
+                        <div class="w-24 h-32 img-card-frame flex-shrink-0 relative">
                             <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-IAN.png" alt="Ian" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i data-lucide="maximize-2" class="w-4 h-4 text-white drop-shadow"></i>
+                            </div>
                         </div>
                         <div>
                             <span class="font-mono text-[10px] text-accent font-bold uppercase block tracking-wider">KOORDINATOR BIDANG</span>
@@ -543,24 +564,27 @@
 
                     <!-- Anggota (LEBIH KECIL & KOMPAK) -->
                     <div class="md:col-span-2 grid grid-cols-3 gap-3">
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-BIEL.png', 'Gabriel Oktavianus S.', 'ANGGOTA // SEKBID KEROHANIAN', 'Setia melayani dan mendukung program kerohanian sekolah dengan penuh sukacita.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-BIEL.png" alt="Biel" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
                             <h5 class="text-xs font-semibold text-fg group-hover:text-white mt-0.5 truncate">Gabriel O.</h5>
                         </div>
 
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SHANA.png', 'Nuela Elshana Tova S.', 'ANGGOTA // SEKBID KEROHANIAN', 'Berdedikasi aktif menciptakan atmosfer persekutuan yang hangat dan positif.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SHANA.png" alt="Shana" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
                             <h5 class="text-xs font-semibold text-fg group-hover:text-white mt-0.5 truncate">Nuela Elshana</h5>
                         </div>
 
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SONIA.png', 'Christania Sonia Gozali', 'ANGGOTA // SEKBID KEROHANIAN', 'Membawa kedamaian dan keceriaan dalam setiap agenda ibadah dan kegiatan kerohanian.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SONIA.png" alt="Sonia" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
@@ -579,9 +603,13 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                     <!-- Koordinator (UTAMA & UTUH) -->
-                    <div class="card-linear spotlight-card p-5 rounded-2xl border-accent/30 bg-accent/5 md:col-span-1 flex items-center space-x-4">
-                        <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                    <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-FEDORA.png', 'Fedora Ananta Quinselle', 'KOORDINATOR // SEKBID PENDIDIKAN & KARAKTER', 'Mendorong semangat belajar, kedisiplinan, dan pembentukan karakter unggul siswa.')" 
+                         class="card-linear spotlight-card p-5 rounded-2xl border-accent/30 bg-accent/5 md:col-span-1 flex items-center space-x-4 cursor-pointer group hover:border-accent/60 transition-all">
+                        <div class="w-24 h-32 img-card-frame flex-shrink-0 relative">
                             <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-FEDORA.png" alt="Fedora" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i data-lucide="maximize-2" class="w-4 h-4 text-white drop-shadow"></i>
+                            </div>
                         </div>
                         <div>
                             <span class="font-mono text-[10px] text-accent font-bold uppercase block tracking-wider">KOORDINATOR BIDANG</span>
@@ -591,16 +619,18 @@
 
                     <!-- Anggota (LEBIH KECIL & KOMPAK) -->
                     <div class="md:col-span-2 grid grid-cols-2 sm:grid-cols-2 gap-3 max-w-md">
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-ANGEL.png', 'Angelyne Aiko Kiroyan', 'ANGGOTA // SEKBID PENDIDIKAN & KARAKTER', 'Berkomitmen membantu pelaksanaan kegiatan akademis dan pengembangan siswa.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-ANGEL.png" alt="Angel" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
                             <h5 class="text-xs font-semibold text-fg group-hover:text-white mt-0.5 truncate">Angelyne Aiko</h5>
                         </div>
 
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-CLIFF.png', 'Cliff Benedict Lim', 'ANGGOTA // SEKBID PENDIDIKAN & KARAKTER', 'Mendukung penegakan karakter positif dan kedisiplinan di lingkungan sekolah.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-CLIFF.png" alt="Cliff" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
@@ -619,9 +649,13 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                     <!-- Koordinator (UTAMA & UTUH) -->
-                    <div class="card-linear spotlight-card p-5 rounded-2xl border-accent/30 bg-accent/5 md:col-span-1 flex items-center space-x-4">
-                        <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                    <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-SCARLETT.png', 'Scarlett Sophie Harper', 'KOORDINATOR // SEKBID MEDIA & TEKNOLOGI', 'Menggerakkan kreativitas media, publikasi visual, dan solusi teknologi informasi OSIS.')" 
+                         class="card-linear spotlight-card p-5 rounded-2xl border-accent/30 bg-accent/5 md:col-span-1 flex items-center space-x-4 cursor-pointer group hover:border-accent/60 transition-all">
+                        <div class="w-24 h-32 img-card-frame flex-shrink-0 relative">
                             <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-SCARLETT.png" alt="Scarlett" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i data-lucide="maximize-2" class="w-4 h-4 text-white drop-shadow"></i>
+                            </div>
                         </div>
                         <div>
                             <span class="font-mono text-[10px] text-accent font-bold uppercase block tracking-wider">KOORDINATOR BIDANG</span>
@@ -631,16 +665,18 @@
 
                     <!-- Anggota (LEBIH KECIL & KOMPAK) -->
                     <div class="md:col-span-2 grid grid-cols-2 gap-3 max-w-md">
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-JASHON.png', 'Jashon Imanuel Yahya', 'ANGGOTA // SEKBID MEDIA & TEKNOLOGI', 'Berkreativitas dalam dokumentasi media dan pengelolaan sistem digital OSIS.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-JASHON.png" alt="Jashon" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
                             <h5 class="text-xs font-semibold text-fg group-hover:text-white mt-0.5 truncate">Jashon Imanuel</h5>
                         </div>
 
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-GUIDO.png', 'Guido Bryan Nugroho', 'ANGGOTA // SEKBID MEDIA & TEKNOLOGI', 'Menghadirkan inovasi pemrograman, antarmuka web modern, dan sistem teknologi terintegrasi.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                            <div class="w-full aspect-[4/5] max-w-[90px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-GUIDO.png" alt="Guido" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
@@ -650,7 +686,7 @@
                 </div>
             </div>
 
-            <!-- SEKSI BIDANG 04 & 05: OLAHRAGA & KEBUDAYAAN (LAYOUT DUA KOLOM SAMA SEPERTI GAMBAR DENGAN HIRARKI ANGGOTA KECIL) -->
+            <!-- SEKSI BIDANG 04 & 05: OLAHRAGA & KEBUDAYAAN -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Sekbid Olahraga -->
                 <div class="card-linear p-6 rounded-3xl border border-white/5">
@@ -658,9 +694,13 @@
                     
                     <div class="space-y-4">
                         <!-- Koordinator Utuh -->
-                        <div class="p-4 rounded-xl bg-accent/5 border border-accent/30 flex items-center space-x-4">
-                            <div class="w-20 h-28 img-card-frame flex-shrink-0">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-IER.png', 'Xavier Aurelius', 'KOORDINATOR // SEKBID OLAHRAGA & PERALATAN', 'Mengordinasikan kegiatan olahraga, sportifitas, serta kesiapan fasilitas dan perlengkapan.')" 
+                             class="p-4 rounded-xl bg-accent/5 border border-accent/30 flex items-center space-x-4 cursor-pointer group hover:border-accent/60 transition-all">
+                            <div class="w-20 h-28 img-card-frame flex-shrink-0 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-IER.png" alt="Xavier" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <i data-lucide="maximize-2" class="w-4 h-4 text-white drop-shadow"></i>
+                                </div>
                             </div>
                             <div>
                                 <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR BIDANG</span>
@@ -670,16 +710,18 @@
 
                         <!-- Anggota Kecil Kompak -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                                <div class="w-full aspect-[4/5] max-w-[80px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                            <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SAMUEL.png', 'Samuel Rusli', 'ANGGOTA // SEKBID OLAHRAGA & PERALATAN', 'Memastikan seluruh peralatan dan logistik kegiatan sekolah siap digunakan dengan baik.')" 
+                                 class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                                <div class="w-full aspect-[4/5] max-w-[80px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                     <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SAMUEL.png" alt="Samuel" class="w-full h-full object-cover">
                                 </div>
                                 <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
                                 <h5 class="text-xs font-semibold text-fg group-hover:text-white mt-0.5 truncate">Samuel Rusli</h5>
                             </div>
 
-                            <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all">
-                                <div class="w-full aspect-[4/5] max-w-[80px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                            <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-MAXWELL.png', 'Maxwell Zega', 'ANGGOTA // SEKBID OLAHRAGA & PERALATAN', 'Semangat memfasilitasi turnamen olahraga dan kebutuhan operasional acara.')" 
+                                 class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all">
+                                <div class="w-full aspect-[4/5] max-w-[80px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                     <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-MAXWELL.png" alt="Maxwell" class="w-full h-full object-cover">
                                 </div>
                                 <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
@@ -695,9 +737,13 @@
                     
                     <div class="space-y-4">
                         <!-- Koordinator Utuh -->
-                        <div class="p-4 rounded-xl bg-accent/5 border border-accent/30 flex items-center space-x-4">
-                            <div class="w-20 h-28 img-card-frame flex-shrink-0">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-ASHLEY.png', 'Ashley Louisa N.', 'KOORDINATOR // SEKBID KEBUDAYAAN & SENI', 'Menumbuhkan minat bakat seni, budaya, serta mengekspresikan kreativitas siswa.')" 
+                             class="p-4 rounded-xl bg-accent/5 border border-accent/30 flex items-center space-x-4 cursor-pointer group hover:border-accent/60 transition-all">
+                            <div class="w-20 h-28 img-card-frame flex-shrink-0 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-ASHLEY.png" alt="Ashley" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <i data-lucide="maximize-2" class="w-4 h-4 text-white drop-shadow"></i>
+                                </div>
                             </div>
                             <div>
                                 <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR BIDANG</span>
@@ -706,8 +752,9 @@
                         </div>
 
                         <!-- Anggota Kecil Kompak -->
-                        <div class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center group hover:border-white/20 transition-all max-w-xs mx-auto">
-                            <div class="w-full aspect-[4/5] max-w-[80px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100">
+                        <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-MONIQ.png', 'Monique Calista', 'ANGGOTA // SEKBID KEBUDAYAAN & SENI', 'Mendukung terselenggaranya pentas seni dan kegiatan kebudayaan yang inspiratif.')" 
+                             class="p-3 rounded-xl bg-bgElevated/80 border border-white/5 text-center cursor-pointer group hover:border-accent/40 hover:bg-white/5 transition-all max-w-xs mx-auto">
+                            <div class="w-full aspect-[4/5] max-w-[80px] mx-auto img-card-frame mb-2 opacity-90 group-hover:opacity-100 relative">
                                 <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-MONIQ.png" alt="Monique" class="w-full h-full object-cover">
                             </div>
                             <span class="font-mono text-[9px] text-fgSubtle block">ANGGOTA</span>
@@ -731,9 +778,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
                 <!-- Gallery Item 1 -->
-                <div class="card-linear spotlight-card p-4 rounded-2xl group" data-aos="fade-right">
-                    <div class="w-full aspect-[16/10] img-card-frame mb-4">
+                <div onclick="openModal('https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg', 'Ibadah Paskah Siswa/i', 'DOKUMENTASI DOKUMEN #01', 'Refleksi dan ucapan syukur dalam momen kebangkitan Tuhan Yesus.')" 
+                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-right">
+                    <div class="w-full aspect-[16/10] img-card-frame mb-4 relative">
                         <img src="https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg" alt="Ibadah Paskah" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow"></i>
+                        </div>
                     </div>
                     <div class="p-2">
                         <div class="flex justify-between items-center mb-1">
@@ -746,9 +797,13 @@
                 </div>
 
                 <!-- Gallery Item 2 -->
-                <div class="card-linear spotlight-card p-4 rounded-2xl group" data-aos="fade-left">
-                    <div class="w-full aspect-[16/10] img-card-frame mb-4">
+                <div onclick="openModal('https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg', 'Nonton Bersama (The Last Supper)', 'DOKUMENTASI DOKUMEN #02', 'Kegiatan mendalami makna Paskah melalui pemutaran film edukatif.')" 
+                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-left">
+                    <div class="w-full aspect-[16/10] img-card-frame mb-4 relative">
                         <img src="https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg" alt="Nonton Bersama" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow"></i>
+                        </div>
                     </div>
                     <div class="p-2">
                         <div class="flex justify-between items-center mb-1">
@@ -913,6 +968,39 @@
 
     </main>
 
+    <!-- ==================== PREVIEW MODAL SYSTEM ==================== -->
+    <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div id="modal-container" class="relative w-full max-w-md card-linear border-accent/40 bg-bgElevated p-6 sm:p-8 rounded-3xl transform scale-95 transition-all duration-300 shadow-2xl overflow-hidden">
+            
+            <!-- Ambient Glow Inside Modal -->
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Close Button -->
+            <button onclick="closeModal()" aria-label="Close Preview" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-fgMuted hover:text-white transition-all z-20">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Modal Content Layout -->
+            <div class="flex flex-col items-center text-center">
+                <!-- Large Image Box -->
+                <div class="w-48 h-64 sm:w-56 sm:h-72 img-card-frame mb-6 border-2 border-accent/40 shadow-2xl relative">
+                    <img id="modal-image" src="" alt="Pratinjau Foto" class="w-full h-full object-cover">
+                </div>
+
+                <!-- Role Badge -->
+                <span id="modal-role" class="font-mono text-[10px] sm:text-xs text-accent font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-accent/10 border border-accent/30 mb-2"></span>
+
+                <!-- Member Name -->
+                <h3 id="modal-name" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4"></h3>
+
+                <!-- Quote Box -->
+                <div id="modal-quote-container" class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-fgMuted text-xs sm:text-sm italic leading-relaxed max-w-sm w-full relative">
+                    <p id="modal-quote" class="px-2 text-fgMuted"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== FOOTER ==================== -->
     <footer class="py-12 border-t border-white/5 bg-bgDeep text-fgMuted font-mono text-xs relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -966,6 +1054,57 @@
         // Current Year Update
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+        // Image Preview Modal Functions
+        function openModal(imageSrc, name, role, quote) {
+            const modal = document.getElementById('preview-modal');
+            const container = document.getElementById('modal-container');
+            const modalImg = document.getElementById('modal-image');
+            const modalName = document.getElementById('modal-name');
+            const modalRole = document.getElementById('modal-role');
+            const modalQuote = document.getElementById('modal-quote');
+
+            modalImg.src = imageSrc;
+            modalImg.alt = name;
+            modalName.textContent = name;
+            modalRole.textContent = role;
+            modalQuote.textContent = quote ? `"${quote}"` : `"Berdedikasi untuk memajukan OSIS SMP Kristen Kalam Kudus Padang Periode 2026/2027."`;
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'pointer-events-auto');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('preview-modal');
+            const container = document.getElementById('modal-container');
+
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            container.classList.add('scale-95');
+            container.classList.remove('scale-100');
+            document.body.style.overflow = '';
+        }
+
+        // Modal Backdrop Click Listener
+        document.getElementById('preview-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'preview-modal') {
+                closeModal();
+            }
+        });
+
+        // Escape Key Modal Listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
 
         // Quiz Engine Logic
         const quizData = [
