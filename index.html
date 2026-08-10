@@ -55,7 +55,7 @@
     </script>
 
     <style>
-        /* Smooth Scrollbar & Base Reset */
+        /* Custom Smooth Scrollbar & Base Reset */
         body {
             background-color: #050506;
             color: #EDEDEF;
@@ -78,7 +78,7 @@
             background: #5E6AD2;
         }
 
-        /* Ambient Keyframes */
+        /* Ambient Animations */
         @keyframes float-primary {
             0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
             50% { transform: translateY(-30px) rotate(2deg) scale(1.05); }
@@ -106,7 +106,7 @@
             animation: shimmer 6s linear infinite;
         }
 
-        /* Multi-layer Shadow & Utility */
+        /* Multi-layer Shadow & Inner Edge Utility */
         .card-linear {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -262,19 +262,23 @@
         <!-- HERO SECTION -->
         <section class="pt-20 pb-32 px-4 sm:px-8 max-w-7xl mx-auto text-center relative">
             
+            <!-- Category Badge -->
             <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-surface border border-accent/30 mb-8 backdrop-blur-md" data-aos="fade-down">
                 <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
                 <span class="font-mono text-xs text-indigo-200 tracking-wider font-medium">OFFICIAL STUDENT COUNCIL // 2026-2027</span>
             </div>
 
+            <!-- Main Headline -->
             <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-white/95 to-white/60 max-w-5xl mx-auto leading-[1.08] mb-8" data-aos="fade-up" data-aos-delay="100">
                 Where Big Ideas Meet <span class="animate-shimmer">Bold Action.</span>
             </h1>
 
+            <!-- Subtitle -->
             <p class="text-lg sm:text-xl text-fgMuted max-w-2xl mx-auto font-normal leading-relaxed mb-10" data-aos="fade-up" data-aos-delay="200">
                 Pusat kepemimpinan, aksi, dan inovasi siswa SMP Kristen Kalam Kudus Padang. Membangun masa depan sekolah yang berintegritas, aktif, dan berdampak.
             </p>
 
+            <!-- CTA Buttons -->
             <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
                 <a href="#structure" class="px-8 py-4 rounded-xl font-semibold text-sm text-white btn-primary-glow inline-flex items-center">
                     Lihat Pengurus <i data-lucide="users" class="w-4 h-4 ml-2"></i>
@@ -284,6 +288,7 @@
                 </a>
             </div>
 
+            <!-- Hero Feature Surface -->
             <div class="mt-20 max-w-5xl mx-auto p-3 rounded-3xl bg-white/[0.02] border border-white/[0.08] shadow-2xl backdrop-blur-xl" data-aos="zoom-in" data-aos-delay="400">
                 <div class="bg-bgElevated rounded-2xl p-6 sm:p-10 border border-white/5 text-left grid md:grid-cols-3 gap-6">
                     <div class="flex items-start space-x-4">
@@ -328,8 +333,10 @@
                 <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Tentang OSIS Kalam Kudus</h2>
             </div>
 
+            <!-- Bento Layout -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
+                <!-- Large Highlight Card -->
                 <div class="md:col-span-2 card-linear spotlight-card p-8 sm:p-10 rounded-2xl flex flex-col justify-between" data-aos="fade-right">
                     <div>
                         <div class="flex items-center justify-between mb-6">
@@ -351,6 +358,7 @@
                     </div>
                 </div>
 
+                <!-- Secondary Card -->
                 <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col justify-between" data-aos="fade-left">
                     <div>
                         <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-6">
@@ -382,6 +390,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
+                <!-- School Vision & Mission Card -->
                 <div class="card-linear spotlight-card p-8 sm:p-10 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
                     <div class="flex items-center space-x-3 mb-6">
                         <div class="p-2.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
@@ -404,6 +413,7 @@
                     </ul>
                 </div>
 
+                <!-- OSIS Vision & Mission Card -->
                 <div class="card-linear spotlight-card p-8 sm:p-10 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
                     <div class="flex items-center space-x-3 mb-6">
                         <div class="p-2.5 rounded-lg bg-accent/10 border border-accent/20 text-accent">
@@ -433,23 +443,246 @@
             </div>
         </section>
 
-        <!-- ==================== STRUCTURE SECTION (DYNAMIC LOCAL JSON DYNAMIC LOADER) ==================== -->
+        <!-- ==================== STRUCTURE SECTION (ALL PHOTOS PRESERVED) ==================== -->
         <section id="structure" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
             
             <div class="mb-16 text-center" data-aos="fade-up">
-                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 03 // OFFICERS DIRECTORY ]</span>
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 03 // OFFICERS & GALLERY ]</span>
                 <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Struktur Kabinet Pengurus</h2>
-                <p class="text-sm text-fgMuted mt-2">Seluruh foto dan data pengurus dimuat secara dinamis melalui <code class="text-accent font-mono">image_data.json</code>.</p>
+                <p class="text-sm text-fgMuted mt-2">Seluruh jajaran pimpinan dan koordinator pengurus OSIS Periode 2026/2027.</p>
             </div>
 
-            <!-- EXECUTIVES CONTAINER -->
-            <div id="executives-container" class="space-y-8 mb-16">
-                <!-- Loaded dynamically by JS -->
+            <!-- CORE EXECUTIVES (Presiden & Wakil) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                
+                <!-- President (Levi) -->
+                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center" data-aos="fade-right">
+                    <div class="w-36 h-44 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/xqPq0chZ/KETOS-LEVI-2.png" alt="Ketua OSIS Levi Janice Lie" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-xs text-accent font-bold uppercase">STUDENT COUNCIL PRESIDENT</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Levi Janice Lie</h3>
+                        <p class="text-xs text-fgMuted italic mt-3 leading-relaxed border-l-2 border-accent pl-3">
+                            "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Vice President (Asher) -->
+                <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center" data-aos="fade-left">
+                    <div class="w-36 h-44 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/2zqkWks/WAKETOS-ASHER-1.png" alt="Wakil Ketos Asher Yang" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-xs text-accent font-bold uppercase">VICE PRESIDENT</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Asher Yang</h3>
+                        <p class="text-xs text-fgMuted italic mt-3 leading-relaxed border-l-2 border-accent pl-3">
+                            "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member."
+                        </p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- DEPARTMENTS CONTAINER -->
-            <div id="departments-container" class="space-y-16">
-                <!-- Loaded dynamically by JS -->
+            <!-- TREASURER & SECRETARY -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <!-- Treasurer (Michelle) -->
+                <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5" data-aos="fade-right">
+                    <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/sJkJ6M15/BENDAHARA-MICHELLE-SEAN-1.png" alt="Bendahara Michelle Abigail Zalukhu" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">TREASURER // BENDAHARA</span>
+                        <h3 class="text-lg font-bold text-white">Michelle Abigail Zalukhu</h3>
+                        <p class="text-xs text-fgMuted mt-2 italic leading-relaxed">
+                            "True integrity is being accountable for the smallest details, ensuring trust is maintained."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Secretary (Sean) -->
+                <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5" data-aos="fade-left">
+                    <div class="w-24 h-32 img-card-frame flex-shrink-0">
+                        <img src="https://i.ibb.co.com/LX5yWsQ1/SEKRE-SEAN-1.png" alt="Sekretaris Sean Arcelia Zega" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">SECRETARY // SEKRETARIS</span>
+                        <h3 class="text-lg font-bold text-white">Sean Arcelia Zega</h3>
+                        <p class="text-xs text-fgMuted mt-2 italic leading-relaxed">
+                            "A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 01: KEROHANIAN (ALL MEMBERS WITH PHOTOS) -->
+            <div class="mb-16">
+                <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">DEPT 01 // SEKBID KEROHANIAN</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Ian (Koordinator) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/Rpk7mGgX/KOORDINATOR-IAN.png" alt="Ian" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Sepdyanta Sitepu</h4>
+                    </div>
+
+                    <!-- Biel (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/nqFLLMQ0/ANGGOTA-BIEL-1.png" alt="Biel" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Gabriel Oktavianus S.</h4>
+                    </div>
+
+                    <!-- Shana (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/mCpbHLQr/ANGGOTA-SHANA-1.png" alt="Shana" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Nuela Elshana Tova S.</h4>
+                    </div>
+
+                    <!-- Sonia (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/gZtHhn4B/ANGGOTA-SONIA-1.png" alt="Sonia" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Christania Sonia Gozali</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 02: PENDIDIKAN & KARAKTER -->
+            <div class="mb-16">
+                <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">DEPT 02 // SEKBID PENDIDIKAN & KARAKTER</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Fedora (Koordinator) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/DPn0NyTK/KOORDINATOR-FEDORA-1.png" alt="Fedora" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Fedora Ananta Quinselle</h4>
+                    </div>
+
+                    <!-- Angel (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/XkY6GPrm/ANGGOTA-ANGEL-1.png" alt="Angel" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Angelyne Aiko Kiroyan</h4>
+                    </div>
+
+                    <!-- Cliff (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/XgPxPP0/ANGGOTA-CLIFF-1.png" alt="Cliff" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Cliff Benedict Lim</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 03: MEDIA & TEKNOLOGI -->
+            <div class="mb-16">
+                <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">DEPT 03 // SEKBID MEDIA & TEKNOLOGI</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Scarlett (Koordinator) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/Ngx3VMSj/KOORDINATOR-SCARLETT-1.png" alt="Scarlett" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-accent font-bold uppercase block">KOORDINATOR</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Scarlett Sophie Harper</h4>
+                    </div>
+
+                    <!-- Jashon (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/d0pjgT3F/ANGGOTA-JASHON-1.png" alt="Jashon" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Jashon Imanuel Yahya</h4>
+                    </div>
+
+                    <!-- Guido (Anggota) -->
+                    <div class="card-linear spotlight-card p-4 rounded-xl text-center">
+                        <div class="w-full aspect-[4/5] img-card-frame mb-3">
+                            <img src="https://i.ibb.co.com/bgzFzXVL/ANGGOTA-GUIDO-1.png" alt="Guido" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-mono text-[10px] text-fgMuted font-bold uppercase block">ANGGOTA</span>
+                        <h4 class="text-sm font-bold text-white mt-1">Guido Bryan Nugroho</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEKSI BIDANG 04 & 05: OLAHRAGA & KEBUDAYAAN -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Sekbid Olahraga -->
+                <div class="p-6 rounded-2xl bg-bgElevated border border-white/5">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase block mb-6 border-b border-white/5 pb-2">DEPT 04 // SEKBID OLAHRAGA & PERALATAN</span>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/tTdjFpLT/KOORDINATOR-IER-1.png" alt="Xavier" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-accent font-bold block">KOORDINATOR</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Xavier Aurelius</h5>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/hRVF7skS/ANGGOTA-SAMUEL-1.png" alt="Samuel" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-fgMuted font-bold block">ANGGOTA</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Samuel Rusli</h5>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/Zy0QF5z/ANGGOTA-MAXWELL.png" alt="Maxwell" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-fgMuted font-bold block">ANGGOTA</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Maxwell Zega</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sekbid Kebudayaan -->
+                <div class="p-6 rounded-2xl bg-bgElevated border border-white/5">
+                    <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase block mb-6 border-b border-white/5 pb-2">DEPT 05 // SEKBID KEBUDAYAAN & SENI</span>
+                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/qL9qWb79/KOORDINATOR-ASHLEY-1.png" alt="Ashley" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-accent font-bold block">KOORDINATOR</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Ashley Louisa N.</h5>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-full aspect-[4/5] img-card-frame mb-2">
+                                <img src="https://i.ibb.co.com/4whBCJhy/ANGGOTA-MONIQ-1.png" alt="Monique" class="w-full h-full object-cover">
+                            </div>
+                            <span class="font-mono text-[9px] text-fgMuted font-bold block">ANGGOTA</span>
+                            <h5 class="text-xs font-bold text-white mt-0.5">Monique Calista</h5>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </section>
@@ -465,6 +698,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
+                <!-- Gallery Item 1 -->
                 <div class="card-linear spotlight-card p-4 rounded-2xl group" data-aos="fade-right">
                     <div class="w-full aspect-[16/10] img-card-frame mb-4">
                         <img src="https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg" alt="Ibadah Paskah" class="w-full h-full object-cover">
@@ -479,6 +713,7 @@
                     </div>
                 </div>
 
+                <!-- Gallery Item 2 -->
                 <div class="card-linear spotlight-card p-4 rounded-2xl group" data-aos="fade-left">
                     <div class="w-full aspect-[16/10] img-card-frame mb-4">
                         <img src="https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg" alt="Nonton Bersama" class="w-full h-full object-cover">
@@ -505,8 +740,10 @@
                 <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Kuis Trivia Kepemimpinan</h2>
             </div>
 
+            <!-- Quiz Card -->
             <div class="card-linear p-8 sm:p-12 rounded-3xl relative overflow-hidden" data-aos="fade-up">
                 
+                <!-- Start Screen -->
                 <div id="quiz-start-screen" class="text-center py-6">
                     <div class="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mx-auto mb-6">
                         <i data-lucide="brain" class="w-8 h-8"></i>
@@ -520,6 +757,7 @@
                     </button>
                 </div>
 
+                <!-- Active Quiz Screen -->
                 <div id="quiz-active-screen" class="hidden">
                     <div class="flex justify-between items-center mb-6 font-mono text-xs text-fgMuted border-b border-white/5 pb-4">
                         <span id="quiz-progress" class="text-accent font-bold">PERTANYAAN 1/5</span>
@@ -534,6 +772,7 @@
                         <!-- JS generated options -->
                     </div>
 
+                    <!-- Explanation -->
                     <div id="quiz-explanation-box" class="hidden mt-8 p-6 rounded-2xl bg-bgElevated border border-white/10">
                         <span class="font-mono text-xs text-accent font-bold block mb-2">FAKTA EDUKATIF:</span>
                         <p id="quiz-explanation-text" class="text-sm text-fgMuted leading-relaxed mb-6"></p>
@@ -543,6 +782,7 @@
                     </div>
                 </div>
 
+                <!-- Result Screen -->
                 <div id="quiz-result-screen" class="hidden text-center py-6">
                     <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto mb-6">
                         <i data-lucide="trophy" class="w-8 h-8"></i>
@@ -558,6 +798,7 @@
                     </button>
                 </div>
 
+                <!-- Progress Line Bar -->
                 <div class="h-1 w-full bg-white/5 absolute bottom-0 left-0">
                     <div id="quiz-progress-bar" class="h-full bg-accent w-0 transition-all duration-300"></div>
                 </div>
@@ -576,6 +817,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
+                <!-- Upcoming Event -->
                 <div class="card-linear p-8 rounded-2xl" data-aos="fade-right">
                     <div class="flex items-center justify-between mb-6">
                         <span class="font-mono text-xs text-accent font-bold uppercase">AGENDA MENDATANG</span>
@@ -595,6 +837,7 @@
                     </div>
                 </div>
 
+                <!-- Bulletin -->
                 <div class="card-linear p-8 rounded-2xl" data-aos="fade-left">
                     <div class="flex items-center justify-between mb-6">
                         <span class="font-mono text-xs text-accent font-bold uppercase">BERITA & PENGUMUMAN</span>
@@ -647,7 +890,7 @@
                 </div>
                 <div>
                     <span class="text-white font-bold block">OSIS SMP KALAM KUDUS PADANG</span>
-                    <span class="text-[10px] text-fgSubtle">DESIGN SYSTEM By: Guido (Divisi Media & Teknologi)</span>
+                    <span class="text-[10px] text-fgSubtle">DESIGN SYSTEM: LINEAR / MODERN DARK</span>
                 </div>
             </div>
 
@@ -661,230 +904,14 @@
     <!-- ==================== JAVASCRIPT ENGINE ==================== -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Default Embedded Fallback JSON Data (Memastikan halaman tetap tampil meskipun dibuka langsung tanpa HTTP Server)
-        const defaultImageData = {
-          "executives": [
-            {
-              "id": "ketos",
-              "role": "STUDENT COUNCIL PRESIDENT",
-              "name": "Levi Janice Lie",
-              "image": "KETOS(LEVI).png",
-              "quote": "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
-            },
-            {
-              "id": "waketos",
-              "role": "VICE PRESIDENT",
-              "name": "Asher Yang",
-              "image": "WAKETOS(ASHER).png",
-              "quote": "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member."
-            },
-            {
-              "id": "bendahara",
-              "role": "TREASURER // BENDAHARA",
-              "name": "Michelle Abigail Zalukhu",
-              "image": "BENDAHARA(MICHELLE).png",
-              "quote": "True integrity is being accountable for the smallest details, ensuring trust is maintained."
-            },
-            {
-              "id": "sekretaris",
-              "role": "SECRETARY // SEKRETARIS",
-              "name": "Sean Arcelia Zega",
-              "image": "SEKRETARIS(SEAN).png",
-              "quote": "A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality."
-            }
-          ],
-          "departments": [
-            {
-              "dept_id": "01",
-              "dept_title": "DEPT 01 // SEKBID KEROHANIAN",
-              "grid_cols": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
-              "members": [
-                { "role": "KOORDINATOR", "name": "Sepdyanta Sitepu", "image": "KOORDINATOR(IAN).png", "is_coordinator": true },
-                { "role": "ANGGOTA", "name": "Gabriel Oktavianus S.", "image": "ANGGOTA(BIEL).png", "is_coordinator": false },
-                { "role": "ANGGOTA", "name": "Nuela Elshana Tova S.", "image": "ANGGOTA(SHANA).png", "is_coordinator": false },
-                { "role": "ANGGOTA", "name": "Christania Sonia Gozali", "image": "ANGGOTA(SONIA).png", "is_coordinator": false }
-              ]
-            },
-            {
-              "dept_id": "02",
-              "dept_title": "DEPT 02 // SEKBID PENDIDIKAN & KARAKTER",
-              "grid_cols": "grid-cols-1 sm:grid-cols-3",
-              "members": [
-                { "role": "KOORDINATOR", "name": "Fedora Ananta Quinselle", "image": "KOORDINATOR(FEDORA).png", "is_coordinator": true },
-                { "role": "ANGGOTA", "name": "Angelyne Aiko Kiroyan", "image": "ANGGOTA(ANGEL).png", "is_coordinator": false },
-                { "role": "ANGGOTA", "name": "Cliff Benedict Lim", "image": "ANGGOTA(CLIFF).png", "is_coordinator": false }
-              ]
-            },
-            {
-              "dept_id": "03",
-              "dept_title": "DEPT 03 // SEKBID MEDIA & TEKNOLOGI",
-              "grid_cols": "grid-cols-1 sm:grid-cols-3",
-              "members": [
-                { "role": "KOORDINATOR", "name": "Scarlett Sophie Harper", "image": "KOORDINATOR(SCARLETT).png", "is_coordinator": true },
-                { "role": "ANGGOTA", "name": "Jashon Imanuel Yahya", "image": "ANGGOTA(JASHON).png", "is_coordinator": false },
-                { "role": "ANGGOTA", "name": "Guido Bryan Nugroho", "image": "ANGGOTA(GUIDO).png", "is_coordinator": false }
-              ]
-            },
-            {
-              "dept_id": "04",
-              "dept_title": "DEPT 04 // SEKBID OLAHRAGA & PERALATAN",
-              "grid_cols": "grid-cols-1 sm:grid-cols-3",
-              "members": [
-                { "role": "KOORDINATOR", "name": "Xavier Aurelius", "image": "KOORDINATOR(XAVIER).png", "is_coordinator": true },
-                { "role": "ANGGOTA", "name": "Samuel Rusli", "image": "ANGGOTA(SAMUEL).png", "is_coordinator": false },
-                { "role": "ANGGOTA", "name": "Maxwell Zega", "image": "ANGGOTA(MAXWELL).png", "is_coordinator": false }
-              ]
-            },
-            {
-              "dept_id": "05",
-              "dept_title": "DEPT 05 // SEKBID KEBUDAYAAN & SENI",
-              "grid_cols": "grid-cols-1 sm:grid-cols-2 max-w-md mx-auto",
-              "members": [
-                { "role": "KOORDINATOR", "name": "Ashley Louisa N.", "image": "KOORDINATOR(ASHLEY).png", "is_coordinator": true },
-                { "role": "ANGGOTA", "name": "Monique Calista", "image": "ANGGOTA(MONIQUE).png", "is_coordinator": false }
-              ]
-            }
-          ]
-        };
+        // AOS Animation Init
+        AOS.init({
+            once: true,
+            duration: 400,
+            easing: 'ease-out-quad',
+        });
 
-        // Render Officers Structure from JSON
-        async function loadOfficersData() {
-            let data = defaultImageData;
-            try {
-                const response = await fetch('image_data.json');
-                if (response.ok) {
-                    data = await response.json();
-                }
-            } catch (err) {
-                console.log('Menggunakan data pengurus internal (Fallback).');
-            }
-
-            renderExecutives(data.executives);
-            renderDepartments(data.departments);
-            initSpotlightListeners();
-        }
-
-        function renderExecutives(executives) {
-            const container = document.getElementById('executives-container');
-            if(!container || !executives) return;
-
-            const ketos = executives.find(e => e.id === 'ketos');
-            const waketos = executives.find(e => e.id === 'waketos');
-            const bendahara = executives.find(e => e.id === 'bendahara');
-            const sekretaris = executives.find(e => e.id === 'sekretaris');
-
-            let html = `
-                <!-- Core Leadership -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    ${ketos ? `
-                    <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center">
-                        <div class="w-36 h-44 img-card-frame flex-shrink-0">
-                            <img src="${ketos.image}" alt="${ketos.name}" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <span class="font-mono text-xs text-accent font-bold uppercase">${ketos.role}</span>
-                            <h3 class="text-2xl font-bold text-white mt-1">${ketos.name}</h3>
-                            <p class="text-xs text-fgMuted italic mt-3 leading-relaxed border-l-2 border-accent pl-3">
-                                "${ketos.quote}"
-                            </p>
-                        </div>
-                    </div>` : ''}
-
-                    ${waketos ? `
-                    <div class="card-linear spotlight-card p-8 rounded-2xl flex flex-col sm:flex-row gap-6 items-center">
-                        <div class="w-36 h-44 img-card-frame flex-shrink-0">
-                            <img src="${waketos.image}" alt="${waketos.name}" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <span class="font-mono text-xs text-accent font-bold uppercase">${waketos.role}</span>
-                            <h3 class="text-2xl font-bold text-white mt-1">${waketos.name}</h3>
-                            <p class="text-xs text-fgMuted italic mt-3 leading-relaxed border-l-2 border-accent pl-3">
-                                "${waketos.quote}"
-                            </p>
-                        </div>
-                    </div>` : ''}
-                </div>
-
-                <!-- Treasurer & Secretary -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    ${bendahara ? `
-                    <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5">
-                        <div class="w-24 h-32 img-card-frame flex-shrink-0">
-                            <img src="${bendahara.image}" alt="${bendahara.name}" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">${bendahara.role}</span>
-                            <h3 class="text-lg font-bold text-white">${bendahara.name}</h3>
-                            <p class="text-xs text-fgMuted mt-2 italic leading-relaxed">
-                                "${bendahara.quote}"
-                            </p>
-                        </div>
-                    </div>` : ''}
-
-                    ${sekretaris ? `
-                    <div class="card-linear spotlight-card p-6 rounded-2xl flex items-center space-x-5">
-                        <div class="w-24 h-32 img-card-frame flex-shrink-0">
-                            <img src="${sekretaris.image}" alt="${sekretaris.name}" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <span class="font-mono text-[10px] text-accent font-bold uppercase tracking-wider block mb-1">${sekretaris.role}</span>
-                            <h3 class="text-lg font-bold text-white">${sekretaris.name}</h3>
-                            <p class="text-xs text-fgMuted mt-2 italic leading-relaxed">
-                                "${sekretaris.quote}"
-                            </p>
-                        </div>
-                    </div>` : ''}
-                </div>
-            `;
-
-            container.innerHTML = html;
-        }
-
-        function renderDepartments(departments) {
-            const container = document.getElementById('departments-container');
-            if(!container || !departments) return;
-
-            let html = '';
-            departments.forEach(dept => {
-                html += `
-                    <div>
-                        <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-white/10">
-                            <span class="font-mono text-xs font-bold text-accent tracking-widest uppercase">${dept.dept_title}</span>
-                        </div>
-                        
-                        <div class="grid ${dept.grid_cols} gap-6">
-                            ${dept.members.map(member => `
-                                <div class="card-linear spotlight-card p-4 rounded-xl text-center">
-                                    <div class="w-full aspect-[4/5] img-card-frame mb-3">
-                                        <img src="${member.image}" alt="${member.name}" class="w-full h-full object-cover">
-                                    </div>
-                                    <span class="font-mono text-[10px] ${member.is_coordinator ? 'text-accent' : 'text-fgMuted'} font-bold uppercase block">${member.role}</span>
-                                    <h4 class="text-sm font-bold text-white mt-1">${member.name}</h4>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function initSpotlightListeners() {
-            document.querySelectorAll('.spotlight-card').forEach(card => {
-                card.addEventListener('mousemove', e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    card.style.setProperty('--mouse-x', `${x}px`);
-                    card.style.setProperty('--mouse-y', `${y}px`);
-                });
-            });
-        }
-
-        // Initialize AOS & Basic Handlers
-        AOS.init({ once: true, duration: 400, easing: 'ease-out-quad' });
-
+        // Mobile Menu Toggle
         const mobileToggle = document.getElementById('mobile-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
         if(mobileToggle) {
@@ -893,6 +920,18 @@
             });
         }
 
+        // Spotlight Mouse Tracking Effect
+        document.querySelectorAll('.spotlight-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Current Year Update
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -1066,13 +1105,10 @@
             scoreEl.textContent = `SKOR: ${score}`;
         }
 
-        // On Page Load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadOfficersData();
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        });
+        // Initialize Lucide Icons
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     </script>
 </body>
 </html>

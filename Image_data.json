@@ -4,28 +4,28 @@
       "id": "ketos",
       "role": "STUDENT COUNCIL PRESIDENT",
       "name": "Levi Janice Lie",
-      "image": "KETOS-LEVI.png",
+      "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/KETOS-LEVI.png?raw=true",
       "quote": "Not a boss who commands, but a leader who walks alongside, embraces the struggling, and guards the pack with justice."
     },
     {
       "id": "waketos",
       "role": "VICE PRESIDENT",
       "name": "Asher Yang",
-      "image": "WAKETOS-ASHER.png",
+      "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/WAKETOS-ASHER.png?token=GHSAT0AAAAAAEFG5AXINAPKMRGOVJZOUETG2TZOQ4A",
       "quote": "Not just a second-in-command, but the spark that turns plans into reality. Working behind the scenes to empower every member."
     },
     {
       "id": "bendahara",
       "role": "TREASURER // BENDAHARA",
       "name": "Michelle Abigail Zalukhu",
-      "image": "BENDAHARA-MICHELLE.png",
+      "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/BENDAHARA-MICHELLE.png?raw=true",
       "quote": "True integrity is being accountable for the smallest details, ensuring trust is maintained."
     },
     {
       "id": "sekretaris",
       "role": "SECRETARY // SEKRETARIS",
       "name": "Sean Arcelia Zega",
-      "image": "SEKRE-SEAN.png",
+      "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/SEKRE-SEAN.png?token=GHSAT0AAAAAAEFG5AXIYD5YF2VBDWTIF35M2TZOQWA",
       "quote": "A secretary is the pulse of every meeting, ensuring our ideas transition smoothly from notes to reality."
     }
   ],
@@ -38,25 +38,25 @@
         {
           "role": "KOORDINATOR",
           "name": "Sepdyanta Sitepu",
-          "image": "KOORDINATOR-IAN.png",
+          "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/KOORDINATOR-IAN.png?raw=true",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Gabriel Oktavianus S.",
-          "image": "ANGGOTA-BIEL.png",
+          "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/ANGGOTA-BIEL.png?raw=true",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Nuela Elshana Tova S.",
-          "image": "ANGGOTA-SHANA.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SHANA.png?token=GHSAT0AAAAAAEFG5AXID6RSPGHR2ZQ4IGKC2TZOOYQ",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Christania Sonia Gozali",
-          "image": "ANGGOTA-SONIA.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SONIA.png?token=GHSAT0AAAAAAEFG5AXJINC2XAZCXLMQ4JFA2TZOPBQ",
           "is_coordinator": false
         }
       ]
@@ -69,19 +69,19 @@
         {
           "role": "KOORDINATOR",
           "name": "Fedora Ananta Quinselle",
-          "image": "KOORDINATOR-FEDORA.png",
+          "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/KOORDINATOR-FEDORA.png?raw=true",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Angelyne Aiko Kiroyan",
-          "image": "ANGGOTA-ANGEL.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-ANGEL.png?token=GHSAT0AAAAAAEFG5AXIKLKF4OCHFWEKMTOE2TZOMFQ",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Cliff Benedict Lim",
-          "image": "ANGGOTA-CLIFF.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-CLIFF.png?token=GHSAT0AAAAAAEFG5AXJ2IBHHNMYOWRGV4AY2TZONCQ",
           "is_coordinator": false
         }
       ]
@@ -94,19 +94,19 @@
         {
           "role": "KOORDINATOR",
           "name": "Scarlett Sophie Harper",
-          "image": "KOORDINATOR-SCARLETT.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-SCARLETT.png?token=GHSAT0AAAAAAEFG5AXIKKJM7L2WIMUCV26S2TZOQRA",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Jashon Imanuel Yahya",
-          "image": "ANGGOTA-JASHON.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-JASHON.png?token=GHSAT0AAAAAAEFG5AXID44JCLD5MLVFQPDM2TZONQA",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Guido Bryan Nugroho",
-          "image": "ANGGOTA-GUIDO.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-GUIDO.png?token=GHSAT0AAAAAAEFG5AXJ3WRAB4PQA5QLWHKW2TZONKA",
           "is_coordinator": false
         }
       ]
@@ -119,19 +119,19 @@
         {
           "role": "KOORDINATOR",
           "name": "Xavier Aurelius",
-          "image": "KOORDINATOR-IER.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KOORDINATOR-IER.png?token=GHSAT0AAAAAAEFG5AXIUAGZCWIFGLJU357M2TZOQLA",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Samuel Rusli",
-          "image": "ANGGOTA-SAMUEL.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-SAMUEL.png?token=GHSAT0AAAAAAEFG5AXI4YAIAFRUMKLRH3WE2TZOOOA",
           "is_coordinator": false
         },
         {
           "role": "ANGGOTA",
           "name": "Maxwell Zega",
-          "image": "ANGGOTA-MAXWELL.png",
+          "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/ANGGOTA-MAXWELL.png?raw=true",
           "is_coordinator": false
         }
       ]
@@ -144,13 +144,13 @@
         {
           "role": "KOORDINATOR",
           "name": "Ashley Louisa N.",
-          "image": "KOORDINATOR-ASHLEY.png",
+          "image": "https://github.com/osismediateknologiskkkpdg-dev/Image-OSIS/blob/main/KOORDINATOR-ASHLEY.png?raw=true",
           "is_coordinator": true
         },
         {
           "role": "ANGGOTA",
           "name": "Monique Calista",
-          "image": "ANGGOTA-MONIQ.png",
+          "image": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-MONIQ.png?token=GHSAT0AAAAAAEFG5AXIZGFA7CBOXJTX3VQW2TZON6A",
           "is_coordinator": false
         }
       ]
