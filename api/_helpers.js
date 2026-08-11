@@ -2,20 +2,18 @@
  * ============================================================================
  * OSIS SMP KALAM KUDUS PADANG — SERVERLESS CORE HELPERS
  * File: api/_helpers.js
- * Deskripsi: Pusat konfigurasi Nodemailer SMTP, GitHub Octokit DB, CORS, & OTP
+ * Deskripsi: Pusat konfigurasi Nodemailer SMTP, Native Fetch GitHub API, & CORS
  * ============================================================================
  */
 
 require('dotenv').config();
 const nodemailer = require('nodemailer');
-const { Octokit } = require('@octokit/rest');
 
-// In-Memory Storage Global untuk OTP (Persistensi selama instance lambda aktif)
+// In-Memory Storage Global untuk OTP
 global.otpMemoryStore = global.otpMemoryStore || {};
 
 /**
- * Menerapkan Header Cross-Origin Resource Sharing (CORS) pada Vercel Serverless Functions
- * @param {import('http').ServerResponse} res 
+ * Menerapkan Header CORS pada Vercel Serverless Function
  */
 function applyCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -28,28 +26,20 @@ function applyCorsHeaders(res) {
 }
 
 /**
- * Membuat dan Memvalidasi Transporter Nodemailer SMTP secara Ketat
- * Mencegah Error "Missing credentials for PLAIN" dengan pengecekan pra-eksekusi.
+ * Memvalidasi & Membuat Transporter Nodemailer
  */
 function createSmtpTransporter() {
   const rawUser = process.env.SMTP_USER;
   const rawPass = process.env.SMTP_PASS;
 
-  // Validasi Keberadaan Environment Variables
-  if (!rawUser || rawUser.trim() === '') {
-    throw new Error(
-      "Konfigurasi SMTP Gagal: Variable 'SMTP_USER' tidak ditemukan atau kosong pada Vercel Environment Variables."
-    );
+  if (!rawUser || !rawUser.trim()) {
+    throw new Error("Variabel 'SMTP_USER' tidak ditemukan pada Environment Variables Vercel.");
   }
-
-  if (!rawPass || rawPass.trim() === '') {
-    throw new Error(
-      "Konfigurasi SMTP Gagal: Variable 'SMTP_PASS' tidak ditemukan atau kosong pada Vercel Environment Variables."
-    );
+  if (!rawPass || !rawPass.trim()) {
+    throw new Error("Variabel 'SMTP_PASS' tidak ditemukan pada Environment Variables Vercel.");
   }
 
   const smtpUser = rawUser.trim();
-  // Membersihkan spasi pada App Password Gmail (contoh: 'abcd efgh ijkl' -> 'abcdefghijkl')
   const smtpPass = rawPass.replace(/\s+/g, '');
   const smtpHost = process.env.SMTP_HOST ? process.env.SMTP_HOST.trim() : 'smtp.gmail.com';
   const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
@@ -57,47 +47,35 @@ function createSmtpTransporter() {
   return nodemailer.createTransport({
     host: smtpHost,
     port: smtpPort,
-    secure: smtpPort === 465, // true untuk SSL (465), false untuk TLS/STARTTLS (587)
+    secure: smtpPort === 465,
     auth: {
       user: smtpUser,
       pass: smtpPass,
     },
     tls: {
-      rejectUnauthorized: false, // Mencegah kegagalan otentikasi SSL pada lingkungan serverless
+      rejectUnauthorized: false,
     },
   });
 }
 
 /**
- * Mengirimkan Email Berisi Kode OTP Verifikasi Keamanan
- * @param {string} targetEmail 
- * @param {string} otpCode 
- * @param {string} actionTitle 
+ * Mengirimkan Email OTP Verifikasi
  */
 async function sendOtpEmail(targetEmail, otpCode, actionTitle) {
   const transporter = createSmtpTransporter();
 
   const htmlTemplate = `
-    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #050506; color: #EDEDEF; padding: 40px 20px; max-width: 540px; margin: 0 auto; border-radius: 20px; border: 1px solid #5E6AD2;">
-      <div style="text-align: center; margin-bottom: 28px;">
-        <h2 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">OSIS SMP KALAM KUDUS PADANG</h2>
-        <p style="color: #8A8F98; font-size: 11px; font-family: monospace; text-transform: uppercase; letter-spacing: 2px; margin-top: 6px;">Official Student Council Portal</p>
+    <div style="font-family: Arial, sans-serif; background-color: #050506; color: #EDEDEF; padding: 30px; max-width: 500px; margin: 0 auto; border-radius: 16px; border: 1px solid #5E6AD2;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="color: #ffffff; margin: 0;">OSIS SMP KALAM KUDUS PADANG</h2>
+        <p style="color: #8A8F98; font-size: 11px; font-family: monospace; margin-top: 4px;">OFFICIAL PORTAL</p>
       </div>
-
-      <div style="background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 24px; border-radius: 16px; margin-bottom: 24px;">
-        <p style="font-size: 14px; color: #EDEDEF; margin-top: 0;">Halo,</p>
-        <p style="font-size: 14px; color: #8A8F98; line-height: 1.6;">Berikut adalah kode Otentikasi Sekali Pakai (OTP) Anda untuk melakukan <strong>${actionTitle}</strong>:</p>
-        
-        <div style="background-color: #0a0a0c; border: 2px dashed #5E6AD2; padding: 20px; text-align: center; font-size: 36px; font-weight: 800; font-family: monospace; letter-spacing: 10px; color: #6872D9; border-radius: 12px; margin: 20px 0;">
-          ${otpCode}
-        </div>
-
-        <p style="font-size: 12px; color: #8A8F98; text-align: center; margin-bottom: 0;">Kode ini berlaku selama <strong>5 menit</strong>. Jangan berikan kode ini kepada siapa pun demi keamanan akun Anda.</p>
+      <p style="font-size: 14px;">Halo,</p>
+      <p style="font-size: 14px; color: #8A8F98;">Gunakan kode OTP berikut untuk melanjutkan proses <strong>${actionTitle}</strong> Anda:</p>
+      <div style="background-color: #0a0a0c; border: 2px dashed #5E6AD2; padding: 18px; text-align: center; font-size: 32px; font-weight: bold; font-family: monospace; letter-spacing: 8px; color: #6872D9; border-radius: 10px; margin: 20px 0;">
+        ${otpCode}
       </div>
-
-      <div style="text-align: center; font-size: 11px; color: #606060; font-family: monospace;">
-        <p style="margin: 0;">&copy; 2026 OSIS SMP Kristen Kalam Kudus Padang. All Rights Reserved.</p>
-      </div>
+      <p style="font-size: 12px; color: #8A8F98; text-align: center;">Kode ini berlaku selama <strong>5 menit</strong>.</p>
     </div>
   `;
 
@@ -110,7 +88,7 @@ async function sendOtpEmail(targetEmail, otpCode, actionTitle) {
 }
 
 /**
- * Membaca Data Pengguna dari File User_data.json di Repositori GitHub
+ * Membaca File User_data.json dari GitHub Menggunakan Native Fetch
  */
 async function getUsersFromGitHub() {
   const token = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.trim() : null;
@@ -119,35 +97,40 @@ async function getUsersFromGitHub() {
   const branch = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
 
   if (!token || !owner || !repo) {
-    console.warn('Peringatan: Konfigurasi GitHub API belum lengkap di Environment Variables.');
+    console.warn('Konfigurasi GitHub API belum lengkap di Environment Variables.');
     return { usersList: [], fileSha: null };
   }
 
-  const octokit = new Octokit({ auth: token });
-
   try {
-    const response = await octokit.repos.getContent({
-      owner,
-      repo,
-      path: 'User_data.json',
-      ref: branch,
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/User_data.json?ref=${branch}`;
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'Vercel-Serverless-App'
+      }
     });
 
-    const fileContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+    if (!response.ok) {
+      throw new Error(`GitHub REST API melempar HTTP status ${response.status}`);
+    }
+
+    const data = await response.json();
+    const fileContent = Buffer.from(data.content, 'base64').toString('utf-8');
     const parsedData = JSON.parse(fileContent);
 
     return {
       usersList: Array.isArray(parsedData) ? parsedData : [],
-      fileSha: response.data.sha,
+      fileSha: data.sha,
     };
   } catch (error) {
-    console.error('Error saat membaca User_data.json dari GitHub API:', error.message);
+    console.error('Error saat membaca User_data.json dari GitHub:', error.message);
     return { usersList: [], fileSha: null };
   }
 }
 
 /**
- * Menyimpan / Meng-commit Pembaruan Data Pengguna ke GitHub Repositori
+ * Menyimpan / Meng-commit Pembaruan ke User_data.json Menggunakan Native Fetch
  */
 async function saveUsersToGitHub(updatedUsersList, currentSha) {
   const token = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.trim() : null;
@@ -156,21 +139,37 @@ async function saveUsersToGitHub(updatedUsersList, currentSha) {
   const branch = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
 
   if (!token || !owner || !repo) {
-    throw new Error('Gagal menyimpan ke GitHub: Variable GITHUB_TOKEN, GITHUB_OWNER, atau GITHUB_REPO belum diatur.');
+    throw new Error('Gagal menyimpan ke GitHub: Variable GITHUB_TOKEN, GITHUB_OWNER, atau GITHUB_REPO belum diset.');
   }
 
-  const octokit = new Octokit({ auth: token });
-  const updatedContentBase64 = Buffer.from(JSON.stringify(updatedUsersList, null, 2)).toString('base64');
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/User_data.json`;
+  const contentBase64 = Buffer.from(JSON.stringify(updatedUsersList, null, 2)).toString('base64');
 
-  await octokit.repos.createOrUpdateFileContents({
-    owner,
-    repo,
-    path: 'User_data.json',
-    message: 'chore(auth): update User_data.json via Vercel Serverless Function',
-    content: updatedContentBase64,
-    sha: currentSha,
-    branch,
+  const payload = {
+    message: 'chore(auth): update User_data.json via Vercel Function',
+    content: contentBase64,
+    branch: branch,
+  };
+
+  if (currentSha) {
+    payload.sha = currentSha;
+  }
+
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'Vercel-Serverless-App'
+    },
+    body: JSON.stringify(payload)
   });
+
+  if (!response.ok) {
+    const errorDetails = await response.text();
+    throw new Error(`Gagal meng-commit ke GitHub (${response.status}): ${errorDetails}`);
+  }
 }
 
 module.exports = {
