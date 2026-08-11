@@ -1,0 +1,16 @@
+{
+  "name": "osis-kalam-kudus-auth",
+  "version": "1.0.0",
+  "description": "Portal OSIS SMP Kalam Kudus Padang dengan Sistem Auth OTP & GitHub Persistence",
+  "main": "api/login.js",
+  "scripts": {
+    "start": "node api/login.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.13"
+  }
+}

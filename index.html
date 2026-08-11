@@ -1603,5 +1603,224 @@
             lucide.createIcons();
         }
     </script>
+    <!-- ==================== AUTHENTICATION MODAL (LOGIN & REGISTER) ==================== -->
+<div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="relative w-full max-w-md card-linear border-accent/40 bg-bgElevated p-6 sm:p-8 rounded-3xl shadow-2xl overflow-hidden">
+        
+        <button onclick="closeAuthModal()" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all z-20">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- TABS SWITCHER -->
+        <div class="flex border-b border-white/10 mb-6 font-mono text-xs">
+            <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center border-b-2 border-accent text-white font-bold transition-all">
+                LOGIN
+            </button>
+            <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all">
+                REGISTER
+            </button>
+        </div>
+
+        <!-- NOTIFICATION BANNER -->
+        <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-mono border"></div>
+
+        <!-- ================= FORM 1: LOGIN ================= -->
+        <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-mono text-fgMuted mb-1">EMAIL / USERNAME</label>
+                <input type="text" id="login-identifier" required placeholder="Masukkan Email atau Username" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-accent focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-mono text-fgMuted mb-1">PASSWORD</label>
+                <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-accent focus:outline-none">
+            </div>
+            <button type="submit" id="btn-login-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase">
+                MASUK // KIRIM OTP
+            </button>
+        </form>
+
+        <!-- ================= FORM 2: REGISTER ================= -->
+        <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-3 hidden">
+            <div>
+                <label class="block text-[11px] font-mono text-fgMuted mb-1">EMAIL</label>
+                <input type="email" id="reg-email" required placeholder="nama@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-[11px] font-mono text-fgMuted mb-1">USERNAME</label>
+                <input type="text" id="reg-username" required placeholder="username_siswa" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-[11px] font-mono text-fgMuted mb-1">DISPLAY NAME</label>
+                <input type="text" id="reg-displayname" required placeholder="Nama Lengkap Anda" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-[11px] font-mono text-fgMuted mb-1">CREATE PASSWORD</label>
+                <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-[11px] font-mono text-fgMuted mb-1">CONFIRM YOUR PASSWORD</label>
+                <input type="password" id="reg-confirmpassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+            </div>
+            <button type="submit" id="btn-reg-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase mt-2">
+                SUBMIT // DAFTAR AKUN
+            </button>
+        </form>
+
+        <!-- ================= FORM 3: OTP VERIFICATION ================= -->
+        <form id="form-otp" onsubmit="handleOTPSubmit(event)" class="space-y-4 hidden">
+            <div class="text-center">
+                <span class="font-mono text-xs text-accent font-bold block mb-1">VERIFIKASI KEAMANAN OTP</span>
+                <p class="text-xs text-fgMuted">Masukkan 6 digit kode OTP yang dikirim ke email: <br><strong id="otp-target-email" class="text-white"></strong></p>
+            </div>
+            <div>
+                <input type="text" id="otp-code" maxlength="6" required placeholder="123456" class="w-full text-center tracking-[10px] text-2xl font-mono py-3 rounded-xl bg-surface border border-accent text-white focus:outline-none">
+            </div>
+            <button type="submit" id="btn-otp-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase">
+                VERIFIKASI & PROSES
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    let currentAuthFlow = 'login'; // 'login' | 'register'
+    let currentPendingEmail = '';
+
+    function openAuthModal() {
+        const modal = document.getElementById('auth-modal');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+    }
+
+    function closeAuthModal() {
+        const modal = document.getElementById('auth-modal');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
+    }
+
+    function showAlert(msg, isSuccess = false) {
+        const alertEl = document.getElementById('auth-alert');
+        alertEl.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300', 'bg-rose-500/10', 'border-rose-500', 'text-rose-300');
+        if (isSuccess) {
+            alertEl.classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300');
+        } else {
+            alertEl.classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-300');
+        }
+        alertEl.textContent = msg;
+    }
+
+    function switchAuthTab(tab) {
+        currentAuthFlow = tab;
+        document.getElementById('auth-alert').classList.add('hidden');
+        document.getElementById('form-otp').classList.add('hidden');
+
+        if (tab === 'login') {
+            document.getElementById('form-login').classList.remove('hidden');
+            document.getElementById('form-register').classList.add('hidden');
+            document.getElementById('tab-login-btn').className = "flex-1 py-3 text-center border-b-2 border-accent text-white font-bold transition-all";
+            document.getElementById('tab-register-btn').className = "flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all";
+        } else {
+            document.getElementById('form-register').classList.remove('hidden');
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('tab-register-btn').className = "flex-1 py-3 text-center border-b-2 border-accent text-white font-bold transition-all";
+            document.getElementById('tab-login-btn').className = "flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all";
+        }
+    }
+
+    async function handleRegisterSubmit(e) {
+        e.preventDefault();
+        const email = document.getElementById('reg-email').value;
+        const username = document.getElementById('reg-username').value;
+        const displayName = document.getElementById('reg-displayname').value;
+        const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirmpassword').value;
+
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, username, displayName, password, confirmPassword })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentPendingEmail = email;
+                showAlert(data.message, true);
+                document.getElementById('form-register').classList.add('hidden');
+                document.getElementById('form-otp').classList.remove('hidden');
+                document.getElementById('otp-target-email').textContent = email;
+            } else {
+                showAlert(data.message, false);
+            }
+        } catch (err) {
+            showAlert("Gagal menghubungi server: " + err.message, false);
+        }
+    }
+
+    async function handleLoginSubmit(e) {
+        e.preventDefault();
+        const identifier = document.getElementById('login-identifier').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentPendingEmail = data.email;
+                showAlert(data.message, true);
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-otp').classList.remove('hidden');
+                document.getElementById('otp-target-email').textContent = data.email;
+            } else {
+                showAlert(data.message, false);
+                if (data.suggestRegister) {
+                    setTimeout(() => switchAuthTab('register'), 2500);
+                }
+            }
+        } catch (err) {
+            showAlert("Gagal menghubungi server: " + err.message, false);
+        }
+    }
+
+    async function handleOTPSubmit(e) {
+        e.preventDefault();
+        const otp = document.getElementById('otp-code').value;
+        const endpoint = currentAuthFlow === 'register' ? '/api/verify-register' : '/api/verify-login';
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentPendingEmail, otp })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showAlert(data.message, true);
+                if (currentAuthFlow === 'register') {
+                    setTimeout(() => {
+                        switchAuthTab('login');
+                    }, 2000);
+                } else {
+                    localStorage.setItem('osis_token', data.token);
+                    setTimeout(() => {
+                        closeAuthModal();
+                        alert("Selamat Datang, " + data.user.displayName + "!");
+                    }, 1500);
+                }
+            } else {
+                showAlert(data.message, false);
+            }
+        } catch (err) {
+            showAlert("Terjadi kesalahan verifikasi: " + err.message, false);
+        }
+    }
+</script>
 </body>
 </html>
