@@ -771,10 +771,12 @@
                 <p class="text-sm text-fgMuted mt-2">Momen-momen kebersamaan dan kegiatan sekolah yang terekam.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- 3-Column Grid for Documentation Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
+                <!-- Dokumentasi #01 -->
                 <div onclick="openModal('https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg', 'Ibadah Paskah Siswa', 'DOKUMENTASI DOKUMEN #01', 'Refleksi dan ucapan syukur dalam momen kebangkitan Tuhan Yesus.')" 
-                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-right">
+                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-up" data-aos-delay="100">
                     <div class="w-full aspect-[16/10] img-card-frame mb-4 relative">
                         <img src="https://i.ibb.co.com/4n8CdXB1/IMG-5144.jpg" alt="Ibadah Paskah" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -791,8 +793,9 @@
                     </div>
                 </div>
 
+                <!-- Dokumentasi #02 -->
                 <div onclick="openModal('https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg', 'Nonton Bersama (The Last Supper)', 'DOKUMENTASI DOKUMEN #02', 'Kegiatan mendalami makna Paskah melalui pemutaran film edukatif.')" 
-                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-left">
+                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-up" data-aos-delay="200">
                     <div class="w-full aspect-[16/10] img-card-frame mb-4 relative">
                         <img src="https://i.ibb.co.com/vxdBzL08/IMG-5164.jpg" alt="Nonton Bersama" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -806,6 +809,25 @@
                         </div>
                         <h3 class="text-lg font-bold text-white">Nonton Bersama (The Last Supper)</h3>
                         <p class="text-xs text-fgMuted mt-1">Kegiatan mendalami makna Paskah melalui pemutaran film edukatif.</p>
+                    </div>
+                </div>
+
+                <!-- Dokumentasi #03: MPLS (Pengenalan) -->
+                <div onclick="openModal('https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/IMG_9250.png', 'Masa Pengenalan Lingkungan Sekolah (MPLS)', 'DOKUMENTASI DOKUMEN #03', 'Sesi pengenalan lingkungan sekolah, pengenalan pengurus OSIS, serta pembinaan keakraban siswa baru.')" 
+                     class="card-linear spotlight-card p-4 rounded-2xl group cursor-pointer" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-full aspect-[16/10] img-card-frame mb-4 relative">
+                        <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/IMG_9250.png" alt="MPLS Pengenalan" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-6 h-6 text-white drop-shadow"></i>
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-mono text-xs text-accent font-bold">Pengenalan Sekolah</span>
+                            <span class="font-mono text-[10px] text-fgMuted">DOKUMENTASI #03</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">MPLS (Pengenalan)</h3>
+                        <p class="text-xs text-fgMuted mt-1">Sesi pengenalan lingkungan sekolah dan keakraban siswa baru SMP KKK Padang.</p>
                     </div>
                 </div>
 
@@ -832,7 +854,7 @@
                     </div>
                     <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">Tantangan Otak Pemimpin Muda (10 Soal)</h3>
                     <p class="text-fgMuted text-sm max-w-md mx-auto mb-8 leading-relaxed">
-                        Uji wawasan kepemimpinan, manajemen konflik, anti-bullying, dan dinamika OSIS. Sistem akan mengacak **10 soal komprehensif** dan posisi jawaban `[A] - [D]` secara dinamis.
+                        Uji wawasan kepemimpinan, manajemen konflik, anti-bullying, dan dinamika OSIS. Sistem akan mengacak 10 soal komprehensif dan posisi jawaban `[A] - [D]` secara dinamis.
                     </p>
                     <button onclick="startQuiz()" class="px-8 py-4 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase tracking-wider inline-flex items-center">
                         <i data-lucide="play" class="w-4 h-4 mr-2"></i> MULAI SESI 10 SOAL ACAK
@@ -910,6 +932,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
+                <!-- Card 1: Perayaan Paskah Sekolah -->
                 <div class="card-linear p-8 rounded-2xl" data-aos="fade-right">
                     <div class="flex items-center justify-between mb-6">
                         <span class="font-mono text-xs text-accent font-bold uppercase">AGENDA MENDATANG</span>
@@ -929,20 +952,48 @@
                     </div>
                 </div>
 
+                <!-- Card 2: MPLS 2026 & Games -->
                 <div class="card-linear p-8 rounded-2xl" data-aos="fade-left">
                     <div class="flex items-center justify-between mb-6">
-                        <span class="font-mono text-xs text-accent font-bold uppercase">BERITA & PENGUMUMAN</span>
-                        <span class="font-mono text-xs text-fgMuted px-2.5 py-1 rounded-full bg-white/5">BULLETIN</span>
+                        <span class="font-mono text-xs text-accent font-bold uppercase">FUN GAMES & ORIENTATION</span>
+                        <span class="font-mono text-xs text-fgMuted px-2.5 py-1 rounded-full bg-white/5">MPLS 2026</span>
                     </div>
 
-                    <div class="space-y-4">
-                        <div class="p-4 rounded-xl bg-bgElevated border border-white/5">
-                            <h4 class="text-sm font-bold text-white mb-1">SPMB 2026/2027</h4>
-                            <p class="text-xs text-fgMuted">Sistem Penerimaan Murid Baru melayani setiap hari kerja pukul 09.00 - 13.00 WIB.</p>
+                    <h3 class="text-2xl font-bold text-white mb-2">MPLS 2026</h3>
+                    <p class="text-sm text-fgMuted mb-6">Masa Pengenalan Lingkungan Sekolah dengan keseruan rangkaian permainan interaktif & keakraban:</p>
+
+                    <div class="space-y-3 font-sans text-xs">
+                        <div class="p-3.5 rounded-xl bg-bgElevated border border-white/5 hover:border-accent/30 transition-colors flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i data-lucide="users" class="w-4 h-4 text-accent mr-3 flex-shrink-0"></i>
+                                <div>
+                                    <h4 class="font-bold text-white text-xs">Tebak orang</h4>
+                                    <p class="text-[11px] text-fgMuted">Setiap kelompok memilih 1 orang sebagai penebak dan 3 orang sebagai pengitari.</p>
+                                </div>
+                            </div>
+                            <span class="font-mono text-[10px] text-accent font-semibold px-2 py-0.5 rounded bg-accent/10 flex-shrink-0 ml-2">GAME 01</span>
                         </div>
-                        <div class="p-4 rounded-xl bg-bgElevated border border-white/5">
-                            <h4 class="text-sm font-bold text-white mb-1">MPLS 2026</h4>
-                            <p class="text-xs text-fgMuted">Masa Pengenalan Lingkungan Sekolah diselenggarakan 13 - 17 Juli 2026.</p>
+
+                        <div class="p-3.5 rounded-xl bg-bgElevated border border-white/5 hover:border-accent/30 transition-colors flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i data-lucide="coins" class="w-4 h-4 text-accent mr-3 flex-shrink-0"></i>
+                                <div>
+                                    <h4 class="font-bold text-white text-xs">Coins</h4>
+                                    <p class="text-[11px] text-fgMuted">Setiap peserta harus mengangkat koin dari ember mengunakan kelingking berdua dengan teman sekelompoknya.</p>
+                                </div>
+                            </div>
+                            <span class="font-mono text-[10px] text-accent font-semibold px-2 py-0.5 rounded bg-accent/10 flex-shrink-0 ml-2">GAME 02</span>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-bgElevated border border-white/5 hover:border-accent/30 transition-colors flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i data-lucide="bomb" class="w-4 h-4 text-accent mr-3 flex-shrink-0"></i>
+                                <div>
+                                    <h4 class="font-bold text-white text-xs">Don’t step on the bomb</h4>
+                                    <p class="text-[11px] text-fgMuted">Uji ketangkasan & kehati-hatian memijak lantai.</p>
+                                </div>
+                            </div>
+                            <span class="font-mono text-[10px] text-accent font-semibold px-2 py-0.5 rounded bg-accent/10 flex-shrink-0 ml-2">GAME 03</span>
                         </div>
                     </div>
                 </div>
