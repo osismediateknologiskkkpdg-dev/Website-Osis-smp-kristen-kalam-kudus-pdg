@@ -13,11 +13,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const https = require('https');
+const path = require('path');
 
 const app = express();
 
 // ==================== GLOBAL PROCESS PROTECTION ====================
-// Mencegah Serverless Function Crash (500 FUNCTION_INVOCATION_FAILED)
 process.on('uncaughtException', (err) => {
   console.error('[CRITICAL ERROR] Uncaught Exception:', err.message || err);
 });
@@ -36,14 +36,9 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Memory Store Global untuk OTP (Memilih fallback persisten antar-request)
 global.otpMemoryStore = global.otpMemoryStore || {};
 
 // ==================== HELPER 1: GITHUB REST API VIA NATIVE HTTPS ====================
-
-/**
- * Melakukan Request ke GitHub REST API tanpa Library Eksternal (Anti-Crash)
- */
 function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   return new Promise((resolve, reject) => {
     const rawToken = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.trim() : null;
@@ -103,9 +98,6 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   });
 }
 
-/**
- * Membaca File User_data.json dari Repositori GitHub
- */
 async function fetchUserDataFromGitHub() {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   try {
@@ -123,9 +115,6 @@ async function fetchUserDataFromGitHub() {
   }
 }
 
-/**
- * Menyimpan / Meng-commit Pembaruan User_data.json ke GitHub
- */
 async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   const base64EncodedContent = Buffer.from(JSON.stringify(updatedUsersArray, null, 2)).toString('base64');
@@ -144,10 +133,6 @@ async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
 }
 
 // ==================== HELPER 2: NODEMAILER SMTP TRANSPORTER ====================
-
-/**
- * Memverifikasi & Membuat Transporter Nodemailer
- */
 function createSmtpTransporter() {
   const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
   const pass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : null;
@@ -172,9 +157,6 @@ function createSmtpTransporter() {
   });
 }
 
-/**
- * Mengirimkan Email OTP
- */
 async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHeader) {
   const transporter = createSmtpTransporter();
 
@@ -205,8 +187,13 @@ async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHe
 
 // ==================== EXPRESS ROUTING HANDLERS ====================
 
-// Health Check Endpoint
-app.get('/api/health', (req, res) => {
+// FRONTEND ROUTE: Menyajikan index.html saat GET / dipanggil
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+// HEALTH CHECK ROUTE
+app.get(['/api/health', '/health'], (req, res) => {
   return res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
@@ -215,7 +202,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // ROUTE 1: REGISTER USER (REQUEST OTP)
-app.post('/api/register', async (req, res) => {
+app.post(['/api/register', '/register'], async (req, res) => {
   try {
     const { email, username, displayName, password, confirmPassword } = req.body || {};
 
@@ -234,7 +221,6 @@ app.post('/api/register', async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedUsername = username.trim().toLowerCase();
 
-    // Cek Duplikasi di GitHub
     const { usersList } = await fetchUserDataFromGitHub();
     const isDuplicate = usersList.some(
       (u) => u.email.toLowerCase() === normalizedEmail || u.username.toLowerCase() === normalizedUsername
@@ -247,7 +233,6 @@ app.post('/api/register', async (req, res) => {
       });
     }
 
-    // Generate 6 Digit OTP
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
     global.otpMemoryStore[normalizedEmail] = {
@@ -261,7 +246,6 @@ app.post('/api/register', async (req, res) => {
       expiresAt: Date.now() + 5 * 60 * 1000
     };
 
-    // Kirim Email OTP
     await dispatchOTPEmail(normalizedEmail, generatedOtp, 'Pendaftaran Akun Baru');
 
     return res.status(200).json({
@@ -279,7 +263,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 // ROUTE 2: VERIFY REGISTER OTP & SAVE TO GITHUB
-app.post('/api/verify-register', async (req, res) => {
+app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
   try {
     const { email, otp } = req.body || {};
 
@@ -303,11 +287,9 @@ app.post('/api/verify-register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Kode OTP yang Anda masukkan salah!' });
     }
 
-    // Encrypt Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(cachedData.payload.password, salt);
 
-    // Ambil & Update Data di GitHub
     const { usersList, fileSha } = await fetchUserDataFromGitHub();
 
     const newUserObject = {
@@ -340,7 +322,7 @@ app.post('/api/verify-register', async (req, res) => {
 });
 
 // ROUTE 3: LOGIN USER (REQUEST OTP)
-app.post('/api/login', async (req, res) => {
+app.post(['/api/login', '/login'], async (req, res) => {
   try {
     const { identifier, password } = req.body || {};
 
@@ -399,7 +381,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // ROUTE 4: VERIFY LOGIN OTP & GENERATE JWT
-app.post('/api/verify-login', async (req, res) => {
+app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
   try {
     const { email, otp } = req.body || {};
 
@@ -474,5 +456,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Export untuk Vercel Serverless Function
 module.exports = app;
