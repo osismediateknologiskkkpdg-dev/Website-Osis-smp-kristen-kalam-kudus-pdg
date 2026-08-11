@@ -1,69 +1,80 @@
-const bcrypt = require('bcryptjs');
-const { getUsersFromGitHub, sendOTPEmail } = require('./_helpers');
+/**
+ * ============================================================================
+ * ENDPOINT LOGIN USER (REQUEST OTP LOGIN)
+ * File: api/login.js
+ * ============================================================================
+ */
 
-module.exports = async function handler(req, res) {
+const bcrypt = require('bcryptjs');
+const { applyCorsHeaders, sendOtpEmail, getUsersFromGitHub } = require('./_helpers');
+
+module.exports = async (req, res) => {
+  applyCorsHeaders(res);
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+    return res.status(405).json({ success: false, message: 'Method Not Allowed. Gunakan POST.' });
   }
 
   try {
-    const { identifier, password } = req.body; // identifier bisa berisi Email atau Username
+    const { identifier, password } = req.body || {};
 
     if (!identifier || !password) {
       return res.status(400).json({ success: false, message: 'Email/Username dan Password wajib diisi!' });
     }
 
-    // Read Data dari User_data.json
-    const { users } = await getUsersFromGitHub();
+    const cleanIdentifier = identifier.trim().toLowerCase();
 
-    const user = users.find(
-      (u) =>
-        u.email.toLowerCase() === identifier.toLowerCase() ||
-        u.username.toLowerCase() === identifier.toLowerCase()
+    // Cari Akun pada Data GitHub
+    const { usersList } = await getUsersFromGitHub();
+    const foundUser = usersList.find(
+      (u) => u.email.toLowerCase() === cleanIdentifier || u.username.toLowerCase() === cleanIdentifier
     );
 
-    // Jika Akun Tidak Ditemukan -> Anjurkan Register
-    if (!user) {
+    if (!foundUser) {
       return res.status(404).json({
         success: false,
-        message: 'Akun tidak ditemukan! Silakan periksa kembali Email/Username Anda atau lakukan Register terlebih dahulu.',
+        message: 'Akun tidak ditemukan! Silakan periksa kembali data Anda atau mendaftar akun baru.',
         suggestRegister: true,
       });
     }
 
-    // Pencocokan Enkripsi Password (Bcrypt)
-    const isPasswordMatch = await bcrypt.compare(password, user.passwordHash);
-
+    // Verifikasi Password Hash
+    const isPasswordMatch = await bcrypt.compare(password, foundUser.passwordHash);
     if (!isPasswordMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Password salah! Periksa kembali password Anda.',
+        message: 'Password yang Anda masukkan salah!',
         suggestRegister: false,
       });
     }
 
-    // Jika Kredensial Cocok -> Generate Kode OTP Login
-    const loginOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate Kode OTP Verifikasi Login
+    const loginOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const sessionKey = 'login_' + foundUser.email.toLowerCase();
 
-    global.otpStore['login_' + user.email.toLowerCase()] = {
-      otp: loginOTP,
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-      displayName: user.displayName,
+    global.otpMemoryStore[sessionKey] = {
+      otp: loginOtp,
+      userData: foundUser,
       expiresAt: Date.now() + 5 * 60 * 1000,
     };
 
-    // Kirim Kode OTP Ke Email Terdaftar
-    await sendOTPEmail(user.email, loginOTP, 'Verifikasi Login');
+    // Kirim Kode OTP Ke Email
+    await sendOtpEmail(foundUser.email, loginOtp, 'Otentikasi Masuk (Login)');
 
     return res.status(200).json({
       success: true,
-      message: 'Kredensial sesuai! Kode OTP Verifikasi Login telah dikirimkan ke email Anda.',
-      email: user.email,
+      message: 'Kredensial valid! Kode OTP Verifikasi Login telah dikirimkan ke email Anda.',
+      email: foundUser.email,
     });
   } catch (error) {
-    console.error('Error Login API:', error);
-    return res.status(500).json({ success: false, message: 'Terjadi kesalahan server: ' + error.message });
+    console.error('Error pada Handler /api/login:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan server: ' + error.message,
+    });
   }
 };

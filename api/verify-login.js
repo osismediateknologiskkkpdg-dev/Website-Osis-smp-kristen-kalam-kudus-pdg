@@ -1,60 +1,84 @@
-const jwt = require('jsonwebtoken');
+/**
+ * ============================================================================
+ * ENDPOINT VERIFIKASI OTP LOGIN & JWT ISSUANCE
+ * File: api/verify-login.js
+ * ============================================================================
+ */
 
-module.exports = async function handler(req, res) {
+const jwt = require('jsonwebtoken');
+const { applyCorsHeaders } = require('./_helpers');
+
+module.exports = async (req, res) => {
+  applyCorsHeaders(res);
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+    return res.status(405).json({ success: false, message: 'Method Not Allowed. Gunakan POST.' });
   }
 
   try {
-    const { email, otp } = req.body;
+    const { email, otp } = req.body || {};
 
     if (!email || !otp) {
       return res.status(400).json({ success: false, message: 'Email dan Kode OTP wajib diisi!' });
     }
 
-    const key = 'login_' + email.toLowerCase();
-    const storedData = global.otpStore[key];
+    const cleanEmail = email.trim().toLowerCase();
+    const sessionKey = 'login_' + cleanEmail;
+    const cachedRecord = global.otpMemoryStore[sessionKey];
 
-    if (!storedData) {
-      return res.status(400).json({ success: false, message: 'Sesi verifikasi login tidak ditemukan atau kadaluwarsa.' });
+    if (!cachedRecord) {
+      return res.status(400).json({
+        success: false,
+        message: 'Sesi verifikasi login tidak ditemukan atau telah kadaluwarsa.',
+      });
     }
 
-    if (Date.now() > storedData.expiresAt) {
-      delete global.otpStore[key];
-      return res.status(400).json({ success: false, message: 'Kode OTP telah kadaluwarsa. Silakan login kembali.' });
+    if (Date.now() > cachedRecord.expiresAt) {
+      delete global.otpMemoryStore[sessionKey];
+      return res.status(400).json({
+        success: false,
+        message: 'Kode OTP telah kadaluwarsa! Silakan ulangi proses login.',
+      });
     }
 
-    if (storedData.otp !== otp.trim()) {
-      return res.status(400).json({ success: false, message: 'Kode OTP Verifikasi Login tidak valid!' });
+    if (cachedRecord.otp !== otp.trim()) {
+      return res.status(400).json({ success: false, message: 'Kode OTP Login yang Anda masukkan salah!' });
     }
 
-    // Generate JWT Token Akses Sesi
+    // Penerbitan JWT Token (Masa berlaku 24 Jam)
     const token = jwt.sign(
       {
-        id: storedData.userId,
-        email: storedData.email,
-        username: storedData.username,
-        displayName: storedData.displayName,
+        id: cachedRecord.userData.id,
+        email: cachedRecord.userData.email,
+        username: cachedRecord.userData.username,
+        displayName: cachedRecord.userData.displayName,
       },
-      process.env.JWT_SECRET || 'fallback_secret',
+      process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026',
       { expiresIn: '24h' }
     );
 
-    // Hapus Temp OTP
-    delete global.otpStore[key];
+    // Hapus Sesi OTP dari Memory
+    delete global.otpMemoryStore[sessionKey];
 
     return res.status(200).json({
       success: true,
-      message: 'Login Berhasil! Selamat datang di Portal OSIS SMP Kalam Kudus Padang.',
+      message: 'Autentikasi Berhasil! Selamat datang di Portal OSIS SMP Kalam Kudus Padang.',
       token,
       user: {
-        displayName: storedData.displayName,
-        username: storedData.username,
-        email: storedData.email,
+        displayName: cachedRecord.userData.displayName,
+        username: cachedRecord.userData.username,
+        email: cachedRecord.userData.email,
       },
     });
   } catch (error) {
-    console.error('Error Verify Login API:', error);
-    return res.status(500).json({ success: false, message: 'Terjadi kesalahan sistem: ' + error.message });
+    console.error('Error pada Handler /api/verify-login:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan sistem: ' + error.message,
+    });
   }
 };

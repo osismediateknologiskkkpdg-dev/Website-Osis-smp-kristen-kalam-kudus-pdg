@@ -1,16 +1,30 @@
-const { getUsersFromGitHub, sendOTPEmail } = require('./_helpers');
+/**
+ * ============================================================================
+ * ENDPOINT REGISTRASI USER (REQUEST OTP)
+ * File: api/register.js
+ * ============================================================================
+ */
 
-module.exports = async function handler(req, res) {
+const { applyCorsHeaders, sendOtpEmail, getUsersFromGitHub } = require('./_helpers');
+
+module.exports = async (req, res) => {
+  applyCorsHeaders(res);
+
+  // Penanganan Preflight Request OPTIONS
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+    return res.status(405).json({ success: false, message: 'Method Not Allowed. Gunakan POST.' });
   }
 
   try {
-    const { email, username, displayName, password, confirmPassword } = req.body;
+    const { email, username, displayName, password, confirmPassword } = req.body || {};
 
-    // 1. Validasi Kelengkapan Field
+    // Validasi Form Input
     if (!email || !username || !displayName || !password || !confirmPassword) {
-      return res.status(400).json({ success: false, message: 'Semua field wajib diisi!' });
+      return res.status(400).json({ success: false, message: 'Semua kolom formulir pendaftaran wajib diisi!' });
     }
 
     if (password !== confirmPassword) {
@@ -18,47 +32,53 @@ module.exports = async function handler(req, res) {
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ success: false, message: 'Password minimal 6 karakter!' });
+      return res.status(400).json({ success: false, message: 'Password minimal harus terdiri dari 6 karakter!' });
     }
 
-    // 2. Cek Apakah Email / Username Sudah Terdaftar di User_data.json
-    const { users } = await getUsersFromGitHub();
-    const existingUser = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() || u.username.toLowerCase() === username.toLowerCase()
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = username.trim().toLowerCase();
+
+    // Cek Duplikasi Akun dari Database GitHub
+    const { usersList } = await getUsersFromGitHub();
+    const isExistingUser = usersList.some(
+      (user) => user.email.toLowerCase() === cleanEmail || user.username.toLowerCase() === cleanUsername
     );
 
-    if (existingUser) {
+    if (isExistingUser) {
       return res.status(400).json({
         success: false,
-        message: 'Email atau Username sudah terdaftar! Silakan login atau gunakan kredensial lain.',
+        message: 'Email atau Username sudah terdaftar di sistem! Silakan gunakan akun lain atau login.',
       });
     }
 
-    // 3. Generate 6 Digit Kode OTP
-    const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate 6 Digit Random OTP Code
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Simpan Data Registrasi Sementara di Memory dengan Expired 5 Menit
-    global.otpStore[email.toLowerCase()] = {
-      otp: generatedOTP,
-      userData: {
-        email: email.toLowerCase(),
-        username: username.toLowerCase(),
-        displayName,
-        password,
+    // Simpan ke Memory Store (Kadaluwarsa dalam 5 Menit)
+    global.otpMemoryStore[cleanEmail] = {
+      otp: generatedOtp,
+      payload: {
+        email: cleanEmail,
+        username: cleanUsername,
+        displayName: displayName.trim(),
+        password: password,
       },
       expiresAt: Date.now() + 5 * 60 * 1000,
     };
 
-    // 4. Kirim OTP ke Email Pengguna
-    await sendOTPEmail(email, generatedOTP, 'Pendaftaran Akun OSIS');
+    // Kirim Email OTP via SMTP
+    await sendOtpEmail(cleanEmail, generatedOtp, 'Pendaftaran Akun Baru');
 
     return res.status(200).json({
       success: true,
-      message: 'Kode OTP berhasil dikirimkan ke email Anda. Silakan periksa Kotak Masuk / Spam.',
-      email: email.toLowerCase(),
+      message: 'Kode OTP Verifikasi telah berhasil dikirimkan ke email Anda. Silakan periksa Inbox/Spam.',
+      email: cleanEmail,
     });
   } catch (error) {
-    console.error('Error Register API:', error);
-    return res.status(500).json({ success: false, message: 'Terjadi kesalahan server: ' + error.message });
+    console.error('Error pada Handler /api/register:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan server: ' + error.message,
+    });
   }
 };
