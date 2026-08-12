@@ -1,734 +1,644 @@
-<!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSIS SMP Kalam Kudus Padang — Official Web Portal</title>
+/**
+ * ============================================================================
+ * SERVER BACKEND UTAMA SYSTEM AUTHENTICATION OSIS SMP KALAM KUDUS PADANG
+ * File: api/index.js
+ * Engine: Express.js Unified Serverless Handler for Vercel
+ * Description: Production-Grade Security, Auto Admin Seeder, Role-Based Access Control (RBAC),
+ *              Native HTTPS GitHub API Transceiver, & Nodemailer Engine
+ * ============================================================================
+ */
+
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const https = require('https');
+const path = require('path');
+
+const app = express();
+
+// ==================== MASTER ADMIN CONSTANTS ====================
+const MASTER_ADMIN_EMAIL = "osismediateknologiskkkpdg@gmail.com";
+const MASTER_ADMIN_USERNAME = "admin osis";
+const MASTER_ADMIN_DISPLAY = "Administrator OSIS";
+const MASTER_ADMIN_RAW_PASS = "skkk2019osismedia&teknologi";
+
+// ==================== GLOBAL PROCESS SAFETY ENGINE ====================
+process.on('uncaughtException', (err) => {
+  console.error('[CRITICAL SYSTEM ERROR] Uncaught Exception Detected:', err.stack || err.message || err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[CRITICAL SYSTEM ERROR] Unhandled Promise Rejection at:', promise, 'reason:', reason);
+});
+
+// ==================== MIDDLEWARE CONFIGURATION ====================
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Global Memory Cache Storage untuk OTP State
+global.otpMemoryStore = global.otpMemoryStore || {};
+
+// ==================== HELPER UTILITIES ====================
+
+function sanitizeGitHubToken(rawToken) {
+  if (!rawToken || typeof rawToken !== 'string') return null;
+  return rawToken.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
+}
+
+function maskTokenForDiagnostics(token) {
+  if (!token) return '[NOT CONFIGURED]';
+  if (token.length <= 8) return '****';
+  return `${token.substring(0, 6)}...${token.substring(token.length - 4)}`;
+}
+
+// ==================== HELPER 1: NATIVE HTTPS GITHUB REST API ENGINE ====================
+
+function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
+  return new Promise((resolve, reject) => {
+    const rawToken = process.env.GITHUB_TOKEN;
+    const cleanToken = sanitizeGitHubToken(rawToken);
+    const rawOwner = process.env.GITHUB_OWNER ? process.env.GITHUB_OWNER.trim() : null;
+    const rawRepo = process.env.GITHUB_REPO ? process.env.GITHUB_REPO.trim() : null;
+
+    if (!cleanToken) {
+      return reject(new Error("Konfigurasi GITHUB_TOKEN tidak ditemukan di Environment Variables Vercel atau bernilai kosong."));
+    }
+    if (!rawOwner || !rawRepo) {
+      return reject(new Error("Konfigurasi GITHUB_OWNER atau GITHUB_REPO belum diisi di Environment Variables Vercel."));
+    }
+
+    const requestPayload = requestBodyData ? JSON.stringify(requestBodyData) : null;
+
+    const requestOptions = {
+      hostname: 'api.github.com',
+      port: 443,
+      path: `/repos/${rawOwner}/${rawRepo}/${apiPath}`,
+      method: endpointMethod.toUpperCase(),
+      headers: {
+        'User-Agent': 'OSIS-KalamKudus-Serverless-App',
+        'Authorization': `Bearer ${cleanToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        ...(requestPayload && { 'Content-Length': Buffer.byteLength(requestPayload) })
+      }
+    };
+
+    const req = https.request(requestOptions, (res) => {
+      let responseBody = '';
+
+      res.on('data', (chunk) => {
+        responseBody += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            const parsedJson = JSON.parse(responseBody);
+            resolve(parsedJson);
+          } catch (pErr) {
+            resolve(responseBody);
+          }
+        } else if (res.statusCode === 401) {
+          reject(new Error(`GitHub API Error [401 Bad Credentials]: Token GitHub tidak valid. Mask Token: ${maskTokenForDiagnostics(cleanToken)}`));
+        } else if (res.statusCode === 404) {
+          reject(new Error(`GitHub API Error [404 Not Found]: File atau Repositori '${rawOwner}/${rawRepo}/${apiPath}' tidak ditemukan.`));
+        } else {
+          reject(new Error(`GitHub API Error [${res.statusCode}]: ${responseBody}`));
+        }
+      });
+    });
+
+    req.on('error', (reqErr) => {
+      reject(new Error(`Koneksi jaringan HTTPS ke GitHub API Gagal: ${reqErr.message}`));
+    });
+
+    if (requestPayload) {
+      req.write(requestPayload);
+    }
+
+    req.end();
+  });
+}
+
+/**
+ * Membaca File User_data.json dari Repositori GitHub & Auto-Seeding SuperAdmin jika Belum Ada
+ */
+async function fetchUserDataFromGitHub() {
+  const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
+  try {
+    const responseData = await makeGitHubApiRequest('GET', `contents/User_data.json?ref=${branchName}`);
+    const decodedContent = Buffer.from(responseData.content, 'base64').toString('utf-8');
+    let parsedUsers = JSON.parse(decodedContent);
+
+    if (!Array.isArray(parsedUsers)) {
+      parsedUsers = [];
+    }
+
+    // Auto-Seeding Master Admin jika Belum Ada di File User_data.json
+    const adminExists = parsedUsers.some(u => u.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase());
     
-    <!-- Google Fonts: Inter (Sans) & JetBrains Mono (Code/Labels) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- AOS Animation Library CSS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    if (!adminExists) {
+      console.log('[AUTO-SEED] Seeding Master Administrator Account...');
+      const salt = await bcrypt.genSalt(10);
+      const adminHashedPass = await bcrypt.hash(MASTER_ADMIN_RAW_PASS, salt);
 
-    <!-- Tailwind Config Customization -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        bgDeep: '#020203',
-                        bgBase: '#050506',
-                        bgElevated: '#0a0a0c',
-                        surface: 'rgba(255, 255, 255, 0.05)',
-                        surfaceHover: 'rgba(255, 255, 255, 0.08)',
-                        fg: '#EDEDEF',
-                        fgMuted: '#8A8F98',
-                        fgSubtle: 'rgba(255, 255, 255, 0.60)',
-                        accent: '#5E6AD2',
-                        accentBright: '#6872D9',
-                        accentGlow: 'rgba(94, 106, 210, 0.3)',
-                        borderDefault: 'rgba(255, 255, 255, 0.06)',
-                        borderHover: 'rgba(255, 255, 255, 0.12)',
-                        borderAccent: 'rgba(94, 106, 210, 0.30)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    borderRadius: {
-                        '3xl': '24px',
-                        '2xl': '16px',
-                        'xl': '12px',
-                        'lg': '8px',
-                    }
-                }
-            }
-        }
-    </script>
+      const adminUserObj = {
+        id: "usr_master_admin_001",
+        email: MASTER_ADMIN_EMAIL.toLowerCase(),
+        username: MASTER_ADMIN_USERNAME.toLowerCase(),
+        displayName: MASTER_ADMIN_DISPLAY,
+        passwordHash: adminHashedPass,
+        role: "SUPER_ADMIN",
+        createdAt: new Date().toISOString(),
+        verified: true
+      };
 
-    <style>
-        /* Custom Smooth Scrollbar & Base Reset */
-        body {
-            background-color: #050506;
-            color: #EDEDEF;
-            font-family: 'Inter', system-ui, sans-serif;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            user-select: none; /* Mencegah seleksi teks ilegal */
-            -webkit-user-select: none;
-        }
+      parsedUsers.unshift(adminUserObj);
+      await saveUserDataToGitHub(parsedUsers, responseData.sha);
+    }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #020203;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #5E6AD2;
-        }
+    return {
+      usersList: parsedUsers,
+      fileSha: responseData.sha
+    };
+  } catch (err) {
+    console.warn('[GITHUB READ WARNING]:', err.message);
+    return { usersList: [], fileSha: null, errorDetail: err.message };
+  }
+}
 
-        /* Ambient Keyframe Animations */
-        @keyframes float-primary {
-            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-            50% { transform: translateY(-30px) rotate(2deg) scale(1.05); }
-        }
-        @keyframes float-secondary {
-            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-            50% { transform: translateY(25px) rotate(-3deg) scale(0.95); }
-        }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
+/**
+ * Menyimpan / Meng-commit Pembaruan User_data.json ke GitHub
+ */
+async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
+  const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
+  const base64EncodedContent = Buffer.from(JSON.stringify(updatedUsersArray, null, 2)).toString('base64');
 
-        .animate-float-1 {
-            animation: float-primary 10s ease-in-out infinite;
-        }
-        .animate-float-2 {
-            animation: float-secondary 12s ease-in-out infinite;
-        }
-        .animate-shimmer {
-            background: linear-gradient(90deg, #5E6AD2 0%, #a5b4fc 50%, #5E6AD2 100%);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            animation: shimmer 6s linear infinite;
-        }
+  const commitPayload = {
+    message: 'chore(auth): auto-update User_data.json via Express Serverless API',
+    content: base64EncodedContent,
+    branch: branchName
+  };
 
-        /* Multi-layer Shadow & Linear Cards */
-        .card-linear {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 
-                0 0 0 1px rgba(255, 255, 255, 0.04),
-                0 4px 20px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-            transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
+  if (currentSha) {
+    commitPayload.sha = currentSha;
+  }
 
-        .card-linear:hover {
-            border-color: rgba(255, 255, 255, 0.14);
-            transform: translateY(-4px);
-            box-shadow: 
-                0 0 0 1px rgba(94, 106, 210, 0.3),
-                0 12px 40px rgba(0, 0, 0, 0.6),
-                0 0 60px rgba(94, 106, 210, 0.15),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
-        }
+  return await makeGitHubApiRequest('PUT', 'contents/User_data.json', commitPayload);
+}
 
-        .btn-primary-glow {
-            background-color: #5E6AD2;
-            box-shadow: 
-                0 0 0 1px rgba(94, 106, 210, 0.5),
-                0 4px 16px rgba(94, 106, 210, 0.4),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
-            transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn-primary-glow:hover {
-            background-color: #6872D9;
-            box-shadow: 
-                0 0 0 1px rgba(104, 114, 217, 0.8),
-                0 6px 24px rgba(94, 106, 210, 0.6),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
-        }
+// ==================== HELPER 2: NODEMAILER SMTP TRANSPORTER ====================
 
-        /* Mouse Tracking Spotlight Card Wrapper */
-        .spotlight-card {
-            position: relative;
-            overflow: hidden;
-        }
-        .spotlight-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(94, 106, 210, 0.15), transparent 80%);
-            opacity: 0;
-            transition: opacity 300ms ease;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .spotlight-card:hover::before {
-            opacity: 1;
-        }
+function createSmtpTransporter() {
+  const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
+  const pass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : null;
+  const host = process.env.SMTP_HOST ? process.env.SMTP_HOST.trim() : 'smtp.gmail.com';
+  const port = parseInt(process.env.SMTP_PORT || '465', 10);
 
-        /* Image Aspect Frames */
-        .img-card-frame {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background-color: #0a0a0c;
-        }
-        .img-card-frame img {
-            transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 300ms ease;
-        }
-        .img-card-frame:hover img {
-            transform: scale(1.05);
-        }
+  if (!user || !pass) {
+    throw new Error("Kredensial SMTP belum diisi lengkap! Pastikan 'SMTP_USER' dan 'SMTP_PASS' tersedia di Vercel Environment Variables.");
+  }
 
-        /* Focus Ring */
-        a:focus-visible, button:focus-visible {
-            outline: none !important;
-            box-shadow: 0 0 0 2px #050506, 0 0 0 4px rgba(94, 106, 210, 0.8) !important;
-        }
-    </style>
-</head>
+  return nodemailer.createTransport({
+    host: host,
+    port: port,
+    secure: port === 465,
+    auth: {
+      user: user,
+      pass: pass
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+}
 
-<body class="bg-bgBase text-fg relative min-h-screen">
+async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHeader) {
+  const transporter = createSmtpTransporter();
 
-    <!-- ==================== BACKGROUND LIGHTING SYSTEM ==================== -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#0a0a0f_0%,#050506_60%,#020203_100%)]"></div>
-        <div class="absolute -top-[200px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-accent/20 rounded-full blur-[160px] animate-float-1"></div>
-        <div class="absolute top-[40%] -left-[200px] w-[700px] h-[500px] bg-indigo-900/15 rounded-full blur-[140px] animate-float-2"></div>
-        <div class="absolute top-[70%] -right-[200px] w-[650px] h-[550px] bg-purple-900/10 rounded-full blur-[150px] animate-float-1"></div>
-        <div class="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml,%3Csvg%20viewBox=%220%200%20256%20256%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter%20id=%22noise%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%220.8%22%20numOctaves=%224%22%20stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect%20width=%22100%25%22%20height=%22100%25%22%20filter=%22url(%23noise)%22/%3E%3C/svg%3E')]"></div>
-        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+  const emailHtmlBody = `
+    <div style="font-family: 'Inter', Arial, sans-serif; background-color: #050506; color: #EDEDEF; padding: 32px; border-radius: 16px; max-width: 520px; margin: 0 auto; border: 1px solid #5E6AD2;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h2 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800;">OSIS SMP KALAM KUDUS PADANG</h2>
+        <p style="color: #8A8F98; font-size: 11px; font-family: monospace; margin-top: 4px; text-transform: uppercase;">Official Authentication System</p>
+      </div>
+      <p style="font-size: 14px; color: #EDEDEF; line-height: 1.6;">Halo,</p>
+      <p style="font-size: 14px; color: #EDEDEF; line-height: 1.6;">Gunakan kode OTP berikut untuk menyelesaikan proses <strong>${actionTitleHeader}</strong> Anda:</p>
+      <div style="background-color: #0a0a0c; border: 2px dashed #5E6AD2; padding: 18px; text-align: center; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #6872D9; border-radius: 12px; margin: 24px 0; font-family: monospace;">
+        ${otpCodeNumber}
+      </div>
+      <p style="font-size: 12px; color: #8A8F98; text-align: center; margin: 0;">Kode OTP ini berlaku selama <strong>5 menit</strong>. Jangan berikan kode ini kepada siapapun.</p>
+      <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 28px 0 16px 0;" />
+      <p style="font-size: 10px; color: #606060; text-align: center; margin: 0;">&copy; 2026 OSIS SMP Kristen Kalam Kudus Padang. All Rights Reserved.</p>
     </div>
+  `;
 
-    <!-- ==================== HEADER NAVIGATION ==================== -->
-    <header class="sticky top-0 z-50 w-full bg-bgBase/80 backdrop-blur-xl border-b border-borderDefault">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between relative z-10">
-            
-            <a href="#" class="flex items-center space-x-3 group">
-                <div class="w-10 h-10 rounded-xl bg-surface border border-white/10 flex items-center justify-center group-hover:border-accent/50 transition-colors">
-                    <img src="https://i.ibb.co.com/whKDsQ5L/image.png" alt="Logo OSIS" class="w-6 h-6 object-contain filter drop-shadow">
-                </div>
-                <div>
-                    <span class="font-bold text-base tracking-tight block text-fg group-hover:text-white transition-colors">OSIS SMP KKK</span>
-                    <span class="font-mono text-[10px] text-fgMuted tracking-wider uppercase">PADANG // 2026-2027</span>
-                </div>
-            </a>
+  return await transporter.sendMail({
+    from: `"OSIS SMP Kalam Kudus Padang" <${process.env.SMTP_USER.trim()}>`,
+    to: targetEmailAddress,
+    subject: `[OTP ${actionTitleHeader}] Kode Verifikasi Keamanan: ${otpCodeNumber}`,
+    html: emailHtmlBody
+  });
+}
 
-            <nav class="hidden md:flex items-center space-x-1 bg-surface p-1.5 rounded-full border border-borderDefault">
-                <a href="#about-us" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Tentang</a>
-                <a href="#vision-mission" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Visi & Misi</a>
-                <a href="#structure" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Pengurus</a>
-                <a href="#gallery" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Galeri</a>
-                <a href="#events" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Agenda</a>
-                <a href="#quiz" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Brainstorming</a>
-            </nav>
+// ==================== AUTHENTICATION & ADMIN MIDDLEWARE ====================
 
-            <div class="flex items-center space-x-3">
-                <a href="#contact-us" class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white bg-surface hover:bg-white/10 border border-borderDefault hover:border-borderHover transition-all">
-                    <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-accent"></i> Kontak
-                </a>
+function authenticateAdminToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
-                <div id="auth-header-container" class="inline-flex items-center">
-                    <button id="btn-open-auth" onclick="openAuthModal()" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white btn-primary-glow transition-all">
-                        <i data-lucide="user" class="w-3.5 h-3.5 mr-2"></i> Login / Register
-                    </button>
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Akses Ditolak! Token otentikasi tidak ditemukan.' });
+  }
 
-                    <div id="user-logged-badge" class="hidden flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface border border-accent/40 shadow-lg">
-                        <div id="user-role-icon" class="w-6 h-6 rounded-lg bg-accent/20 border border-accent flex items-center justify-center text-accent">
-                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <span id="user-display-username" class="text-xs font-mono font-bold text-white"></span>
-                        <button onclick="handleLogout()" title="Keluar / Logout" class="ml-1 text-fgMuted hover:text-rose-400 transition-colors p-1">
-                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                </div>
+  const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
+  jwt.verify(token, secretKey, (err, decodedUser) => {
+    if (err) {
+      return res.status(403).json({ success: false, message: 'Sesi token tidak valid atau telah kedaluwarsa!' });
+    }
 
-                <button id="mobile-toggle" aria-label="Toggle Menu" class="md:hidden p-2.5 rounded-lg bg-surface border border-borderDefault text-fg hover:text-white">
-                    <i data-lucide="menu" class="w-5 h-5"></i>
-                </button>
-            </div>
+    if (decodedUser.role !== 'SUPER_ADMIN' && decodedUser.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Akses Ditolak! Hak akses khusus Administrator diperlukan.' });
+    }
 
-        </div>
+    req.user = decodedUser;
+    next();
+  });
+}
 
-        <div id="mobile-menu" class="hidden md:hidden bg-bgElevated/95 backdrop-blur-2xl border-b border-borderDefault px-6 py-6 space-y-4">
-            <a href="#about-us" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Tentang OSIS</a>
-            <a href="#vision-mission" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Visi & Misi</a>
-            <a href="#structure" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Struktur Pengurus</a>
-            <a href="#gallery" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Galeri Foto</a>
-            <a href="#events" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Agenda & Berita</a>
-            <a href="#quiz" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Brainstorming Trivia</a>
-            <a href="#contact-us" class="inline-flex w-full items-center justify-center px-4 py-3 rounded-lg text-xs font-bold text-white btn-primary-glow mt-2">
-                HUBUNGI KAMI
-            </a>
-        </div>
-    </header>
+// ==================== EXPRESS ROUTING HANDLERS ====================
 
-    <!-- ==================== MAIN CONTENT ==================== -->
-    <main class="relative z-10">
+// FRONTEND ROUTE: Menyajikan index.html saat GET / dipanggil
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
 
-        <!-- HERO SECTION -->
-        <section class="pt-20 pb-32 px-4 sm:px-8 max-w-7xl mx-auto text-center relative">
-            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-surface border border-accent/30 mb-8 backdrop-blur-md" data-aos="fade-down">
-                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-                <span class="font-mono text-xs text-indigo-200 tracking-wider font-medium">OFFICIAL STUDENT COUNCIL // 2026-2027</span>
-            </div>
+// HEALTH & DIAGNOSTICS ROUTE
+app.get(['/api/health', '/health'], async (req, res) => {
+  const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN);
+  return res.status(200).json({
+    status: 'online',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'production',
+    diagnostics: {
+      smtpUserConfigured: !!process.env.SMTP_USER,
+      githubOwnerConfigured: !!process.env.GITHUB_OWNER,
+      githubRepoConfigured: !!process.env.GITHUB_REPO,
+      githubTokenMask: maskTokenForDiagnostics(tokenClean)
+    }
+  });
+});
 
-            <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-white/95 to-white/60 max-w-5xl mx-auto leading-[1.08] mb-8" data-aos="fade-up" data-aos-delay="100">
-                Where Big Ideas Meet <span class="animate-shimmer">Bold Action.</span>
-            </h1>
+// ROUTE 1: REGISTER USER (REQUEST OTP)
+app.post(['/api/register', '/register'], async (req, res) => {
+  try {
+    const { email, username, displayName, password, confirmPassword } = req.body || {};
 
-            <p class="text-lg sm:text-xl text-fgMuted max-w-2xl mx-auto font-normal leading-relaxed mb-10" data-aos="fade-up" data-aos-delay="200">
-                Pusat kepemimpinan, aksi, dan inovasi siswa SMP Kristen Kalam Kudus Padang. Membangun masa depan sekolah yang berintegritas, aktif, dan berdampak.
-            </p>
+    if (!email || !username || !displayName || !password || !confirmPassword) {
+      return res.status(400).json({ success: false, message: 'Semua kolom formulir pendaftaran wajib diisi!' });
+    }
 
-            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
-                <a href="#structure" class="px-8 py-4 rounded-xl font-semibold text-sm text-white btn-primary-glow inline-flex items-center">
-                    Lihat Pengurus <i data-lucide="users" class="w-4 h-4 ml-2"></i>
-                </a>
-                <a href="#gallery" class="px-8 py-4 rounded-xl font-semibold text-sm text-fg bg-surface hover:bg-white/10 border border-borderDefault hover:border-borderHover transition-all inline-flex items-center">
-                    Dokumentasi Galeri <i data-lucide="image" class="w-4 h-4 ml-2"></i>
-                </a>
-            </div>
-        </section>
+    if (password !== confirmPassword) {
+      return res.status(400).json({ success: false, message: 'Konfirmasi password tidak cocok!' });
+    }
 
-        <!-- ADMIN EXCLUSIVE DASHBOARD SECTION (TAMPIL HANYA JIKA LOGIN SEBAGAI SUPER_ADMIN) -->
-        <section id="admin-dashboard-section" class="hidden py-12 px-4 sm:px-8 max-w-7xl mx-auto">
-            <div class="card-linear p-8 sm:p-10 rounded-3xl border-2 border-accent/60 bg-accent/10 shadow-2xl relative overflow-hidden">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between pb-6 border-b border-white/10 mb-8 gap-4">
-                    <div>
-                        <span class="px-3 py-1 rounded-full bg-accent text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">MASTER CONTROL PANEL</span>
-                        <h2 class="text-2xl sm:text-4xl font-extrabold text-white mt-2">Administrator System Portal</h2>
-                        <p class="text-xs text-fgMuted mt-1">Sistem manajemen penuh akun terdaftar di repositori `User_data.json` GitHub.</p>
-                    </div>
-                    <button onclick="fetchAdminUsersList()" class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold text-white bg-accent hover:bg-accentBright transition-all inline-flex items-center">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> RELOAD USER DATA
-                    </button>
-                </div>
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password minimal terdiri dari 6 karakter!' });
+    }
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left font-sans text-xs">
-                        <thead>
-                            <tr class="border-b border-white/10 font-mono text-fgMuted uppercase text-[10px]">
-                                <th class="p-3">DISPLAY NAME</th>
-                                <th class="p-3">USERNAME</th>
-                                <th class="p-3">EMAIL</th>
-                                <th class="p-3">ROLE</th>
-                                <th class="p-3 text-right">ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-users-table-body" class="divide-y divide-white/5">
-                            <!-- JS Dynamic Content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedUsername = username.trim().toLowerCase();
 
-    </main>
+    const { usersList } = await fetchUserDataFromGitHub();
+    const isDuplicate = usersList.some(
+      (u) => u.email.toLowerCase() === normalizedEmail || u.username.toLowerCase() === normalizedUsername
+    );
 
-    <!-- ==================== AUTHENTICATION MODAL ==================== -->
-    <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
-        <div class="relative w-full max-w-md card-linear border-accent/40 bg-bgElevated p-6 sm:p-8 rounded-3xl shadow-2xl overflow-hidden">
-            
-            <button onclick="closeAuthModal()" aria-label="Close" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all z-20">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
+    if (isDuplicate) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email atau Username sudah terdaftar! Silakan login atau gunakan akun lain.'
+      });
+    }
 
-            <div class="flex border-b border-white/10 mb-6 font-mono text-xs">
-                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center border-b-2 border-accent text-white font-bold transition-all">
-                    LOGIN
-                </button>
-                <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all">
-                    REGISTER
-                </button>
-            </div>
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-            <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-mono border"></div>
+    global.otpMemoryStore[normalizedEmail] = {
+      otp: generatedOtp,
+      payload: {
+        email: normalizedEmail,
+        username: normalizedUsername,
+        displayName: displayName.trim(),
+        password: password,
+        role: "USER"
+      },
+      expiresAt: Date.now() + 5 * 60 * 1000
+    };
 
-            <!-- FORM 1: LOGIN -->
-            <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-mono text-fgMuted mb-1">EMAIL / USERNAME</label>
-                    <input type="text" id="login-identifier" required placeholder="Masukkan Email atau Username" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-accent focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-mono text-fgMuted mb-1">PASSWORD</label>
-                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-accent focus:outline-none">
-                </div>
-                <button type="submit" id="btn-login-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase">
-                    MASUK // PROSES AKUN
-                </button>
-            </form>
+    await dispatchOTPEmail(normalizedEmail, generatedOtp, 'Pendaftaran Akun Baru');
 
-            <!-- FORM 2: REGISTER -->
-            <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-3 hidden">
-                <div>
-                    <label class="block text-[11px] font-mono text-fgMuted mb-1">EMAIL</label>
-                    <input type="email" id="reg-email" required placeholder="nama@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-mono text-fgMuted mb-1">USERNAME</label>
-                    <input type="text" id="reg-username" required placeholder="username_siswa" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-mono text-fgMuted mb-1">DISPLAY NAME</label>
-                    <input type="text" id="reg-displayname" required placeholder="Nama Lengkap Anda" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-mono text-fgMuted mb-1">CREATE PASSWORD</label>
-                    <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-mono text-fgMuted mb-1">CONFIRM YOUR PASSWORD</label>
-                    <input type="password" id="reg-confirmpassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
-                </div>
-                <button type="submit" id="btn-reg-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase mt-2">
-                    SUBMIT // DAFTAR AKUN
-                </button>
-            </form>
+    return res.status(200).json({
+      success: true,
+      message: 'Kode OTP Verifikasi telah dikirimkan ke email Anda. Silakan cek Inbox/Spam.',
+      email: normalizedEmail
+    });
+  } catch (error) {
+    console.error('Error /api/register:', error.message || error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal memproses pendaftaran: ' + (error.message || 'Terjadi kesalahan sistem internal.')
+    });
+  }
+});
 
-            <!-- FORM 3: OTP VERIFICATION -->
-            <form id="form-otp" onsubmit="handleOTPSubmit(event)" class="space-y-4 hidden">
-                <div class="text-center">
-                    <span class="font-mono text-xs text-accent font-bold block mb-1">VERIFIKASI KEAMANAN OTP</span>
-                    <p class="text-xs text-fgMuted">Masukkan 6 digit kode OTP yang dikirim ke email: <br><strong id="otp-target-email" class="text-white"></strong></p>
-                </div>
-                <div>
-                    <input type="text" id="otp-code" maxlength="6" required placeholder="123456" class="w-full text-center tracking-[10px] text-2xl font-mono py-3 rounded-xl bg-surface border border-accent text-white focus:outline-none">
-                </div>
-                <button type="submit" id="btn-otp-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase">
-                    VERIFIKASI & PROSES
-                </button>
-            </form>
+// ROUTE 2: VERIFY REGISTER OTP & SAVE TO GITHUB
+app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
+  try {
+    const { email, otp } = req.body || {};
 
-        </div>
-    </div>
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email dan Kode OTP wajib diisi!' });
+    }
 
-    <!-- ==================== JAVASCRIPT ENGINE & SECURITY SHIELD ==================== -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // AOS Animation Init
-        AOS.init({ once: true, duration: 400, easing: 'ease-out-quad' });
+    const normalizedEmail = email.trim().toLowerCase();
+    const cachedData = global.otpMemoryStore[normalizedEmail];
 
-        // Mobile Menu Toggle
-        const mobileToggle = document.getElementById('mobile-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if(mobileToggle) {
-            mobileToggle.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    if (!cachedData) {
+      return res.status(400).json({ success: false, message: 'Sesi verifikasi OTP tidak ditemukan atau telah kadaluwarsa. Silakan daftar ulang.' });
+    }
+
+    if (Date.now() > cachedData.expiresAt) {
+      delete global.otpMemoryStore[normalizedEmail];
+      return res.status(400).json({ success: false, message: 'Kode OTP telah kadaluwarsa! Silakan ajukan registrasi ulang.' });
+    }
+
+    if (cachedData.otp !== otp.trim()) {
+      return res.status(400).json({ success: false, message: 'Kode OTP yang Anda masukkan salah!' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(cachedData.payload.password, salt);
+
+    const { usersList, fileSha } = await fetchUserDataFromGitHub();
+
+    const newUserObject = {
+      id: 'usr_' + Date.now(),
+      email: cachedData.payload.email,
+      username: cachedData.payload.username,
+      displayName: cachedData.payload.displayName,
+      passwordHash: hashedPassword,
+      role: cachedData.payload.role || "USER",
+      createdAt: new Date().toISOString(),
+      verified: true
+    };
+
+    usersList.push(newUserObject);
+
+    await saveUserDataToGitHub(usersList, fileSha);
+
+    delete global.otpMemoryStore[normalizedEmail];
+
+    return res.status(200).json({
+      success: true,
+      message: 'Registrasi Berhasil! Data Akun Anda telah tersimpan di User_data.json. Silakan Login.'
+    });
+  } catch (error) {
+    console.error('Error /api/verify-register:', error.message || error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal menyelesaikan verifikasi pendaftaran: ' + (error.message || 'Terjadi kesalahan internal.')
+    });
+  }
+});
+
+// ROUTE 3: LOGIN USER (REQUEST OTP)
+app.post(['/api/login', '/login'], async (req, res) => {
+  try {
+    const { identifier, password } = req.body || {};
+
+    if (!identifier || !password) {
+      return res.status(400).json({ success: false, message: 'Email/Username dan Password wajib diisi!' });
+    }
+
+    const cleanIdentifier = identifier.trim().toLowerCase();
+    const { usersList } = await fetchUserDataFromGitHub();
+
+    const foundUser = usersList.find(
+      (u) => u.email.toLowerCase() === cleanIdentifier || u.username.toLowerCase() === cleanIdentifier
+    );
+
+    if (!foundUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Akun tidak ditemukan! Silakan periksa kembali kredensial Anda atau mendaftar terlebih dahulu.',
+        suggestRegister: true
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, foundUser.passwordHash);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Password yang Anda masukkan salah!',
+        suggestRegister: false
+      });
+    }
+
+    // Bypass OTP khusus untuk Master Admin demi Akses Cepat & Langsung
+    if (foundUser.role === 'SUPER_ADMIN' || foundUser.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
+      const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
+      const adminToken = jwt.sign(
+        {
+          id: foundUser.id,
+          email: foundUser.email,
+          username: foundUser.username,
+          displayName: foundUser.displayName,
+          role: foundUser.role || 'SUPER_ADMIN'
+        },
+        secretKey,
+        { expiresIn: '24h' }
+      );
+
+      return res.status(200).json({
+        success: true,
+        directAdminLogin: true,
+        message: 'Otentikasi Administrator Berhasil! Mengalihkan ke Panel Kontrol Utama...',
+        token: adminToken,
+        user: {
+          displayName: foundUser.displayName,
+          username: foundUser.username,
+          email: foundUser.email,
+          role: foundUser.role || 'SUPER_ADMIN'
         }
+      });
+    }
 
-        // =========================================================================
-        // CLIENT-SIDE ANTI-INSPECT & ANTI-DEVTOOLS HIGH-SECURITY PROTECTION SHIELD
-        // =========================================================================
-        (function enforceMaximumSecurity() {
-            'use strict';
+    // Untuk User Biasa: Kirim OTP Ke Email
+    const loginOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const cacheKey = 'login_' + foundUser.email.toLowerCase();
 
-            // 1. Lock Context Menu (Right Click)
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                return false;
-            }, false);
+    global.otpMemoryStore[cacheKey] = {
+      otp: loginOtp,
+      userData: foundUser,
+      expiresAt: Date.now() + 5 * 60 * 1000
+    };
 
-            // 2. Lock Keyboard Shortcuts
-            document.addEventListener('keydown', function(e) {
-                if (
-                    e.key === 'F12' ||
-                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-                    (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
-                ) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-            }, false);
+    await dispatchOTPEmail(foundUser.email, loginOtp, 'Verifikasi Login');
 
-            // 3. Debugger Anti-Tamper Trap Loop
-            setInterval(function() {
-                const startTime = performance.now();
-                (function() { return false; })["constructor"]("debugger")();
-                const endTime = performance.now();
-                if (endTime - startTime > 100) {
-                    document.body.innerHTML = `
-                        <div style="background:#050506; color:#f43f5e; height:100vh; display:flex; flex-direction:column; align-items:center; justify-center:center; font-family:monospace; text-align:center; padding:20px;">
-                            <h1 style="font-size:24px; font-weight:bold; margin-bottom:10px;">[SECURITY BREACH SHIELD TRIGGERED]</h1>
-                            <p style="color:#8A8F98; font-size:14px; max-width:400px;">Akses Developer Tools / Inspeksi Kode Dilarang Demi Keamanan Portal OSIS.</p>
-                            <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#5E6AD2; color:#white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">MUAT ULANG HALAMAN</button>
-                        </div>
-                    `;
-                }
-            }, 500);
+    return res.status(200).json({
+      success: true,
+      directAdminLogin: false,
+      message: 'Kredensial cocok! Kode OTP Verifikasi Login telah dikirimkan ke email Anda.',
+      email: foundUser.email
+    });
+  } catch (error) {
+    console.error('Error /api/login:', error.message || error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal memproses login: ' + (error.message || 'Terjadi kesalahan sistem internal.')
+    });
+  }
+});
 
-            // 4. Console Silent Override
-            if (typeof window.console === 'object') {
-                const noop = function() {};
-                window.console.log = noop;
-                window.console.warn = noop;
-                window.console.error = noop;
-                window.console.info = noop;
-            }
-        })();
+// ROUTE 4: VERIFY LOGIN OTP & GENERATE JWT
+app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
+  try {
+    const { email, otp } = req.body || {};
 
-        // ==================== AUTHENTICATION & ADMIN ENGINE ====================
-        let currentAuthFlow = 'login'; 
-        let currentPendingEmail = '';
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email dan Kode OTP wajib diisi!' });
+    }
 
-        function checkLoginStatus() {
-            const userJson = localStorage.getItem('osis_user');
-            const token = localStorage.getItem('osis_token');
-            const btnOpenAuth = document.getElementById('btn-open-auth');
-            const userLoggedBadge = document.getElementById('user-logged-badge');
-            const userDisplayUsername = document.getElementById('user-display-username');
-            const userRoleIcon = document.getElementById('user-role-icon');
-            const adminDashboardSection = document.getElementById('admin-dashboard-section');
+    const cleanEmail = email.trim().toLowerCase();
+    const cacheKey = 'login_' + cleanEmail;
+    const cachedData = global.otpMemoryStore[cacheKey];
 
-            if (token && userJson) {
-                try {
-                    const user = JSON.parse(userJson);
-                    if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
-                    if (userLoggedBadge) {
-                        userLoggedBadge.classList.remove('hidden');
-                        userLoggedBadge.classList.add('flex');
-                    }
-                    if (userDisplayUsername) {
-                        userDisplayUsername.textContent = '@' + (user.username || user.displayName);
-                    }
+    if (!cachedData) {
+      return res.status(400).json({ success: false, message: 'Sesi login tidak ditemukan atau sudah kadaluwarsa.' });
+    }
 
-                    if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
-                        if (userRoleIcon) {
-                            userRoleIcon.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i>`;
-                        }
-                        if (adminDashboardSection) {
-                            adminDashboardSection.classList.remove('hidden');
-                            fetchAdminUsersList();
-                        }
-                    } else {
-                        if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
-                    }
-                } catch (e) {
-                    handleLogout();
-                }
-            } else {
-                if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
-                if (userLoggedBadge) {
-                    userLoggedBadge.classList.add('hidden');
-                    userLoggedBadge.classList.remove('flex');
-                }
-                if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
-            }
-            if (window.lucide) lucide.createIcons();
-        }
+    if (Date.now() > cachedData.expiresAt) {
+      delete global.otpMemoryStore[cacheKey];
+      return res.status(400).json({ success: false, message: 'Kode OTP telah kadaluwarsa. Silakan ulangi proses login.' });
+    }
 
-        function handleLogout() {
-            localStorage.removeItem('osis_token');
-            localStorage.removeItem('osis_user');
-            checkLoginStatus();
-        }
+    if (cachedData.otp !== otp.trim()) {
+      return res.status(400).json({ success: false, message: 'Kode OTP Verifikasi Login tidak valid!' });
+    }
 
-        function openAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            if (modal) {
-                modal.classList.remove('opacity-0', 'pointer-events-none');
-                modal.classList.add('opacity-100', 'pointer-events-auto');
-            }
-        }
+    const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
+    const jwtToken = jwt.sign(
+      {
+        id: cachedData.userData.id,
+        email: cachedData.userData.email,
+        username: cachedData.userData.username,
+        displayName: cachedData.userData.displayName,
+        role: cachedData.userData.role || 'USER'
+      },
+      secretKey,
+      { expiresIn: '24h' }
+    );
 
-        function closeAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            if (modal) {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                modal.classList.remove('opacity-100', 'pointer-events-auto');
-            }
-        }
+    delete global.otpMemoryStore[cacheKey];
 
-        function showAlert(msg, isSuccess = false) {
-            const alertEl = document.getElementById('auth-alert');
-            if (!alertEl) return;
-            alertEl.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300', 'bg-rose-500/10', 'border-rose-500', 'text-rose-300');
-            if (isSuccess) {
-                alertEl.classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300');
-            } else {
-                alertEl.classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-300');
-            }
-            alertEl.textContent = msg;
-        }
+    return res.status(200).json({
+      success: true,
+      message: 'Autentikasi Berhasil! Selamat datang di Portal OSIS SMP Kalam Kudus Padang.',
+      token: jwtToken,
+      user: {
+        displayName: cachedData.userData.displayName,
+        username: cachedData.userData.username,
+        email: cachedData.userData.email,
+        role: cachedData.userData.role || 'USER'
+      }
+    });
+  } catch (error) {
+    console.error('Error /api/verify-login:', error.message || error);
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan verifikasi login: ' + (error.message || 'Terjadi kesalahan internal.')
+    });
+  }
+});
 
-        function switchAuthTab(tab) {
-            currentAuthFlow = tab;
-            document.getElementById('auth-alert')?.classList.add('hidden');
-            document.getElementById('form-otp')?.classList.add('hidden');
+// ==================== SUPER ADMIN CONTROL ENDPOINTS ====================
 
-            if (tab === 'login') {
-                document.getElementById('form-login')?.classList.remove('hidden');
-                document.getElementById('form-register')?.classList.add('hidden');
-                document.getElementById('tab-login-btn').className = "flex-1 py-3 text-center border-b-2 border-accent text-white font-bold transition-all";
-                document.getElementById('tab-register-btn').className = "flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all";
-            } else {
-                document.getElementById('form-register')?.classList.remove('hidden');
-                document.getElementById('form-login')?.classList.add('hidden');
-                document.getElementById('tab-register-btn').className = "flex-1 py-3 text-center border-b-2 border-accent text-white font-bold transition-all";
-                document.getElementById('tab-login-btn').className = "flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all";
-            }
-        }
+// ADMIN ROUTE 1: GET ALL USERS (Khusus Administrator)
+app.get(['/api/admin/users', '/admin/users'], authenticateAdminToken, async (req, res) => {
+  try {
+    const { usersList } = await fetchUserDataFromGitHub();
+    const sanitizedUsers = usersList.map(u => ({
+      id: u.id,
+      email: u.email,
+      username: u.username,
+      displayName: u.displayName,
+      role: u.role || 'USER',
+      createdAt: u.createdAt,
+      verified: u.verified
+    }));
 
-        async function handleLoginSubmit(e) {
-            e.preventDefault();
-            const identifier = document.getElementById('login-identifier').value;
-            const password = document.getElementById('login-password').value;
+    return res.status(200).json({
+      success: true,
+      totalUsers: sanitizedUsers.length,
+      users: sanitizedUsers
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Gagal mengambil data user: ' + error.message });
+  }
+});
 
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ identifier, password })
-                });
-                const data = await res.json();
+// ADMIN ROUTE 2: DELETE USER BY ID (Khusus Administrator)
+app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken, async (req, res) => {
+  try {
+    const targetUserId = req.params.id;
+    const { usersList, fileSha } = await fetchUserDataFromGitHub();
 
-                if (data.success) {
-                    if (data.directAdminLogin) {
-                        showAlert(data.message, true);
-                        localStorage.setItem('osis_token', data.token);
-                        localStorage.setItem('osis_user', JSON.stringify(data.user));
-                        setTimeout(() => {
-                            closeAuthModal();
-                            checkLoginStatus();
-                        }, 1200);
-                    } else {
-                        currentPendingEmail = data.email;
-                        showAlert(data.message, true);
-                        document.getElementById('form-login').classList.add('hidden');
-                        document.getElementById('form-otp').classList.remove('hidden');
-                        document.getElementById('otp-target-email').textContent = data.email;
-                    }
-                } else {
-                    showAlert(data.message, false);
-                }
-            } catch (err) {
-                showAlert("Gagal menghubungi server backend.", false);
-            }
-        }
+    const targetUser = usersList.find(u => u.id === targetUserId);
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: 'User tidak ditemukan!' });
+    }
 
-        async function handleRegisterSubmit(e) {
-            e.preventDefault();
-            const email = document.getElementById('reg-email').value;
-            const username = document.getElementById('reg-username').value;
-            const displayName = document.getElementById('reg-displayname').value;
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirmpassword').value;
+    if (targetUser.role === 'SUPER_ADMIN' || targetUser.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
+      return res.status(403).json({ success: false, message: 'Dilarang menghapus Akun Master Administrator Utama!' });
+    }
 
-            try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, username, displayName, password, confirmPassword })
-                });
-                const data = await res.json();
+    const filteredUsers = usersList.filter(u => u.id !== targetUserId);
+    await saveUserDataToGitHub(filteredUsers, fileSha);
 
-                if (data.success) {
-                    currentPendingEmail = email;
-                    showAlert(data.message, true);
-                    document.getElementById('form-register').classList.add('hidden');
-                    document.getElementById('form-otp').classList.remove('hidden');
-                    document.getElementById('otp-target-email').textContent = email;
-                } else {
-                    showAlert(data.message, false);
-                }
-            } catch (err) {
-                showAlert("Gagal menghubungi server backend.", false);
-            }
-        }
+    return res.status(200).json({
+      success: true,
+      message: `Akun user '${targetUser.displayName}' (${targetUser.email}) berhasil dihapus dari sistem!`
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Gagal menghapus user: ' + error.message });
+  }
+});
 
-        async function handleOTPSubmit(e) {
-            e.preventDefault();
-            const otp = document.getElementById('otp-code').value;
-            const endpoint = currentAuthFlow === 'register' ? '/api/verify-register' : '/api/verify-login';
+// Fallback Unmatched Route
+app.use((req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: `Endpoint Rute API '${req.originalUrl}' tidak ditemukan.`
+  });
+});
 
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: currentPendingEmail, otp })
-                });
-                const data = await res.json();
+// Global Express Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error('[EXPRESS GLOBAL ERROR]:', err.stack || err);
+  return res.status(500).json({
+    success: false,
+    message: 'Terjadi kesalahan kritis pada aplikasi Express: ' + (err.message || 'Internal Error')
+  });
+});
 
-                if (data.success) {
-                    showAlert(data.message, true);
-                    if (currentAuthFlow === 'register') {
-                        setTimeout(() => switchAuthTab('login'), 2000);
-                    } else {
-                        localStorage.setItem('osis_token', data.token);
-                        localStorage.setItem('osis_user', JSON.stringify(data.user));
-                        setTimeout(() => {
-                            closeAuthModal();
-                            checkLoginStatus();
-                        }, 1200);
-                    }
-                } else {
-                    showAlert(data.message, false);
-                }
-            } catch (err) {
-                showAlert("Terjadi kesalahan verifikasi.", false);
-            }
-        }
-
-        async function fetchAdminUsersList() {
-            const token = localStorage.getItem('osis_token');
-            const tbody = document.getElementById('admin-users-table-body');
-            if (!tbody || !token) return;
-
-            try {
-                const res = await fetch('/api/admin/users', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (data.success && data.users) {
-                    tbody.innerHTML = '';
-                    data.users.forEach(u => {
-                        const tr = document.createElement('tr');
-                        tr.className = "hover:bg-white/5 transition-colors";
-                        tr.innerHTML = `
-                            <td class="p-3 font-bold text-white">${u.displayName}</td>
-                            <td class="p-3 font-mono text-fgMuted">@${u.username}</td>
-                            <td class="p-3 font-mono text-fgMuted">${u.email}</td>
-                            <td class="p-3 font-mono"><span class="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent font-bold">${u.role}</span></td>
-                            <td class="p-3 text-right">
-                                ${u.role === 'SUPER_ADMIN' ? '<span class="text-xs text-fgMuted italic">Protected</span>' : `
-                                    <button onclick="deleteUserByAdmin('${u.id}')" class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold transition-all">
-                                        DELETE
-                                    </button>
-                                `}
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
-            } catch (err) {
-                // Silent catch for security
-            }
-        }
-
-        async function deleteUserByAdmin(userId) {
-            if (!confirm("Apakah Anda yakin ingin menghapus akun ini secara permanen dari sistem?")) return;
-            const token = localStorage.getItem('osis_token');
-            try {
-                const res = await fetch(`/api/admin/users/${userId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                alert(data.message);
-                fetchAdminUsersList();
-            } catch (err) {
-                alert("Gagal menghapus user.");
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            checkLoginStatus();
-            if (window.lucide) lucide.createIcons();
-        });
-    </script>
-</body>
-</html>
+module.exports = app;

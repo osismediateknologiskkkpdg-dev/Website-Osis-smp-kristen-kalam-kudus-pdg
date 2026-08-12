@@ -1043,6 +1043,39 @@
 
         </section>
 
+        <!-- ==================== ADMIN EXCLUSIVE DASHBOARD SECTION ==================== -->
+<section id="admin-dashboard-section" class="hidden py-12 px-4 sm:px-8 max-w-7xl mx-auto">
+    <div class="card-linear p-8 sm:p-10 rounded-3xl border-2 border-accent/60 bg-accent/10 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between pb-6 border-b border-white/10 mb-8 gap-4">
+            <div>
+                <span class="px-3 py-1 rounded-full bg-accent text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">MASTER CONTROL PANEL</span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white mt-2">Administrator System Portal</h2>
+                <p class="text-xs text-fgMuted mt-1">Sistem manajemen penuh akun terdaftar di repositori User_data.json GitHub.</p>
+            </div>
+            <button onclick="fetchAdminUsersList()" class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold text-white bg-accent hover:bg-accentBright transition-all inline-flex items-center">
+                <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> RELOAD USER DATA
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left font-sans text-xs">
+                <thead>
+                    <tr class="border-b border-white/10 font-mono text-fgMuted uppercase text-[10px]">
+                        <th class="p-3">DISPLAY NAME</th>
+                        <th class="p-3">USERNAME</th>
+                        <th class="p-3">EMAIL</th>
+                        <th class="p-3">ROLE</th>
+                        <th class="p-3 text-right">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-users-table-body" class="divide-y divide-white/5">
+                    <!-- Data User Akan Dimuat Otomatis Melalui JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
     </main>
 
     <!-- ==================== PREVIEW MODAL SYSTEM ==================== -->
@@ -1204,6 +1237,109 @@
         // Current Year Update
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+        // Memeriksa Status Login dan Membuka Control Panel Jika Memiliki Role SUPER_ADMIN
+function checkLoginStatus() {
+    const userJson = localStorage.getItem('osis_user');
+    const token = localStorage.getItem('osis_token');
+    const btnOpenAuth = document.getElementById('btn-open-auth');
+    const userLoggedBadge = document.getElementById('user-logged-badge');
+    const userDisplayUsername = document.getElementById('user-display-username');
+    const userRoleIcon = document.getElementById('user-role-icon');
+    const adminDashboardSection = document.getElementById('admin-dashboard-section');
+
+    if (token && userJson) {
+        try {
+            const user = JSON.parse(userJson);
+            if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
+            if (userLoggedBadge) {
+                userLoggedBadge.classList.remove('hidden');
+                userLoggedBadge.classList.add('flex');
+            }
+            if (userDisplayUsername) {
+                userDisplayUsername.textContent = '@' + (user.username || user.displayName);
+            }
+
+            // Memeriksa Hak Akses Administrator
+            if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+                if (userRoleIcon) {
+                    userRoleIcon.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i>`;
+                }
+                if (adminDashboardSection) {
+                    adminDashboardSection.classList.remove('hidden');
+                    fetchAdminUsersList();
+                }
+            } else {
+                if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
+            }
+        } catch (e) {
+            handleLogout();
+        }
+    } else {
+        if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
+        if (userLoggedBadge) {
+            userLoggedBadge.classList.add('hidden');
+            userLoggedBadge.classList.remove('flex');
+        }
+        if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
+    }
+    if (window.lucide) lucide.createIcons();
+}
+
+// Mengambil Data Seluruh Pengguna dari API Serverless Vercel
+async function fetchAdminUsersList() {
+    const token = localStorage.getItem('osis_token');
+    const tbody = document.getElementById('admin-users-table-body');
+    if (!tbody || !token) return;
+
+    try {
+        const res = await fetch('/api/admin/users', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success && data.users) {
+            tbody.innerHTML = '';
+            data.users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-white/5 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-white">${u.displayName}</td>
+                    <td class="p-3 font-mono text-fgMuted">@${u.username}</td>
+                    <td class="p-3 font-mono text-fgMuted">${u.email}</td>
+                    <td class="p-3 font-mono"><span class="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent font-bold">${u.role}</span></td>
+                    <td class="p-3 text-right">
+                        ${u.role === 'SUPER_ADMIN' ? '<span class="text-xs text-fgMuted italic">Protected</span>' : `
+                            <button onclick="deleteUserByAdmin('${u.id}')" class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold transition-all">
+                                DELETE
+                            </button>
+                        `}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (err) {
+        // Silent catch
+    }
+}
+
+// Menghapus Pengguna Spesifik dari Repositori GitHub
+async function deleteUserByAdmin(userId) {
+    if (!confirm("Apakah Anda yakin ingin menghapus akun ini secara permanen dari sistem?")) return;
+    const token = localStorage.getItem('osis_token');
+    try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        alert(data.message);
+        fetchAdminUsersList();
+    } catch (err) {
+        alert("Gagal menghapus user.");
+    }
+}
 
         // Image Preview Modal Functions
         function openModal(imageSrc, name, role, quote) {
@@ -1877,6 +2013,57 @@
                 lucide.createIcons();
             }
         });
+
+        // =========================================================================
+// CLIENT-SIDE ANTI-INSPECT & ANTI-DEVTOOLS HIGH-SECURITY PROTECTION SHIELD
+// =========================================================================
+(function enforceMaximumSecurity() {
+    'use strict';
+
+    // 1. Lock Context Menu (Mematikan Klik Kanan)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    }, false);
+
+    // 2. Lock Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S)
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }, false);
+
+    // 3. Debugger Anti-Tamper Trap Loop (Jebakan Otomatis Jika DevTools Dipaksa Terbuka)
+    setInterval(function() {
+        const startTime = performance.now();
+        (function() { return false; })["constructor"]("debugger")();
+        const endTime = performance.now();
+        if (endTime - startTime > 100) {
+            document.body.innerHTML = `
+                <div style="background:#050506; color:#f43f5e; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:monospace; text-align:center; padding:20px;">
+                    <h1 style="font-size:24px; font-weight:bold; margin-bottom:10px;">[SECURITY BREACH SHIELD TRIGGERED]</h1>
+                    <p style="color:#8A8F98; font-size:14px; max-width:400px;">Akses Developer Tools / Inspeksi Kode Dilarang Demi Keamanan Portal OSIS.</p>
+                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#5E6AD2; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">MUAT ULANG HALAMAN</button>
+                </div>
+            `;
+        }
+    }, 500);
+
+    // 4. Console Silent Override (Membersihkan Jejak Log)
+    if (typeof window.console === 'object') {
+        const noop = function() {};
+        window.console.log = noop;
+        window.console.warn = noop;
+        window.console.error = noop;
+        window.console.info = noop;
+    }
+})();
     </script>
 </body>
 </html>
