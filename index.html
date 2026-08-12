@@ -189,6 +189,48 @@
 
 <body class="bg-bgBase text-fg relative min-h-screen">
 
+    <!-- ================================================================= -->
+<!-- LOKASI 1A: Dalam file index.html (Bagian UI Form Verifikasi OTP)  -->
+<!-- ================================================================= -->
+<div class="otp-container" id="otpContainer">
+    <div class="otp-header">
+        <h2>Verifikasi Kode OTP</h2>
+        <p>Masukkan 6 digit kode verifikasi yang telah dikirimkan ke email Anda.</p>
+    </div>
+
+    <form id="otpForm" class="otp-form" onsubmit="handleVerifyOTP(event)">
+        <div class="otp-input-group">
+            <input type="text" maxlength="1" class="otp-field" id="otp1" onkeyup="handleOtpInput(this, 'otp2')" autocomplete="off" required />
+            <input type="text" maxlength="1" class="otp-field" id="otp2" onkeyup="handleOtpInput(this, 'otp3', 'otp1')" autocomplete="off" required />
+            <input type="text" maxlength="1" class="otp-field" id="otp3" onkeyup="handleOtpInput(this, 'otp4', 'otp2')" autocomplete="off" required />
+            <input type="text" maxlength="1" class="otp-field" id="otp4" onkeyup="handleOtpInput(this, 'otp5', 'otp3')" autocomplete="off" required />
+            <input type="text" maxlength="1" class="otp-field" id="otp5" onkeyup="handleOtpInput(this, 'otp6', 'otp4')" autocomplete="off" required />
+            <input type="text" maxlength="1" class="otp-field" id="otp6" onkeyup="handleOtpInput(this, null, 'otp5')" autocomplete="off" required />
+        </div>
+
+        <button type="submit" id="btnVerifyOtp" class="btn-primary btn-block">
+            <span id="verifyBtnText">Verifikasi Sekarang</span>
+            <span id="verifySpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+    </form>
+
+    <!-- TABUNGAN KODE BARU: Letakkan elemen Resend OTP tepat di bawah tag </form> -->
+    <div class="resend-otp-wrapper">
+        <p class="resend-text">
+            Tidak menerima kode? 
+            <button type="button" id="btnResendOtp" class="btn-link-resend" onclick="executeResendOTP()" disabled>
+                <span id="resendText">Kirim Ulang Kode</span>
+                <span id="resendSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
+        </p>
+        <div id="resendTimerContainer" class="timer-container">
+            <span class="timer-label">Kirim ulang tersedia dalam:</span>
+            <span id="timerCountdown" class="timer-value">01:00</span>
+        </div>
+        <div id="statusNotification" class="status-notification-box d-none"></div>
+    </div>
+</div>
+
     <!-- ==================== BACKGROUND LIGHTING SYSTEM ==================== -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <!-- Layer 1: Base Radial Gradient -->
@@ -2093,5 +2135,125 @@ async function deleteUserByAdmin(userId) {
     }
 })();
     </script>
+<!-- ================================================================= -->
+<!-- LOKASI 1B: Dalam file index.html (Sebelum tag penutup </body>)    -->
+<!-- ================================================================= -->
+<script>
+    // Konfigurasi State Timer Resend OTP
+    const RESEND_COOLDOWN_SECONDS = 60;
+    let countdownTimerInterval = null;
+    let currentRemainingTime = RESEND_COOLDOWN_SECONDS;
+
+    // Jalankan timer hitung mundur saat halaman dimuat
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("[OTP Module] Memulai countdown resend awal...");
+        startResendCountdown(RESEND_COOLDOWN_SECONDS);
+    });
+
+    // Otomatis pindah kolom input angka OTP
+    function handleOtpInput(currentInput, nextFieldId, prevFieldId) {
+        if (currentInput.value.length >= 1 && nextFieldId) {
+            document.getElementById(nextFieldId).focus();
+        }
+        currentInput.addEventListener("keydown", function (event) {
+            if (event.key === "Backspace" && currentInput.value.length === 0 && prevFieldId) {
+                document.getElementById(prevFieldId).focus();
+            }
+        });
+    }
+
+    // Fungsi Hitung Mundur Waktu Tunggu Resend OTP
+    function startResendCountdown(seconds) {
+        const resendBtn = document.getElementById("btnResendOtp");
+        const timerContainer = document.getElementById("resendTimerContainer");
+
+        currentRemainingTime = seconds;
+        resendBtn.disabled = true;
+        timerContainer.classList.remove("d-none");
+
+        if (countdownTimerInterval) {
+            clearInterval(countdownTimerInterval);
+        }
+
+        updateTimerDisplay(currentRemainingTime);
+
+        countdownTimerInterval = setInterval(function () {
+            currentRemainingTime--;
+
+            if (currentRemainingTime <= 0) {
+                clearInterval(countdownTimerInterval);
+                resendBtn.disabled = false;
+                timerContainer.classList.add("d-none");
+            } else {
+                updateTimerDisplay(currentRemainingTime);
+            }
+        }, 1000);
+    }
+
+    // Format Tampilan Timer MM:SS
+    function updateTimerDisplay(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+        
+        document.getElementById("timerCountdown").textContent = `${formattedMinutes}:${formattedSeconds}`;
+    }
+
+    // Fungsi Eksekusi Pemanggilan API Kirim Ulang Kode OTP
+    async function executeResendOTP() {
+        const resendBtn = document.getElementById("btnResendOtp");
+        const resendText = document.getElementById("resendText");
+        const resendSpinner = document.getElementById("resendSpinner");
+        const userEmail = localStorage.getItem("pending_otp_email") || "user@example.com";
+
+        resendBtn.disabled = true;
+        resendText.textContent = "Mengirim...";
+        resendSpinner.classList.remove("d-none");
+        hideNotification();
+
+        try {
+            const response = await fetch("/api/resend-otp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    email: userEmail,
+                    requestTimestamp: new Date().toISOString()
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showNotification(data.message || "Kode OTP baru berhasil dikirim ulang.", "success");
+                startResendCountdown(RESEND_COOLDOWN_SECONDS);
+            } else {
+                showNotification(data.message || "Gagal mengirim ulang kode OTP.", "error");
+                resendBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error("[OTP Error]:", error);
+            showNotification("Terjadi masalah koneksi jaringan.", "error");
+            resendBtn.disabled = false;
+        } finally {
+            resendText.textContent = "Kirim Ulang Kode";
+            resendSpinner.classList.add("d-none");
+        }
+    }
+
+    function showNotification(message, type) {
+        const notifBox = document.getElementById("statusNotification");
+        notifBox.textContent = message;
+        notifBox.className = "status-notification-box " + (type === "success" ? "status-success" : "status-error");
+        notifBox.classList.remove("d-none");
+    }
+
+    function hideNotification() {
+        document.getElementById("statusNotification").classList.add("d-none");
+    }
+</script>
 </body>
 </html>
