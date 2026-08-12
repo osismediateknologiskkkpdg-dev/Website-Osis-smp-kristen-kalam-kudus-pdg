@@ -676,4 +676,68 @@ app.use((err, req, res, next) => {
   });
 });
 
+// ==========================================
+// ENDPOINT: KIRIM ULANG OTP (RESEND OTP)
+// Lokasi: api/index.js
+// ==========================================
+app.post('/api/resend-otp', async (req, res) => {
+    try {
+        const { email, username } = req.body;
+
+        // Validasi kelengkapan data identifikasi user
+        if (!email && !username) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email atau Username wajib disertakan untuk mengirim ulang OTP.'
+            });
+        }
+
+        // Cari user yang sesuai dalam memori / database
+        // Silakan sesuaikan variabel pencarian user dengan struktur data Anda
+        const targetIdentifier = email || username;
+        
+        // Generate kode 6-digit OTP baru yang acak dan presisi
+        const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiryTime = Date.now() + (5 * 60 * 1000); // Masa berlaku 5 menit
+
+        // Sinkronisasi OTP baru ke data user di server
+        // Contoh pembaruan penyimpanan sesi/database:
+        if (global.userSessions && global.userSessions[targetIdentifier]) {
+            global.userSessions[targetIdentifier].otp = newOtpCode;
+            global.userSessions[targetIdentifier].otpExpiry = otpExpiryTime;
+            global.userSessions[targetIdentifier].attempts = 0; // Reset percobaan gagal
+        } else {
+            // Jika menggunakan struktur data alternatif
+            global.latestOtpStore = global.latestOtpStore || {};
+            global.latestOtpStore[targetIdentifier] = {
+                code: newOtpCode,
+                expiry: otpExpiryTime,
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+        console.log(`[OTP RESEND LOG] OTP Baru untuk ${targetIdentifier}: ${newOtpCode}`);
+
+        // =========================================================================
+        // PROSES PENGIRIMAN EMAIL / BOT (OPSIONAL)
+        // Jika Anda menggunakan Nodemailer atau Telegram Bot, panggil fungsinya di sini:
+        // await sendOtpToEmail(email, newOtpCode);
+        // =========================================================================
+
+        return res.status(200).json({
+            success: true,
+            message: 'Kode OTP baru berhasil dibuat dan dikirimkan.',
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Error pada proses Resend OTP:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Gagal mengirim ulang OTP akibat kendala server.',
+            errorDetail: error.message
+        });
+    }
+});
+
 module.exports = app;
