@@ -3,6 +3,8 @@
  * SERVER BACKEND UTAMA SYSTEM AUTHENTICATION OSIS SMP KALAM KUDUS PADANG
  * File: api/index.js
  * Engine: Express.js Unified Serverless Handler for Vercel
+ * Description: Production-grade Backend with Robust Token Sanitization,
+ *              Native HTTPS GitHub API Transceiver, & Nodemailer Engine
  * ============================================================================
  */
 
@@ -17,16 +19,16 @@ const path = require('path');
 
 const app = express();
 
-// ==================== GLOBAL PROCESS PROTECTION ====================
+// ==================== GLOBAL PROCESS SAFETY ENGINE ====================
 process.on('uncaughtException', (err) => {
-  console.error('[CRITICAL ERROR] Uncaught Exception:', err.message || err);
+  console.error('[CRITICAL SYSTEM ERROR] Uncaught Exception Detected:', err.stack || err.message || err);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('[CRITICAL ERROR] Unhandled Promise Rejection at:', promise, 'reason:', reason);
+  console.error('[CRITICAL SYSTEM ERROR] Unhandled Promise Rejection at:', promise, 'reason:', reason);
 });
 
-// ==================== MIDDLEWARE SETUP ====================
+// ==================== MIDDLEWARE CONFIGURATION ====================
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -36,17 +38,56 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Global Memory Cache Storage untuk OTP State
 global.otpMemoryStore = global.otpMemoryStore || {};
 
-// ==================== HELPER 1: GITHUB REST API VIA NATIVE HTTPS ====================
+// ==================== HELPER UTILITIES: TOKEN SANITIZER ====================
+
+/**
+ * Membersihkan Token GitHub dari spasi, karakter new-line, atau tanda petik yang tak sengaja terbawa.
+ * @param {string} rawToken 
+ * @returns {string|null}
+ */
+function sanitizeGitHubToken(rawToken) {
+  if (!rawToken || typeof rawToken !== 'string') return null;
+  return rawToken.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
+}
+
+/**
+ * Menyamarkan token untuk kebutuhan logging diagnostics demi keamanan.
+ * @param {string} token 
+ * @returns {string}
+ */
+function maskTokenForDiagnostics(token) {
+  if (!token) return '[NOT CONFIGURED]';
+  if (token.length <= 8) return '****';
+  return `${token.substring(0, 6)}...${token.substring(token.length - 4)}`;
+}
+
+// ==================== HELPER 1: NATIVE HTTPS GITHUB REST API ENGINE ====================
+
+/**
+ * Melakukan Request REST API ke GitHub secara Langsung Tanpa Dependency Pihak Ketiga.
+ * @param {string} endpointMethod HTTP Method (GET, PUT, POST, DELETE)
+ * @param {string} apiPath Path API GitHub (contoh: 'contents/User_data.json')
+ * @param {object|null} requestBodyData Payload objek JSON
+ * @returns {Promise<object>}
+ */
 function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   return new Promise((resolve, reject) => {
-    const rawToken = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.trim() : null;
+    const rawToken = process.env.GITHUB_TOKEN;
+    const cleanToken = sanitizeGitHubToken(rawToken);
     const rawOwner = process.env.GITHUB_OWNER ? process.env.GITHUB_OWNER.trim() : null;
     const rawRepo = process.env.GITHUB_REPO ? process.env.GITHUB_REPO.trim() : null;
 
-    if (!rawToken || !rawOwner || !rawRepo) {
-      return reject(new Error("Konfigurasi GITHUB_TOKEN, GITHUB_OWNER, atau GITHUB_REPO belum diisi di Vercel Environment Variables."));
+    console.log(`[GITHUB API REQUEST] Method: ${endpointMethod} | Target Path: ${apiPath}`);
+    console.log(`[GITHUB API AUTH CHECK] Owner: ${rawOwner} | Repo: ${rawRepo} | Token Mask: ${maskTokenForDiagnostics(cleanToken)}`);
+
+    if (!cleanToken) {
+      return reject(new Error("Konfigurasi GITHUB_TOKEN tidak ditemukan di Environment Variables Vercel atau bernilai kosong."));
+    }
+    if (!rawOwner || !rawRepo) {
+      return reject(new Error("Konfigurasi GITHUB_OWNER atau GITHUB_REPO belum diisi di Environment Variables Vercel."));
     }
 
     const requestPayload = requestBodyData ? JSON.stringify(requestBodyData) : null;
@@ -58,7 +99,7 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
       method: endpointMethod.toUpperCase(),
       headers: {
         'User-Agent': 'OSIS-KalamKudus-Serverless-App',
-        'Authorization': `Bearer ${rawToken}`,
+        'Authorization': `Bearer ${cleanToken}`,
         'Accept': 'application/vnd.github.v3+json',
         'Content-Type': 'application/json',
         ...(requestPayload && { 'Content-Length': Buffer.byteLength(requestPayload) })
@@ -73,6 +114,8 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
       });
 
       res.on('end', () => {
+        console.log(`[GITHUB API RESPONSE] HTTP Status Code: ${res.statusCode}`);
+
         if (res.statusCode >= 200 && res.statusCode < 300) {
           try {
             const parsedJson = JSON.parse(responseBody);
@@ -80,6 +123,10 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
           } catch (pErr) {
             resolve(responseBody);
           }
+        } else if (res.statusCode === 401) {
+          reject(new Error(`GitHub API Error [401 Bad Credentials]: Token GitHub tidak valid, telah dikadaluwarsa, atau tidak memiliki izin scope 'repo'. Mask Token: ${maskTokenForDiagnostics(cleanToken)}`));
+        } else if (res.statusCode === 404) {
+          reject(new Error(`GitHub API Error [404 Not Found]: File atau Repositori '${rawOwner}/${rawRepo}/${apiPath}' tidak ditemukan.`));
         } else {
           reject(new Error(`GitHub API Error [${res.statusCode}]: ${responseBody}`));
         }
@@ -87,7 +134,8 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
     });
 
     req.on('error', (reqErr) => {
-      reject(new Error(`Koneksi HTTPS ke GitHub API Gagal: ${reqErr.message}`));
+      console.error('[HTTPS REQUEST ERROR]:', reqErr.message);
+      reject(new Error(`Koneksi jaringan HTTPS ke GitHub API Gagal: ${reqErr.message}`));
     });
 
     if (requestPayload) {
@@ -98,6 +146,9 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   });
 }
 
+/**
+ * Membaca File User_data.json dari Repositori GitHub
+ */
 async function fetchUserDataFromGitHub() {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   try {
@@ -111,16 +162,19 @@ async function fetchUserDataFromGitHub() {
     };
   } catch (err) {
     console.warn('[GITHUB READ WARNING]:', err.message);
-    return { usersList: [], fileSha: null };
+    return { usersList: [], fileSha: null, errorDetail: err.message };
   }
 }
 
+/**
+ * Menyimpan / Meng-commit Pembaruan User_data.json ke GitHub
+ */
 async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   const base64EncodedContent = Buffer.from(JSON.stringify(updatedUsersArray, null, 2)).toString('base64');
 
   const commitPayload = {
-    message: 'chore(auth): update User_data.json via Express API',
+    message: 'chore(auth): auto-update User_data.json via Express Serverless API',
     content: base64EncodedContent,
     branch: branchName
   };
@@ -133,6 +187,10 @@ async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
 }
 
 // ==================== HELPER 2: NODEMAILER SMTP TRANSPORTER ====================
+
+/**
+ * Memverifikasi & Membuat Transporter Nodemailer
+ */
 function createSmtpTransporter() {
   const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
   const pass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '') : null;
@@ -157,6 +215,9 @@ function createSmtpTransporter() {
   });
 }
 
+/**
+ * Mengirimkan Email OTP Verifikasi Keamanan
+ */
 async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHeader) {
   const transporter = createSmtpTransporter();
 
@@ -192,12 +253,19 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
-// HEALTH CHECK ROUTE
-app.get(['/api/health', '/health'], (req, res) => {
+// HEALTH & DIAGNOSTICS CHECK ROUTE
+app.get(['/api/health', '/health'], async (req, res) => {
+  const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN);
   return res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'production'
+    environment: process.env.NODE_ENV || 'production',
+    diagnostics: {
+      smtpUserConfigured: !!process.env.SMTP_USER,
+      githubOwnerConfigured: !!process.env.GITHUB_OWNER,
+      githubRepoConfigured: !!process.env.GITHUB_REPO,
+      githubTokenMask: maskTokenForDiagnostics(tokenClean)
+    }
   });
 });
 
@@ -229,7 +297,7 @@ app.post(['/api/register', '/register'], async (req, res) => {
     if (isDuplicate) {
       return res.status(400).json({
         success: false,
-        message: 'Email atau Username sudah terdaftar! Silakan login atau gunakan kredensial lain.'
+        message: 'Email atau Username sudah terdaftar! Silakan login atau gunakan akun lain.'
       });
     }
 
@@ -290,6 +358,7 @@ app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(cachedData.payload.password, salt);
 
+    // Ambil Data Pengguna Terkini dan SHA File dari GitHub
     const { usersList, fileSha } = await fetchUserDataFromGitHub();
 
     const newUserObject = {
@@ -304,13 +373,14 @@ app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
 
     usersList.push(newUserObject);
 
+    // Commit Pembaruan ke GitHub Repositori
     await saveUserDataToGitHub(usersList, fileSha);
 
     delete global.otpMemoryStore[normalizedEmail];
 
     return res.status(200).json({
       success: true,
-      message: 'Registrasi Berhasil! Data Akun Anda telah disimpan ke User_data.json. Silakan Login.'
+      message: 'Registrasi Berhasil! Data Akun Anda telah tersimpan di User_data.json. Silakan Login.'
     });
   } catch (error) {
     console.error('Error /api/verify-register:', error.message || error);
