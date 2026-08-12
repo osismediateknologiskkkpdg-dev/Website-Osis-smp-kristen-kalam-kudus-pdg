@@ -17,5 +17,14 @@
     "passwordHash": "$2a$10$1MkRE8qR5Iz8erfCxspLc.rSbnTzxcs0y6U66tF754t8pAuJUwCD2",
     "createdAt": "2026-08-12T00:18:22.538Z",
     "verified": true
+  },
+  {
+    "id": "usr_1786493902538",
+    "email": "gbnpro28@gmail.com",
+    "username": "gbnpro28",
+    "displayName": "gbnpro28",
+    "passwordHash": "$2a$10$1MkRE8qR5Iz8erfCxspLc.rSbnTzxcs0y6U66tF754t8pAuJUwCD2",
+    "createdAt": "2026-08-12T00:18:22.538Z",
+    "verified": true
   }
 ]
