@@ -1184,6 +1184,198 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+<!-- FORM VERIFIKASI OTP DENGAN TOMBOL RESEND   -->
+<!-- ========================================== -->
+<div class="otp-container" id="otpSection">
+    <h3>Verifikasi Kode OTP</h3>
+    <p class="otp-instruction">Masukkan 6 digit kode verifikasi yang telah dikirimkan ke email Anda.</p>
+
+    <!-- Input Kode OTP -->
+    <div class="form-group">
+        <label for="otpInput">Kode OTP</label>
+        <input 
+            type="text" 
+            id="otpInput" 
+            name="otp" 
+            maxlength="6" 
+            placeholder="Contoh: 123456" 
+            autocomplete="one-time-code" 
+            required 
+        />
+    </div>
+
+    <!-- Tombol Submit Utama -->
+    <button type="button" id="btnVerifyOtp" class="btn-primary" onclick="handleVerifyOtp()">
+        Verifikasi OTP
+    </button>
+
+    <!-- Area Resend OTP & Cooldown Timer -->
+    <div class="resend-container" style="margin-top: 15px; text-align: center;">
+        <p style="font-size: 0.9rem; color: #666;">
+            Tidak menerima kode OTP?
+        </p>
+        <button 
+            type="button" 
+            id="btnResendOtp" 
+            class="btn-secondary" 
+            onclick="handleResendOtp()" 
+            style="padding: 8px 16px; border: 1px solid #ccc; border-radius: 6px; background-color: #f8f9fa; cursor: pointer; transition: all 0.3s ease;"
+        >
+            Kirim Ulang Kode (Resend)
+        </button>
+        
+        <!-- Pesan Penghitung Mundur (Cooldown) -->
+        <div id="cooldownNotice" style="margin-top: 8px; font-size: 0.85rem; color: #888; display: none;">
+            Kirim ulang dapat dilakukan dalam <strong id="timerDisplay">60</strong> detik.
+        </div>
+        
+        <!-- Pesan Status Notifikasi -->
+        <div id="otpMessage" style="margin-top: 10px; font-size: 0.85rem; display: none;"></div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- LOGIKA JAVASCRIPT LENGKAP UNTUK RESEND OTP -->
+<!-- ========================================== -->
+<script>
+    // Konfigurasi Durasi Cooldown (detik)
+    const COOLDOWN_DURATION = 60;
+    let cooldownTimerInterval = null;
+    let remainingTime = 0;
+
+    /**
+     * Memulai penghitung mundur untuk tombol Resend OTP
+     */
+    function startResendCooldown(seconds = COOLDOWN_DURATION) {
+        const resendBtn = document.getElementById('btnResendOtp');
+        const cooldownNotice = document.getElementById('cooldownNotice');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        remainingTime = seconds;
+        resendBtn.disabled = true;
+        resendBtn.style.opacity = '0.6';
+        resendBtn.style.cursor = 'not-allowed';
+        cooldownNotice.style.display = 'block';
+        timerDisplay.textContent = remainingTime;
+
+        // Reset timer jika sedang berjalan
+        if (cooldownTimerInterval) {
+            clearInterval(cooldownTimerInterval);
+        }
+
+        cooldownTimerInterval = setInterval(() => {
+            remainingTime--;
+            timerDisplay.textContent = remainingTime;
+
+            if (remainingTime <= 0) {
+                clearInterval(cooldownTimerInterval);
+                resendBtn.disabled = false;
+                resendBtn.style.opacity = '1';
+                resendBtn.style.cursor = 'pointer';
+                cooldownNotice.style.display = 'none';
+            }
+        }, 1000);
+    }
+
+    /**
+     * Menampilkan pesan notifikasi status ke pengguna
+     */
+    function showOtpStatus(message, isError = false) {
+        const msgDiv = document.getElementById('otpMessage');
+        msgDiv.style.display = 'block';
+        msgDiv.style.color = isError ? '#d9534f' : '#5cb85c';
+        msgDiv.textContent = message;
+
+        // Otomatis hilangkan pesan setelah 5 detik
+        setTimeout(() => {
+            msgDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    /**
+     * Handler Fungsi Kirim Ulang OTP (Resend)
+     */
+    async function handleResendOtp() {
+        const email = sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail');
+        
+        if (!email) {
+            showOtpStatus('Email tidak ditemukan. Silakan lakukan pendaftaran ulang.', true);
+            return;
+        }
+
+        const resendBtn = document.getElementById('btnResendOtp');
+        const originalText = resendBtn.textContent;
+
+        try {
+            // Indikator Loading
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Mengirim...';
+
+            const response = await fetch('/api/resend-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                showOtpStatus('Kode OTP baru telah berhasil dikirim ke email Anda!', false);
+                startResendCooldown(COOLDOWN_DURATION);
+            } else {
+                showOtpStatus(result.message || 'Gagal mengirim ulang OTP. Silakan coba lagi.', true);
+                resendBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Error Resend OTP:', error);
+            showOtpStatus('Terjadi kesalahan jaringan. Periksa koneksi Anda.', true);
+            resendBtn.disabled = false;
+        } finally {
+            resendBtn.textContent = originalText;
+        }
+    }
+
+    /**
+     * Handler Fungsi Verifikasi OTP
+     */
+    async function handleVerifyOtp() {
+        const otpValue = document.getElementById('otpInput').value.trim();
+        const email = sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail');
+
+        if (!otpValue || otpValue.length !== 6) {
+            showOtpStatus('Masukkan 6 digit kode OTP yang valid.', true);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email, otp: otpValue })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                showOtpStatus('Verifikasi berhasil! Mengalihkan...', false);
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1500);
+            } else {
+                showOtpStatus(result.message || 'Kode OTP salah atau telah kadaluwarsa.', true);
+            }
+        } catch (error) {
+            console.error('Error Verifikasi OTP:', error);
+            showOtpStatus('Gagal melakukan verifikasi OTP.', true);
+        }
+    }
+</script>
+
     <!-- ==================== FOOTER ==================== -->
     <footer class="py-12 border-t border-white/5 bg-bgDeep text-fgMuted font-mono text-xs relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
