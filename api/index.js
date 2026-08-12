@@ -17,7 +17,6 @@
 
 require('dotenv').config();
 const express = require('express');
-const router = express.Router();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -26,7 +25,6 @@ const https = require('https');
 const path = require('path');
 
 const app = express();
-const otpDatabase = new Map();
 
 // ============================================================================
 // KONSTANTA MASTER ADMINISTRATOR UTAMA
@@ -272,105 +270,6 @@ function createSmtpTransporter() {
     }
   });
 }
-
-/**
- * Helper: Membuat 6 digit angka OTP acak
- */
-function generate6DigitOtp() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-/**
- * Helper: Mengirim Email OTP via Nodemailer
- */
-async function sendOtpEmailNotification(targetEmail, otpCode) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
-
-    const mailOptions = {
-        from: `"OSIS SMP Kristen Kalam Kudus" <${process.env.EMAIL_USER}>`,
-        to: targetEmail,
-        subject: 'Kode OTP Verifikasi Login Baru',
-        html: `
-            <div style="background-color: #0d0f12; padding: 30px; font-family: 'Segoe UI', Arial, sans-serif; color: #ffffff; border-radius: 12px;">
-                <h2 style="color: #818cf8; text-transform: uppercase; letter-spacing: 1px;">Kode OTP Verifikasi Anda</h2>
-                <p style="color: #9ca3af; font-size: 15px;">Berikut adalah kode OTP verifikasi baru untuk akun Anda:</p>
-                <div style="background-color: #161922; border: 1px solid #3b82f6; padding: 15px 25px; border-radius: 8px; font-size: 28px; font-weight: bold; letter-spacing: 8px; color: #ffffff; display: inline-block; margin: 20px 0;">
-                    ${otpCode}
-                </div>
-                <p style="color: #6b7280; font-size: 13px;">Kode ini berlaku selama 5 menit. Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
-            </div>
-        `
-    };
-
-    return await transporter.sendMail(mailOptions);
-}
-
-// =======================================================
-// ROUTE HANDLER: POST /api/resend-otp
-// =======================================================
-router.post('/resend-otp', async (req, res) => {
-    try {
-        const { email } = req.body;
-
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                message: 'Alamat email wajib diisi.'
-            });
-        }
-
-        const currentTime = Date.now();
-        const userOtpRecord = otpDatabase.get(email);
-
-        // Pengecekan Cooldown Sisi Server (Mencegah Spam / Rate Limit)
-        if (userOtpRecord && userOtpRecord.lastSentTime) {
-            const timeElapsedInSeconds = (currentTime - userOtpRecord.lastSentTime) / 1000;
-            if (timeElapsedInSeconds < 60) {
-                const remaining = Math.ceil(60 - timeElapsedInSeconds);
-                return res.status(429).json({
-                    success: false,
-                    message: `Harap tunggu ${remaining} detik sebelum meminta kode OTP lagi.`
-                });
-            }
-        }
-
-        // Generate Kode OTP Baru
-        const newOtpCode = generate6DigitOtp();
-        const expirationTime = currentTime + (5 * 60 * 1000); // Masa berlaku 5 menit
-
-        // Simpan ke database/store
-        otpDatabase.set(email, {
-            otp: newOtpCode,
-            expiresAt: expirationTime,
-            lastSentTime: currentTime
-        });
-
-        // Kirim email
-        await sendOtpEmailNotification(email, newOtpCode);
-
-        console.log(`[RESEND OTP SUCCESS] Email: ${email} | New OTP: ${newOtpCode}`);
-
-        return res.status(200).json({
-            success: true,
-            message: 'Kode OTP baru berhasil dikirimkan ke email Anda.'
-        });
-
-    } catch (error) {
-        console.error('[RESEND OTP ERROR]:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Gagal mengirim ulang kode OTP karena kesalahan server.'
-        });
-    }
-});
-
-module.exports = router;
 
 /**
  * Mengirimkan Email Kode OTP Verifikasi Keamanan ke Email Tujuan
