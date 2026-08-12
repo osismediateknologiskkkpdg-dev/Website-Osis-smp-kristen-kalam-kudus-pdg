@@ -3,15 +3,16 @@
  * SERVER BACKEND UTAMA SYSTEM AUTHENTICATION OSIS SMP KALAM KUDUS PADANG
  * File: api/index.js
  * Engine: Express.js Unified Serverless Handler for Vercel
- * Version: 2.5.0 (Production-Grade Security & Mandatory OTP Enforcement)
+ * Version: 2.6.0 (Production-Grade Security & Mandatory OTP Enforcement)
  * ============================================================================
  * 
- * DESKRIPSI PEMBARUAN KEAMANAN:
+ * DESKRIPSI PEMBARUAN KEAMANAN & FITUR:
  * 1. Otentikasi OTP Wajib untuk Seluruh Akun (Termasuk Master Administrator).
- * 2. Sistem Anti-Duplikasi Otomatis: Pengecekan pra-seeding berbasis keberadaan 
+ * 2. Endpoint Resend OTP terintegrasi penuh dengan SMTP Transporter Nodemailer.
+ * 3. Sistem Anti-Duplikasi Otomatis: Pengecekan pra-seeding berbasis keberadaan 
  *    Identifier Email/Username di repositori User_data.json GitHub.
- * 3. Token Sanitizer & Native HTTPS Transceiver tanpa dependensi eksternal.
- * 4. Hashing Password menggunakan BcryptJS dengan Cost Factor Salt 10.
+ * 4. Token Sanitizer & Native HTTPS Transceiver tanpa dependensi eksternal.
+ * 5. Hashing Password menggunakan BcryptJS dengan Cost Factor Salt 10.
  * ============================================================================
  */
 
@@ -177,7 +178,7 @@ async function fetchUserDataFromGitHub() {
     if (!Array.isArray(parsedUsers)) {
       parsedUsers = [];
     }
-<div id="otpModal"
+
     // ========================================================================
     // PENGECEKAN DUPLIKASI ADMINISTRATOR UTAMA (STRICT ANTI-DUPLICATE CHECK)
     // ========================================================================
@@ -604,6 +605,69 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
   }
 });
 
+// ROUTE 5: KIRIM ULANG KODE OTP (RESEND OTP HANDLER)
+app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
+  try {
+    const { email } = req.body || {};
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Alamat Email wajib disertakan untuk mengirim ulang kode OTP.'
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const loginCacheKey = 'login_' + normalizedEmail;
+    
+    const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // Masa berlaku 5 menit
+
+    let sessionFound = false;
+
+    // 1. Perbarui Sesi Login jika user sedang dalam alur Login
+    if (global.otpMemoryStore[loginCacheKey]) {
+      global.otpMemoryStore[loginCacheKey].otp = newOtpCode;
+      global.otpMemoryStore[loginCacheKey].expiresAt = expiresAt;
+      sessionFound = true;
+    }
+
+    // 2. Perbarui Sesi Registrasi jika user sedang dalam alur Register
+    if (global.otpMemoryStore[normalizedEmail]) {
+      global.otpMemoryStore[normalizedEmail].otp = newOtpCode;
+      global.otpMemoryStore[normalizedEmail].expiresAt = expiresAt;
+      sessionFound = true;
+    }
+
+    // 3. Jika tidak ada sesi di memori, buatkan entri cadangan baru
+    if (!sessionFound) {
+      global.otpMemoryStore[normalizedEmail] = {
+        otp: newOtpCode,
+        expiresAt: expiresAt
+      };
+    }
+
+    // Kirim ulang email berisi Kode OTP baru via Nodemailer
+    await dispatchOTPEmail(normalizedEmail, newOtpCode, 'Kirim Ulang Kode OTP');
+
+    console.log(`[RESEND OTP SUCCESS] Kode OTP baru (${newOtpCode}) dikirim ke: ${normalizedEmail}`);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Kode OTP baru berhasil dikirimkan ke email Anda.',
+      email: normalizedEmail,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error pada endpoint /api/resend-otp:', error.message || error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal mengirim ulang OTP akibat kendala server: ' + (error.message || 'Terjadi kesalahan internal.')
+    });
+  }
+});
+
 // ============================================================================
 // SUPER ADMIN CONTROL ENDPOINTS
 // ============================================================================
@@ -674,70 +738,6 @@ app.use((err, req, res, next) => {
     success: false,
     message: 'Terjadi kesalahan kritis pada aplikasi Express: ' + (err.message || 'Internal Error')
   });
-});
-
-// ==========================================
-// ENDPOINT: KIRIM ULANG OTP (RESEND OTP)
-// Lokasi: api/index.js
-// ==========================================
-app.post('/api/resend-otp', async (req, res) => {
-    try {
-        const { email, username } = req.body;
-
-        // Validasi kelengkapan data identifikasi user
-        if (!email && !username) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email atau Username wajib disertakan untuk mengirim ulang OTP.'
-            });
-        }
-
-        // Cari user yang sesuai dalam memori / database
-        // Silakan sesuaikan variabel pencarian user dengan struktur data Anda
-        const targetIdentifier = email || username;
-        
-        // Generate kode 6-digit OTP baru yang acak dan presisi
-        const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiryTime = Date.now() + (5 * 60 * 1000); // Masa berlaku 5 menit
-
-        // Sinkronisasi OTP baru ke data user di server
-        // Contoh pembaruan penyimpanan sesi/database:
-        if (global.userSessions && global.userSessions[targetIdentifier]) {
-            global.userSessions[targetIdentifier].otp = newOtpCode;
-            global.userSessions[targetIdentifier].otpExpiry = otpExpiryTime;
-            global.userSessions[targetIdentifier].attempts = 0; // Reset percobaan gagal
-        } else {
-            // Jika menggunakan struktur data alternatif
-            global.latestOtpStore = global.latestOtpStore || {};
-            global.latestOtpStore[targetIdentifier] = {
-                code: newOtpCode,
-                expiry: otpExpiryTime,
-                updatedAt: new Date().toISOString()
-            };
-        }
-
-        console.log(`[OTP RESEND LOG] OTP Baru untuk ${targetIdentifier}: ${newOtpCode}`);
-
-        // =========================================================================
-        // PROSES PENGIRIMAN EMAIL / BOT (OPSIONAL)
-        // Jika Anda menggunakan Nodemailer atau Telegram Bot, panggil fungsinya di sini:
-        // await sendOtpToEmail(email, newOtpCode);
-        // =========================================================================
-
-        return res.status(200).json({
-            success: true,
-            message: 'Kode OTP baru berhasil dibuat dan dikirimkan.',
-            timestamp: new Date().toISOString()
-        });
-
-    } catch (error) {
-        console.error('Error pada proses Resend OTP:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Gagal mengirim ulang OTP akibat kendala server.',
-            errorDetail: error.message
-        });
-    }
 });
 
 module.exports = app;
