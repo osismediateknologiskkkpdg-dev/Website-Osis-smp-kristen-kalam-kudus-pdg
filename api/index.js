@@ -148,7 +148,76 @@ router.post('/resend-otp', async (req, res) => {
     }
 });
 
-// Pastikan ekspor router tetap berada di baris paling bawah file api/index.js
+// =================================================================
+// ⬇️ ENDPOINT BARU /api/resend-otp DITAMBAHKAN DI SINI ⬇️            
+// =================================================================
+router.post('/resend-otp', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                statusCode: 400,
+                message: "Email wajib diisi untuk melakukan kirim ulang OTP."
+            });
+        }
+
+        // Path penyimpanan database lokal User_data.json
+        const userDataPath = path.join(__dirname, '../User_data.json');
+        let usersData = [];
+
+        if (fs.existsSync(userDataPath)) {
+            const rawData = fs.readFileSync(userDataPath, 'utf8');
+            if (rawData) {
+                usersData = JSON.parse(rawData);
+            }
+        }
+
+        // Buat kode OTP acak 6 digit baru
+        const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiryTime = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // Berlaku 5 Menit
+
+        const userIndex = usersData.findIndex(u => u.email === email);
+
+        if (userIndex !== -1) {
+            usersData[userIndex].otp = newOtpCode;
+            usersData[userIndex].otpExpiresAt = otpExpiryTime;
+            usersData[userIndex].lastResendAt = new Date().toISOString();
+        } else {
+            usersData.push({
+                email: email,
+                otp: newOtpCode,
+                otpExpiresAt: otpExpiryTime,
+                lastResendAt: new Date().toISOString()
+            });
+        }
+
+        // Simpan update ke User_data.json
+        fs.writeFileSync(userDataPath, JSON.stringify(usersData, null, 2), 'utf8');
+
+        console.log(`[API Resend OTP] Berhasil membuat OTP baru untuk ${email}: ${newOtpCode}`);
+
+        return res.status(200).json({
+            success: true,
+            statusCode: 200,
+            message: "Kode OTP baru telah berhasil dikirim ulang ke email Anda.",
+            data: { email, expiresInSeconds: 300 }
+        });
+
+    } catch (error) {
+        console.error("[API Error /api/resend-otp]:", error);
+        return res.status(500).json({
+            success: false,
+            statusCode: 500,
+            message: "Gagal memproses kirim ulang OTP di server.",
+            errorDetails: error.message
+        });
+    }
+});
+// =================================================================
+
+// PASTI KAN BARIS INI SELALU BERADA DI BAGIAN PALING BAWAH FILE api/index.js
 module.exports = router;
 
 /**

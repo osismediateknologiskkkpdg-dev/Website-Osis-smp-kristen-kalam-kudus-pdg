@@ -184,6 +184,79 @@
             outline: none !important;
             box-shadow: 0 0 0 2px #050506, 0 0 0 4px rgba(94, 106, 210, 0.8) !important;
         }
+        /* ================================================================= */
+        /* ⬇️ KODE CSS BARU UNTUK RESEND OTP DITAMBAHKAN DI SINI ⬇️          -->
+        /* ================================================================= */
+        .resend-otp-container {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid #232530;
+            text-align: center;
+        }
+
+        .resend-question-text {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .btn-resend-action {
+            background: none;
+            border: none;
+            color: #818cf8;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: color 0.2s ease;
+        }
+
+        .btn-resend-action:hover:not(:disabled) {
+            color: #a5b4fc;
+            text-decoration: underline;
+        }
+
+        .btn-resend-action:disabled {
+            color: #4b5563;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .timer-countdown-box {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .timer-clock {
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        .status-banner {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .status-banner.success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid #10b981;
+        }
+
+        .status-banner.error {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid #ef4444;
+        }
+
+        .d-none {
+            display: none !important;
+        }
+        /* ================================================================= */
     </style>
 </head>
 
@@ -214,22 +287,32 @@
         </button>
     </form>
 
-    <!-- TABUNGAN KODE BARU: Letakkan elemen Resend OTP tepat di bawah tag </form> -->
-    <div class="resend-otp-wrapper">
-        <p class="resend-text">
-            Tidak menerima kode? 
-            <button type="button" id="btnResendOtp" class="btn-link-resend" onclick="executeResendOTP()" disabled>
-                <span id="resendText">Kirim Ulang Kode</span>
-                <span id="resendSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-            </button>
+    <!-- ================================================================= -->
+    <!-- ⬇️ KODE BARU FITUR RESEND OTP DITAMBAHKAN TEPAT DI SINI ⬇️        -->
+    <!-- (SESUDAH TOMBOL VERIFIKASI & SEBELUM PENUTUP FORM)                -->
+    <!-- ================================================================= -->
+    <div class="resend-otp-container">
+        <p class="resend-question-text">
+            Tidak menerima kode OTP?
         </p>
-        <div id="resendTimerContainer" class="timer-container">
-            <span class="timer-label">Kirim ulang tersedia dalam:</span>
-            <span id="timerCountdown" class="timer-value">01:00</span>
+        
+        <button type="button" id="btnResendOtp" class="btn-resend-action" onclick="handleResendOtp()" disabled>
+            <span id="resendBtnText">Kirim Ulang Kode</span>
+            <span id="resendBtnSpinner" class="spinner-loader-sm d-none"></span>
+        </button>
+
+        <!-- Indikator Hitung Mundur (Countdown Timer) -->
+        <div id="resendTimerBox" class="timer-countdown-box">
+            <span>Kirim ulang tersedia dalam </span>
+            <strong id="timerClockDisplay" class="timer-clock">01:00</strong>
         </div>
-        <div id="statusNotification" class="status-notification-box d-none"></div>
+
+        <!-- Banner Notifikasi Status -->
+        <div id="otpStatusBanner" class="status-banner d-none"></div>
     </div>
-</div>
+    <!-- ================================================================= -->
+    <!-- ⬆️ AKHIR KODE BARU RESEND OTP ⬆️                                  -->
+    <!-- ================================================================= -->
 
     <!-- ==================== BACKGROUND LIGHTING SYSTEM ==================== -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -2134,126 +2217,109 @@ async function deleteUserByAdmin(userId) {
         window.console.info = noop;
     }
 })();
-    </script>
-<!-- ================================================================= -->
-<!-- LOKASI 1B: Dalam file index.html (Sebelum tag penutup </body>)    -->
-<!-- ================================================================= -->
-<script>
-    // Konfigurasi State Timer Resend OTP
-    const RESEND_COOLDOWN_SECONDS = 60;
-    let countdownTimerInterval = null;
-    let currentRemainingTime = RESEND_COOLDOWN_SECONDS;
+    
+   // =================================================================
+    // ⬇️ LOGIKA KONTROL RESEND OTP & TIMER DITAMBAHKAN DI SINI ⬇️       
+    // =================================================================
+    const RESEND_COOLDOWN_TIME = 60; // 60 Detik
+    let resendTimerInterval = null;
+    let remainingSeconds = RESEND_COOLDOWN_TIME;
 
-    // Jalankan timer hitung mundur saat halaman dimuat
-    document.addEventListener("DOMContentLoaded", function () {
-        console.log("[OTP Module] Memulai countdown resend awal...");
-        startResendCountdown(RESEND_COOLDOWN_SECONDS);
-    });
+    // Memulai timer saat modal verifikasi OTP ditampilkan
+    function startResendTimer(seconds) {
+        const btnResend = document.getElementById("btnResendOtp");
+        const timerBox = document.getElementById("resendTimerBox");
 
-    // Otomatis pindah kolom input angka OTP
-    function handleOtpInput(currentInput, nextFieldId, prevFieldId) {
-        if (currentInput.value.length >= 1 && nextFieldId) {
-            document.getElementById(nextFieldId).focus();
-        }
-        currentInput.addEventListener("keydown", function (event) {
-            if (event.key === "Backspace" && currentInput.value.length === 0 && prevFieldId) {
-                document.getElementById(prevFieldId).focus();
-            }
-        });
-    }
+        remainingSeconds = seconds;
+        if (btnResend) btnResend.disabled = true;
+        if (timerBox) timerBox.classList.remove("d-none");
 
-    // Fungsi Hitung Mundur Waktu Tunggu Resend OTP
-    function startResendCountdown(seconds) {
-        const resendBtn = document.getElementById("btnResendOtp");
-        const timerContainer = document.getElementById("resendTimerContainer");
-
-        currentRemainingTime = seconds;
-        resendBtn.disabled = true;
-        timerContainer.classList.remove("d-none");
-
-        if (countdownTimerInterval) {
-            clearInterval(countdownTimerInterval);
+        if (resendTimerInterval) {
+            clearInterval(resendTimerInterval);
         }
 
-        updateTimerDisplay(currentRemainingTime);
+        renderTimerText(remainingSeconds);
 
-        countdownTimerInterval = setInterval(function () {
-            currentRemainingTime--;
+        resendTimerInterval = setInterval(() => {
+            remainingSeconds--;
 
-            if (currentRemainingTime <= 0) {
-                clearInterval(countdownTimerInterval);
-                resendBtn.disabled = false;
-                timerContainer.classList.add("d-none");
+            if (remainingSeconds <= 0) {
+                clearInterval(resendTimerInterval);
+                if (btnResend) btnResend.disabled = false;
+                if (timerBox) timerBox.classList.add("d-none");
             } else {
-                updateTimerDisplay(currentRemainingTime);
+                renderTimerText(remainingSeconds);
             }
         }, 1000);
     }
 
-    // Format Tampilan Timer MM:SS
-    function updateTimerDisplay(totalSeconds) {
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(seconds).padStart(2, '0');
-        
-        document.getElementById("timerCountdown").textContent = `${formattedMinutes}:${formattedSeconds}`;
+    function renderTimerText(totalSec) {
+        const min = Math.floor(totalSec / 60);
+        const sec = totalSec % 60;
+        const formatted = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        const clockDisplay = document.getElementById("timerClockDisplay");
+        if (clockDisplay) clockDisplay.textContent = formatted;
     }
 
-    // Fungsi Eksekusi Pemanggilan API Kirim Ulang Kode OTP
-    async function executeResendOTP() {
-        const resendBtn = document.getElementById("btnResendOtp");
-        const resendText = document.getElementById("resendText");
-        const resendSpinner = document.getElementById("resendSpinner");
-        const userEmail = localStorage.getItem("pending_otp_email") || "user@example.com";
+    // Fungsi Eksekusi Permintaan Kirim Ulang OTP Ke Backend API
+    async function handleResendOtp() {
+        const btnResend = document.getElementById("btnResendOtp");
+        const btnText = document.getElementById("resendBtnText");
+        const emailTargetElem = document.getElementById("displayUserEmail");
+        const targetEmail = emailTargetElem ? emailTargetElem.innerText.trim() : "user@example.com";
 
-        resendBtn.disabled = true;
-        resendText.textContent = "Mengirim...";
-        resendSpinner.classList.remove("d-none");
-        hideNotification();
+        if (btnResend) btnResend.disabled = true;
+        if (btnText) btnText.textContent = "Mengirim...";
+        hideStatusBanner();
 
         try {
+            console.log("[OTP Resend] Mengirim permintaan resend untuk:", targetEmail);
+
             const response = await fetch("/api/resend-otp", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({
-                    email: userEmail,
-                    requestTimestamp: new Date().toISOString()
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: targetEmail })
             });
 
             const data = await response.json();
 
             if (response.ok && data.success) {
-                showNotification(data.message || "Kode OTP baru berhasil dikirim ulang.", "success");
-                startResendCountdown(RESEND_COOLDOWN_SECONDS);
+                showStatusBanner("Kode OTP baru telah berhasil dikirimkan ke email!", "success");
+                // Reset dan jalankan kembali timer cooldown
+                startResendTimer(RESEND_COOLDOWN_TIME);
             } else {
-                showNotification(data.message || "Gagal mengirim ulang kode OTP.", "error");
-                resendBtn.disabled = false;
+                showStatusBanner(data.message || "Gagal mengirim ulang OTP.", "error");
+                if (btnResend) btnResend.disabled = false;
             }
         } catch (error) {
-            console.error("[OTP Error]:", error);
-            showNotification("Terjadi masalah koneksi jaringan.", "error");
-            resendBtn.disabled = false;
+            console.error("[OTP Resend Error]:", error);
+            showStatusBanner("Koneksi gagal saat menghubungi server.", "error");
+            if (btnResend) btnResend.disabled = false;
         } finally {
-            resendText.textContent = "Kirim Ulang Kode";
-            resendSpinner.classList.add("d-none");
+            if (btnText) btnText.textContent = "Kirim Ulang Kode";
         }
     }
 
-    function showNotification(message, type) {
-        const notifBox = document.getElementById("statusNotification");
-        notifBox.textContent = message;
-        notifBox.className = "status-notification-box " + (type === "success" ? "status-success" : "status-error");
-        notifBox.classList.remove("d-none");
+    // Helper Penampil Notifikasi Banner
+    function showStatusBanner(msg, type) {
+        const banner = document.getElementById("otpStatusBanner");
+        if (banner) {
+            banner.textContent = msg;
+            banner.className = `status-banner ${type}`;
+            banner.classList.remove("d-none");
+        }
     }
 
-    function hideNotification() {
-        document.getElementById("statusNotification").classList.add("d-none");
+    function hideStatusBanner() {
+        const banner = document.getElementById("otpStatusBanner");
+        if (banner) banner.classList.add("d-none");
     }
+
+    // Jalankan timer saat halaman/modal dibuka
+    document.addEventListener("DOMContentLoaded", function () {
+        startResendTimer(RESEND_COOLDOWN_TIME);
+    });
+    // =================================================================
 </script>
 </body>
 </html>
