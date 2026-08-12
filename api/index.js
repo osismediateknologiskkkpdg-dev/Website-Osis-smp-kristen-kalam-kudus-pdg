@@ -274,17 +274,16 @@ function createSmtpTransporter() {
 }
 
 /**
- * Helper Fungsi: Membuat Kode OTP Random 6 Digit
+ * Fungsi pembantu untuk membuat 6 digit angka acak
  */
-function generateOTP() {
+function generateRandomOtp() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 /**
- * Helper Fungsi: Mengirimkan Email OTP via Nodemailer
+ * Fungsi pengiriman Email menggunakan Nodemailer
  */
-async function sendOtpEmail(targetEmail, otpCode) {
-    // Konfigurasi Transporter Mail (Sesuaikan dengan kredensial SMTP Anda)
+async function sendOtpViaEmail(recipientEmail, otpCode) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -295,17 +294,16 @@ async function sendOtpEmail(targetEmail, otpCode) {
 
     const mailOptions = {
         from: `"OSIS SMP Kristen Kalam Kudus" <${process.env.EMAIL_USER}>`,
-        to: targetEmail,
-        subject: 'Kode Verifikasi OTP Baru Anda',
+        to: recipientEmail,
+        subject: 'Kode OTP Verifikasi Baru',
         html: `
-            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                <h2 style="color: #0056b3;">Permintaan Kode OTP Baru</h2>
-                <p>Halo,</p>
-                <p>Berikut adalah kode OTP baru Anda untuk verifikasi akun:</p>
-                <div style="font-size: 24px; font-weight: bold; color: #2d3748; letter-spacing: 4px; margin: 15px 0;">
+            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h2 style="color: #2b6cb0;">Permintaan Kode OTP Baru</h2>
+                <p>Berikut adalah kode OTP baru Anda untuk verifikasi:</p>
+                <div style="font-size: 28px; font-weight: bold; color: #2d3748; letter-spacing: 6px; margin: 20px 0; background-color: #f7fafc; padding: 10px; display: inline-block; border-radius: 6px;">
                     ${otpCode}
                 </div>
-                <p style="color: #666; font-size: 12px;">Kode ini berlaku selama 5 menit. Jangan bagikan kode ini kepada siapapun.</p>
+                <p style="color: #718096; font-size: 0.85rem;">Kode ini hanya berlaku selama 5 menit. Jangan berikan kode ini kepada orang lain.</p>
             </div>
         `
     };
@@ -313,64 +311,58 @@ async function sendOtpEmail(targetEmail, otpCode) {
     return await transporter.sendMail(mailOptions);
 }
 
-// ==========================================
-// ENDPOINT: KIRIM ULANG OTP (/api/resend-otp)
-// ==========================================
+// =======================================================
+// ROUTE POST: /api/resend-otp (Kirim Ulang Kode OTP)
+// =======================================================
 router.post('/resend-otp', async (req, res) => {
     try {
         const { email } = req.body;
 
-        // 1. Validasi Input
         if (!email) {
             return res.status(400).json({
                 success: false,
-                message: 'Alamat email wajib diisi.'
+                message: 'Parameter email wajib disertakan.'
             });
         }
 
-        // 2. Proteksi Cooldown Server (Mencegah spam request berlebihan)
-        const existingData = otpStore.get(email);
-        const currentTime = Date.now();
+        const now = Date.now();
+        const existingRecord = otpStore.get(email);
 
-        if (existingData && existingData.lastSent) {
-            const timeElapsed = (currentTime - existingData.lastSent) / 1000; // dalam detik
-            const minCooldownSeconds = 60;
-
-            if (timeElapsed < minCooldownSeconds) {
-                const remaining = Math.ceil(minCooldownSeconds - timeElapsed);
+        // Validasi Pembatasan Rate Limit (Cooldown Server 60 detik)
+        if (existingRecord && existingRecord.lastSent) {
+            const timeDifference = (now - existingRecord.lastSent) / 1000;
+            if (timeDifference < 60) {
+                const remainingSeconds = Math.ceil(60 - timeDifference);
                 return res.status(429).json({
                     success: false,
-                    message: `Harap tunggu ${remaining} detik lagi sebelum meminta OTP baru.`
+                    message: `Harap tunggu ${remainingSeconds} detik lagi sebelum meminta OTP baru.`
                 });
             }
         }
 
-        // 3. Generate Kode OTP Baru
-        const newOtp = generateOTP();
-        const otpExpiry = currentTime + (5 * 60 * 1000); // Berlaku 5 Menit
+        // Buat Kode OTP Baru dan Atur Masa Kadaluwarsa (5 Menit)
+        const newOtp = generateRandomOtp();
+        const expirationTime = now + (5 * 60 * 1000);
 
-        // 4. Simpan ke Memory / Database
         otpStore.set(email, {
             otp: newOtp,
-            expiresAt: otpExpiry,
-            lastSent: currentTime
+            expiresAt: expirationTime,
+            lastSent: now
         });
 
-        // 5. Kirim Kode OTP melalui Email
-        await sendOtpEmail(email, newOtp);
-
-        console.log(`[OTP RESEND SUCCESS] Email: ${email} | OTP: ${newOtp}`);
+        // Kirim Email
+        await sendOtpViaEmail(email, newOtp);
 
         return res.status(200).json({
             success: true,
-            message: 'Kode OTP baru berhasil dikirimkan ke email Anda.'
+            message: 'Kode OTP baru telah berhasil dikirimkan.'
         });
 
     } catch (error) {
-        console.error('[OTP RESEND ERROR]:', error);
+        console.error('Error pada /api/resend-otp:', error);
         return res.status(500).json({
             success: false,
-            message: 'Gagal mengirim ulang kode OTP. Terjadi kesalahan pada server.'
+            message: 'Gagal mengirim ulang OTP karena gangguan server.'
         });
     }
 });
