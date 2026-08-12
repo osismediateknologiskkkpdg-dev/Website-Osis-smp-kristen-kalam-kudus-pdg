@@ -17,7 +17,6 @@
 
 require('dotenv').config();
 const express = require('express');
-const fs = require('fs');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -26,8 +25,6 @@ const https = require('https');
 const path = require('path');
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // ============================================================================
 // KONSTANTA MASTER ADMINISTRATOR UTAMA
@@ -165,116 +162,6 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
     req.end();
   });
 }
-
-// ==========================================
-// 2. HELPER FUNCTIONS (AUDIT LOGGING)
-// ==========================================
-/**
- * Mengirimkan notifikasi audit log aktivitas pengguna ke Google Chat Webhook.
- * @param {string} eventType - Jenis aktivitas (contoh: 'USER_REGISTERED', 'USER_LOGIN')
- * @param {string} userEmail - Email dari pengguna yang melakukan aksi
- */
-async function sendAuditLog(eventType, userEmail) {
-  const webhookUrl = process.env.GOOGLE_CHAT_WEBHOOK_URL;
-
-  if (!webhookUrl) {
-    console.warn('[Audit Log Warning]: GOOGLE_CHAT_WEBHOOK_URL tidak ditemukan di .env');
-    return;
-  }
-
-  const timestamp = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
-  const payload = {
-    text: `🔒 *[AUDIT LOG OFFICAL]*\n` +
-          `• *Event:* \`${eventType}\`\n` +
-          `• *User Email:* \`${userEmail}\`\n` +
-          `• *Waktu:* ${timestamp}\n` +
-          `• *Status:* Success`
-  };
-
-  try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      console.error(`[Audit Log Error]: HTTP Status ${response.status}`);
-    }
-  } catch (error) {
-    console.error('[Audit Log Error]: Gagal mengirim log ke Webhook', error);
-  }
-}
-
-// ==========================================
-// 3. ROUTE HANDLERS
-// ==========================================
-
-// --- ENDPOINT REGISTRASI (BUAT AKUN) ---
-app.post('/api/register', async (req, res) => {
-  try {
-    const { email, password, name } = req.body;
-
-    // A. Validasi input dasar
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email dan password wajib diisi.' });
-    }
-
-    // B. Proses pendaftaran (Save database / User_data.json)
-    // ... (Proses enkripsi password & penulisan data di sini) ...
-
-    // C. PEMANGGILAN AUDIT LOG
-    // Ditambahkan SETELAH pendaftaran sukses, SEBELUM res.json()
-    await sendAuditLog('USER_REGISTERED', email);
-
-    // D. Kirim respon sukses ke client
-    return res.status(201).json({
-      success: true,
-      message: 'Akun berhasil dibuat.'
-    });
-
-  } catch (error) {
-    console.error('Error Register:', error);
-    return res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server.' });
-  }
-});
-
-// --- ENDPOINT LOGIN ---
-app.post('/api/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // A. Cari user dan verifikasi password
-    // const user = await findUserByEmail(email);
-    // const isPasswordMatch = await comparePassword(password, user.passwordHash);
-
-    // B. Jika verifikasi gagal
-    /*
-    if (!user || !isPasswordMatch) {
-      return res.status(401).json({ success: false, message: 'Email atau password salah.' });
-    }
-    */
-
-    // C. PEMANGGILAN AUDIT LOG
-    // Ditambahkan SETELAH verifikasi login berhasil, SEBELUM res.json()
-    await sendAuditLog('USER_LOGIN', email);
-
-    // D. Kirim respon sukses ke client
-    return res.status(200).json({
-      success: true,
-      message: 'Login berhasil.'
-    });
-
-  } catch (error) {
-    console.error('Error Login:', error);
-    return res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server.' });
-  }
-});
-
-// ==========================================
-// 4. SERVER LISTEN / EXPORT
-// ==========================================
-module.exports = app;
 
 /**
  * Membaca File User_data.json dari GitHub & Menjamin Anti-Duplikasi Administrator
