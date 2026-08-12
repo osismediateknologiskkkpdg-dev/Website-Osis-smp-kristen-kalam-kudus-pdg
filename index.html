@@ -1941,6 +1941,34 @@ async function deleteUserByAdmin(userId) {
         }
 
         async function handleLoginSubmit(e) {
+    e.preventDefault();
+    const identifier = document.getElementById('login-identifier').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            // Seluruh Akun (Termasuk Admin) Mengikuti Alur Verifikasi OTP
+            currentPendingEmail = data.email;
+            showAlert(data.message, true);
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('form-otp').classList.remove('hidden');
+            document.getElementById('otp-target-email').textContent = data.email;
+        } else {
+            showAlert(data.message, false);
+        }
+    } catch (err) {
+        showAlert("Gagal menghubungi server backend.", false);
+    }
+}
+
+        async function handleLoginSubmit(e) {
             e.preventDefault();
             const identifier = document.getElementById('login-identifier').value;
             const password = document.getElementById('login-password').value;
