@@ -303,35 +303,96 @@ async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHe
 }
 
 // ============================================================================
-// AUTHENTICATION & ROLE-BASED ACCESS CONTROL (RBAC) MIDDLEWARE
+// USER AUTHENTICATION MIDDLEWARE FOR RATING
 // ============================================================================
-
-function authenticateAdminToken(req, res, next) {
+function authenticateUserToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ success: false, message: 'Akses Ditolak! Token otentikasi tidak ditemukan.' });
+    return res.status(401).json({ success: false, message: 'Akses Ditolak! Anda harus login terlebih dahulu.' });
   }
 
   const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
   jwt.verify(token, secretKey, (err, decodedUser) => {
     if (err) {
-      return res.status(403).json({ success: false, message: 'Sesi token tidak valid atau telah kedaluwarsa!' });
+      return res.status(403).json({ success: false, message: 'Sesi login tidak valid atau telah kadaluwarsa.' });
     }
-
-    if (decodedUser.role !== 'SUPER_ADMIN' && decodedUser.role !== 'ADMIN') {
-      return res.status(403).json({ success: false, message: 'Akses Ditolak! Hak akses khusus Administrator diperlukan.' });
-    }
-
     req.user = decodedUser;
     next();
   });
 }
 
 // ============================================================================
-// EXPRESS ROUTING HANDLERS
+// SECTOR 7: RATING OSIS ENDPOINTS
 // ============================================================================
+
+// GET RATING DATA & REVIEWS
+app.get(['/api/rating', '/rating'], async (req, res) => {
+  try {
+    const { usersList } = await fetchUserDataFromGitHub();
+    
+    // Filter semua user yang telah memberikan rating
+    const ratedUsers = usersList.filter(u => u.rating && u.rating.stars > 0);
+    
+    const totalRatings = ratedUsers.length;
+    const avgRating = totalRatings > 0 
+      ? (ratedUsers.reduce((sum, u) => sum + u.rating.stars, 0) / totalRatings).toFixed(1)
+      : "5.0";
+
+    const reviews = ratedUsers.map(u => ({
+      displayName: u.displayName,
+      username: u.username,
+      stars: u.rating.stars,
+      reviewText: u.rating.reviewText || "",
+      updatedAt: u.rating.updatedAt
+    })).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    return res.status(200).json({
+      success: true,
+      avgRating,
+      totalRatings,
+      reviews
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Gagal memuat data rating: ' + error.message });
+  }
+});
+
+// SUBMIT / UPDATE RATING (KHUSUS USER LOGGED IN)
+app.post(['/api/rating', '/rating'], authenticateUserToken, async (req, res) => {
+  try {
+    const { stars, reviewText } = req.body || {};
+    const numericStars = parseInt(stars, 10);
+
+    if (!numericStars || numericStars < 1 || numericStars > 5) {
+      return res.status(400).json({ success: false, message: 'Jumlah rating bintang harus antara 1 sampai 5!' });
+    }
+
+    const { usersList, fileSha } = await fetchUserDataFromGitHub();
+    const userIndex = usersList.findIndex(u => u.id === req.user.id || u.email.toLowerCase() === req.user.email.toLowerCase());
+
+    if (userIndex === -1) {
+      return res.status(444).json({ success: false, message: 'Data user tidak ditemukan di database!' });
+    }
+
+    // Simpan/Update Rating pada objek user
+    usersList[userIndex].rating = {
+      stars: numericStars,
+      reviewText: (reviewText || "").trim(),
+      updatedAt: new Date().toISOString()
+    };
+
+    await saveUserDataToGitHub(usersList, fileSha);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Terima kasih! Rating & Ulasan Anda berhasil disimpan.'
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Gagal menyimpan rating: ' + error.message });
+  }
+});
 
 // FRONTEND ROUTE: Menyajikan index.html saat GET / dipanggil
 app.get('/', (req, res) => {

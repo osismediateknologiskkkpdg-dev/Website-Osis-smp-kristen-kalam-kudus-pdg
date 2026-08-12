@@ -228,7 +228,10 @@
                 <a href="#structure" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Pengurus</a>
                 <a href="#gallery" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Galeri</a>
                 <a href="#events" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Agenda</a>
-                <a href="#quiz" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Brainstorming</a>
+                <a href="#sector-7" class="px-4 py-1.5 rounded-full text-xs font-medium text-amber-300 hover:text-white hover:bg-white/5 transition-all flex items-center">
+                    <i data-lucide="star" class="w-3 h-3 mr-1 text-amber-400 fill-amber-400"></i> Rating OSIS
+                </a>
+                <a href="#sector-8" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Kontak</a>
             </nav>
 
             <!-- Actions & Mobile Menu Toggle -->
@@ -1072,6 +1075,133 @@
                     <!-- Data User Akan Dimuat Otomatis Melalui JavaScript -->
                 </tbody>
             </table>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SECTOR 7: RATING & ULASAN OSIS ==================== -->
+<section id="sector-7" class="py-20 px-4 sm:px-8 max-w-7xl mx-auto relative">
+    <div class="text-center mb-12">
+        <span class="px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold tracking-wider uppercase inline-flex items-center">
+            <i data-lucide="star" class="w-3.5 h-3.5 mr-1.5 fill-amber-400"></i> SECTOR 07 // EVALUASI & RATING
+        </span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-3">Rating & Aspirasi Siswa</h2>
+        <p class="text-xs sm:text-sm text-fgMuted max-w-xl mx-auto mt-2">
+            Berikan penilaian transparan dan ulasan konstruktif kamu untuk kinerja OSIS SMP Kalam Kudus Padang.
+        </p>
+    </div>
+
+    <!-- MAIN CARD CONTAINER -->
+    <div class="relative card-linear p-6 sm:p-12 rounded-3xl overflow-hidden border border-borderAccent/40">
+        
+        <!-- GEMBOK & OVERLAY JIKA BELUM LOGIN -->
+        <div id="sector7-lock-overlay" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-bgBase/85 backdrop-blur-xl p-6 text-center transition-all duration-300">
+            <div class="w-20 h-20 rounded-3xl bg-amber-500/10 border-2 border-amber-400/50 flex items-center justify-center text-amber-400 mb-5 shadow-[0_0_50px_rgba(245,158,11,0.2)] animate-pulse">
+                <i data-lucide="lock" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">Sector 07 Terkunci!</h3>
+            <p class="text-xs sm:text-sm text-fgMuted max-w-md mb-6 leading-relaxed">
+                Fitur Rating OSIS hanya dapat diakses oleh siswa atau anggota yang telah **Login** ke akun terdaftar.
+            </p>
+            <button onclick="openAuthModal()" class="px-8 py-3.5 rounded-xl font-mono text-xs font-bold text-white btn-primary-glow uppercase tracking-wider inline-flex items-center">
+                <i data-lucide="log-in" class="w-4 h-4 mr-2"></i> MASUK UNTUK MEMBUKA GEMBOK
+            </button>
+        </div>
+
+        <!-- CONTENT CONTAINER (BLUR JIKA UNAUTHENTICATED) -->
+        <div id="sector7-content-box" class="filter blur-md pointer-events-none select-none transition-all duration-300">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- FORM RATING (LEFT SIDE) -->
+                <div class="lg:col-span-5 bg-surface/50 p-6 rounded-2xl border border-white/10 space-y-5">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i data-lucide="edit-3" class="w-5 h-5 mr-2 text-accent"></i> Kirim Penilaian Kamu
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs font-mono text-fgMuted mb-2">PILIH RATING BINTANG</label>
+                        <div class="flex items-center space-x-2" id="star-picker">
+                            <button type="button" onclick="setStarRating(1)" class="star-btn text-fgMuted hover:text-amber-400 transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button type="button" onclick="setStarRating(2)" class="star-btn text-fgMuted hover:text-amber-400 transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button type="button" onclick="setStarRating(3)" class="star-btn text-fgMuted hover:text-amber-400 transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button type="button" onclick="setStarRating(4)" class="star-btn text-fgMuted hover:text-amber-400 transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                            <button type="button" onclick="setStarRating(5)" class="star-btn text-fgMuted hover:text-amber-400 transition-colors"><i data-lucide="star" class="w-8 h-8"></i></button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-fgMuted mb-1">ULASAN / SARAN UNTUK OSIS</label>
+                        <textarea id="rating-review-text" rows="4" placeholder="Tulis masukan, apresiasi, atau saran untuk program kerja OSIS..." class="w-full px-4 py-3 rounded-xl bg-bgElevated border border-white/10 text-white text-xs focus:border-accent focus:outline-none resize-none"></textarea>
+                    </div>
+
+                    <button type="button" onclick="submitRating()" class="w-full py-3.5 rounded-xl font-mono text-xs font-bold text-white btn-primary-glow uppercase tracking-wider flex items-center justify-center">
+                        <i data-lucide="send" class="w-4 h-4 mr-2"></i> SIMPAN RATING SAYA
+                    </button>
+                </div>
+
+                <!-- DISPLAY STATS & REVIEWS (RIGHT SIDE) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="flex items-center justify-between p-6 rounded-2xl bg-surface/30 border border-white/10">
+                        <div>
+                            <span class="text-3xl sm:text-5xl font-extrabold text-white font-mono" id="avg-rating-value">0.0</span>
+                            <span class="text-xs text-fgMuted font-mono">/ 5.0 STAR</span>
+                            <p class="text-xs text-fgMuted mt-1" id="total-ratings-count">Berdasarkan 0 ulasan siswa</p>
+                        </div>
+                        <div class="flex items-center text-amber-400 space-x-1">
+                            <i data-lucide="star" class="w-7 h-7 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-7 h-7 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-7 h-7 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-7 h-7 fill-amber-400"></i>
+                            <i data-lucide="star" class="w-7 h-7 fill-amber-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 max-h-[320px] overflow-y-auto pr-2" id="reviews-container">
+                        <p class="text-xs text-fgMuted text-center py-8">Memuat ulasan siswa...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ==================== SECTOR 8: CONTACT US ==================== -->
+<section id="sector-8" class="py-20 px-4 sm:px-8 max-w-7xl mx-auto border-t border-white/5">
+    <div class="text-center mb-12">
+        <span class="px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-indigo-300 font-mono text-xs font-bold tracking-wider uppercase inline-flex items-center">
+            <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5 text-accent"></i> SECTOR 08 // HUBUNGI OSIS
+        </span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-3">Kontak & Layanan Informasi</h2>
+        <p class="text-xs sm:text-sm text-fgMuted max-w-xl mx-auto mt-2">
+            Ada pertanyaan, kolaborasi, atau aspirasi? Hubungi kami langsung melalui saluran resmi berikut.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card-linear p-6 rounded-2xl text-center space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center text-accent mx-auto">
+                <i data-lucide="mail" class="w-6 h-6"></i>
+            </div>
+            <h4 class="text-sm font-bold text-white">Email Resmi</h4>
+            <p class="text-xs text-fgMuted font-mono">osismediateknologiskkkpdg@gmail.com</p>
+        </div>
+
+        <div class="card-linear p-6 rounded-2xl text-center space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center text-accent mx-auto">
+                <i data-lucide="map-pin" class="w-6 h-6"></i>
+            </div>
+            <h4 class="text-sm font-bold text-white">Lokasi Sekolah</h4>
+            <p class="text-xs text-fgMuted">SMP Kristen Kalam Kudus, Kota Padang</p>
+        </div>
+
+        <div class="card-linear p-6 rounded-2xl text-center space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-accent/20 border border-accent/40 flex items-center justify-center text-accent mx-auto">
+                <i data-lucide="clock" class="w-6 h-6"></i>
+            </div>
+            <h4 class="text-sm font-bold text-white">Jam Operasional</h4>
+            <p class="text-xs text-fgMuted">Senin - Jumat (07.30 - 15.00 WIB)</p>
         </div>
     </div>
 </section>
@@ -1966,6 +2096,110 @@ async function deleteUserByAdmin(userId) {
     } catch (err) {
         showAlert("Gagal menghubungi server backend.", false);
     }
+}
+
+let selectedStarRating = 5;
+
+// Mengatur Bintang yang Dipilih
+function setStarRating(stars) {
+    selectedStarRating = stars;
+    const btns = document.querySelectorAll('.star-btn');
+    btns.forEach((btn, idx) => {
+        const icon = btn.querySelector('svg');
+        if (idx < stars) {
+            btn.className = "star-btn text-amber-400 transition-colors";
+            if (icon) icon.classList.add('fill-amber-400');
+        } else {
+            btn.className = "star-btn text-fgMuted hover:text-amber-400 transition-colors";
+            if (icon) icon.classList.remove('fill-amber-400');
+        }
+    });
+}
+
+// Memuat Rating & Ulasan dari API
+async function loadRatingsData() {
+    try {
+        const res = await fetch('/api/rating');
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('avg-rating-value').textContent = data.avgRating;
+            document.getElementById('total-ratings-count').textContent = `Berdasarkan ${data.totalRatings} ulasan siswa`;
+
+            const container = document.getElementById('reviews-container');
+            if (data.reviews.length === 0) {
+                container.innerHTML = `<p class="text-xs text-fgMuted text-center py-8">Belum ada ulasan. Jadilah yang pertama memberikan rating!</p>`;
+            } else {
+                container.innerHTML = data.reviews.map(r => `
+                    <div class="p-4 rounded-xl bg-surface/40 border border-white/5 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-white">${r.displayName} <span class="font-mono text-fgMuted text-[10px]">(@${r.username})</span></span>
+                            <div class="flex text-amber-400 text-xs">
+                                ${Array(r.stars).fill('★').join('')}
+                            </div>
+                        </div>
+                        <p class="text-xs text-fgMuted">${r.reviewText || "<i>Tanpa ulasan tertulis.</i>"}</p>
+                    </div>
+                `).join('');
+            }
+        }
+    } catch (e) {}
+}
+
+// Mengirimkan Rating User
+async function submitRating() {
+    const token = localStorage.getItem('osis_token');
+    if (!token) {
+        alert("Anda harus login terlebih dahulu!");
+        openAuthModal();
+        return;
+    }
+
+    const reviewText = document.getElementById('rating-review-text').value;
+
+    try {
+        const res = await fetch('/api/rating', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ stars: selectedStarRating, reviewText })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) {
+            document.getElementById('rating-review-text').value = '';
+            loadRatingsData();
+        }
+    } catch (err) {
+        alert("Gagal menyimpan rating.");
+    }
+}
+
+// Update fungsi checkLoginStatus() agar otomatis BUKA/KUNCI Sector 7
+function checkLoginStatus() {
+    const userJson = localStorage.getItem('osis_user');
+    const token = localStorage.getItem('osis_token');
+    
+    const lockOverlay = document.getElementById('sector7-lock-overlay');
+    const contentBox = document.getElementById('sector7-content-box');
+
+    if (token && userJson) {
+        // JIKA USER SUDAH LOGIN: BUKA GEMBOK SECTOR 7
+        if (lockOverlay) lockOverlay.classList.add('hidden');
+        if (contentBox) {
+            contentBox.classList.remove('blur-md', 'pointer-events-none', 'select-none');
+        }
+    } else {
+        // JIKA BELUM LOGIN: KUNCI & BLUR SECTOR 7
+        if (lockOverlay) lockOverlay.classList.remove('hidden');
+        if (contentBox) {
+            contentBox.classList.add('blur-md', 'pointer-events-none', 'select-none');
+        }
+    }
+
+    // Panggil pemuatan data rating
+    loadRatingsData();
 }
 
         async function handleLoginSubmit(e) {
