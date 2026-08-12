@@ -264,79 +264,6 @@
             </div>
 
         </div>
-
-        <!-- ================================================================= -->
-<!-- MODAL / CONTAINER VERIFIKASI OTP                                 -->
-<!-- File: index.html                                                  -->
-<!-- ================================================================= -->
-<div id="otpModal" class="modal-overlay" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999;">
-    <div class="modal-content" style="background: #ffffff; padding: 30px; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-        
-        <!-- Header Modal -->
-        <div class="modal-header" style="text-align: center; margin-bottom: 20px;">
-            <h3 style="margin: 0; font-size: 22px; color: #1a202c; font-weight: 700;">Verifikasi Kode OTP</h3>
-            <p style="margin-top: 8px; font-size: 14px; color: #718096;">Masukkan 6 digit kode keamanan yang telah dikirimkan ke email Anda.</p>
-        </div>
-
-        <!-- Form Verifikasi OTP -->
-        <form id="otpForm" onsubmit="handleOtpSubmit(event)">
-            
-            <!-- Input Kode OTP -->
-            <div class="form-group" style="margin-bottom: 15px; text-align: center;">
-                <label for="otpInput" style="display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Kode Otentikasi</label>
-                <input type="text" 
-                       id="otpInput" 
-                       name="otpCode" 
-                       maxlength="6" 
-                       placeholder="• • • • • •" 
-                       required 
-                       autocomplete="off"
-                       style="width: 100%; padding: 12px 0; font-size: 24px; letter-spacing: 8px; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: all 0.3s ease; box-sizing: border-box;">
-            </div>
-
-            <!-- =============================================================== -->
-            <!-- ⬇️ SISIPKAN BAGIAN 2 DI SINI (TEPAT DI BAWAH INPUT OTP) ⬇️      -->
-            <!-- =============================================================== -->
-            <div class="otp-resend-wrapper" style="margin-top: 15px; margin-bottom: 20px; text-align: center;">
-                
-                <!-- Pesan Kesalahan / Warning (Tampil jika OTP Salah) -->
-                <div id="otpErrorMessage" 
-                     class="alert-message error" 
-                     style="display: none; background-color: #fff5f5; border: 1px solid #feb2b2; color: #c53030; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; transition: all 0.3s ease;">
-                    <i class="fas me-1"></i>
-                    <span id="otpErrorText">Kode OTP salah atau telah kadaluwarsa. Silakan periksa kembali.</span>
-                </div>
-
-                <!-- Tombol Resend OTP -->
-                <button type="button" 
-                        id="btnResendOtp" 
-                        onclick="executeResendOTP()" 
-                        class="btn-resend-action" 
-                        style="width: 100%; padding: 10px 16px; background-color: #ed8936; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.2s ease, transform 0.1s ease;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                    </svg>
-                    <span>Kirim Ulang Kode OTP</span>
-                </button>
-
-                <!-- Indikator Cooldown Timer -->
-                <div id="otpTimerContainer" style="margin-top: 10px; font-size: 13px; color: #718096; display: none;">
-                    Mohon tunggu <span id="cooldownSeconds" style="font-weight: 700; color: #2b6cb0;">60</span> detik sebelum meminta kode baru.
-                </div>
-            </div>
-            <!-- =============================================================== -->
-            <!-- ⬆️ AKHIR DARI BAGIAN 2 ⬆️                                       -->
-            <!-- =============================================================== -->
-
-            <!-- Tombol Verifikasi Utama -->
-            <button type="submit" 
-                    id="btnVerifySubmit" 
-                    style="width: 100%; padding: 12px; background-color: #3182ce; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 0.2s;">
-                Verifikasi & Lanjutkan
-            </button>
-        </form>
-
-    </div>
 </div>
 
         <!-- Mobile Drawer -->
@@ -1250,6 +1177,28 @@
                 <div>
                     <input type="text" id="otp-code" maxlength="6" required placeholder="123456" class="w-full text-center tracking-[10px] text-2xl font-mono py-3 rounded-xl bg-surface border border-accent text-white focus:outline-none">
                 </div>
+
+                <!-- ========================================================================= -->
+                <!-- ⬇️ SISIPKAN MODAL TOMBOL RESEND OTP DENGAN TEMA DARK MODE DI SINI ⬇️        -->
+                <!-- ========================================================================= -->
+                <div class="text-center space-y-2 py-1">
+                    <button type="button" 
+                            id="btnResendOtp" 
+                            onclick="executeResendOTP()" 
+                            class="w-full py-2.5 rounded-xl text-xs font-mono font-bold text-accent bg-accent/10 border border-accent/30 hover:bg-accent/20 hover:border-accent/50 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                        <span id="btnResendText">KIRIM ULANG KODE OTP</span>
+                    </button>
+
+                    <!-- Cooldown Timer Text -->
+                    <div id="otpTimerContainer" class="hidden text-[11px] font-mono text-fgMuted">
+                        Mohon tunggu <span id="cooldownSeconds" class="font-bold text-accent">60</span> detik sebelum meminta kode baru.
+                    </div>
+                </div>
+                <!-- ========================================================================= -->
+                <!-- ⬆️ AKHIR BAGIAN TOMBOL RESEND OTP ⬆️                                      -->
+                <!-- ========================================================================= -->
+
                 <button type="submit" id="btn-otp-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase">
                     VERIFIKASI & PROSES
                 </button>
@@ -2167,31 +2116,37 @@ async function deleteUserByAdmin(userId) {
     }
 })();
 
-// State Global Modul OTP
+// =========================================================================
+        // LOGIKA INTERAKTIF RESEND OTP & COOLDOWN TIMER (SINKRON DENGAN AUTH SYSTEM)
+        // Lokasi: Di dalam tag <script> di bagian bawah file index.html
+        // =========================================================================
+
         let cooldownTimerInterval = null;
-        const DEFAULT_COOLDOWN_TIME = 60; // Durasi cooldown dalam detik
+        const DEFAULT_COOLDOWN_TIME = 60; // Durasi penundaan dalam detik
 
         /**
-         * Mengirimkan permintaan pembuatan dan pembaruan OTP baru ke server Backend
+         * Mengirimkan permintaan pembuatan dan pembaruan OTP baru ke server Backend Express/Vercel
          */
         async function executeResendOTP() {
             const resendButton = document.getElementById('btnResendOtp');
-            const errorContainer = document.getElementById('otpErrorMessage');
-            const otpInputField = document.getElementById('otpInput');
+            const resendText = document.getElementById('btnResendText');
+            const otpInputField = document.getElementById('otp-code');
             
-            // Ambil identifier pengguna dari input email/username yang tersedia di halaman
-            const emailInput = document.getElementById('email') || document.getElementById('userEmail');
-            const userEmailValue = emailInput ? emailInput.value.trim() : '';
+            // Mengambil alamat email aktif dari alur autentikasi website
+            if (!currentPendingEmail) {
+                alert('Sesi email tidak ditemukan. Silakan ulangi proses pendaftaran atau login.');
+                return;
+            }
 
-            // Mencegah double click selama proses request jaringan berlangsung
             if (resendButton.disabled) return;
             
+            // Mengunci tombol saat permintaan sedang diproses
             resendButton.disabled = true;
-            resendButton.style.opacity = '0.7';
-            resendButton.innerText = 'Sedang Memproses...';
+            resendButton.style.opacity = '0.6';
+            if (resendText) resendText.innerText = 'SEDANG MENGIRIM...';
 
             try {
-                // Request API ke backend Vercel / Express
+                // Request API ke backend Express / Vercel
                 const response = await fetch('/api/resend-otp', {
                     method: 'POST',
                     headers: {
@@ -2199,7 +2154,7 @@ async function deleteUserByAdmin(userId) {
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        email: userEmailValue,
+                        email: currentPendingEmail,
                         requestTimestamp: new Date().toISOString()
                     })
                 });
@@ -2207,55 +2162,46 @@ async function deleteUserByAdmin(userId) {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // 1. Sembunyikan notifikasi error sebelumnya jika ada
-                    if (errorContainer) {
-                        errorContainer.style.display = 'none';
-                    }
-
-                    // 2. Kosongkan input agar pengguna siap memasukkan kode baru
+                    // Kosongkan input OTP dan fokuskan kembali
                     if (otpInputField) {
                         otpInputField.value = '';
                         otpInputField.focus();
                     }
 
-                    // 3. Tampilkan pesan feedback sukses
-                    alert('Kode OTP baru berhasil dikirimkan ke email Anda! Silakan periksa kotak masuk.');
+                    alert(`Kode OTP baru berhasil dikirimkan ke email: ${currentPendingEmail}`);
 
-                    // 4. Jalankan hitung mundur penundaan (Cooldown Timer)
+                    // Jalankan timer hitung mundur
                     initiateResendCooldown(DEFAULT_COOLDOWN_TIME);
                 } else {
-                    // Tampilkan pesan kendala dari server
-                    alert('Gagal Mengirim OTP: ' + (result.message || 'Terjadi kesalahan sistem.'));
+                    alert('Gagal Mengirim OTP: ' + (result.message || 'Terjadi kesalahan pada sistem.'));
                     resetResendButtonState();
                 }
 
             } catch (networkError) {
                 console.error('[Client Log] Kesalahan koneksi jaringan:', networkError);
-                alert('Gagal terhubung ke server. Pastikan koneksi internet Anda stabil.');
+                alert('Gagal terhubung ke server backend. Pastikan koneksi internet Anda stabil.');
                 resetResendButtonState();
             }
         }
 
         /**
-         * Mengelola jalannya waktu hitung mundur tombol resend
+         * Mengelola waktu hitung mundur tombol resend
          */
         function initiateResendCooldown(seconds) {
             const resendButton = document.getElementById('btnResendOtp');
+            const resendText = document.getElementById('btnResendText');
             const timerContainer = document.getElementById('otpTimerContainer');
             const timerDisplay = document.getElementById('cooldownSeconds');
 
             let currentRemainingSeconds = seconds;
             
             resendButton.disabled = true;
-            resendButton.style.backgroundColor = '#cbd5e0';
-            resendButton.style.color = '#718096';
+            resendButton.style.opacity = '0.5';
             resendButton.style.cursor = 'not-allowed';
-            resendButton.style.opacity = '1';
 
-            if (timerContainer) timerContainer.style.display = 'block';
+            if (timerContainer) timerContainer.classList.remove('hidden');
             if (timerDisplay) timerDisplay.innerText = currentRemainingSeconds;
 
-            // Hentikan interval sebelumnya jika ada yang sedang berjalan
             if (cooldownTimerInterval) {
                 clearInterval(cooldownTimerInterval);
             }
@@ -2267,42 +2213,22 @@ async function deleteUserByAdmin(userId) {
                 if (currentRemainingSeconds <= 0) {
                     clearInterval(cooldownTimerInterval);
                     resetResendButtonState();
-                    if (timerContainer) timerContainer.style.display = 'none';
+                    if (timerContainer) timerContainer.classList.add('hidden');
                 }
             }, 1000);
         }
 
         /**
-         * Mengembalikan tampilan dan status tombol Resend ke kondisi aktif semula
+         * Mengembalikan tampilan dan status tombol Resend ke kondisi aktif
          */
         function resetResendButtonState() {
             const resendButton = document.getElementById('btnResendOtp');
+            const resendText = document.getElementById('btnResendText');
             if (resendButton) {
                 resendButton.disabled = false;
-                resendButton.style.backgroundColor = '#ed8936';
-                resendButton.style.color = '#ffffff';
+                resendButton.style.opacity = '1';
                 resendButton.style.cursor = 'pointer';
-                resendButton.innerText = 'Kirim Ulang Kode OTP';
-            }
-        }
-
-        /**
-         * Dipanggil ketika API verifikasi OTP memberikan respons GAGAL / SALAH
-         */
-        function handleFailedOTPVerification(customMessage) {
-            const errorContainer = document.getElementById('otpErrorMessage');
-            const errorTextSpan = document.getElementById('otpErrorText');
-            const otpInputField = document.getElementById('otpInput');
-
-            if (errorContainer && errorTextSpan) {
-                errorTextSpan.innerText = customMessage || 'Kode OTP yang Anda masukkan tidak sesuai atau kadaluwarsa.';
-                errorContainer.style.display = 'block';
-            }
-
-            if (otpInputField) {
-                otpInputField.style.borderColor = '#e53e3e';
-                otpInputField.value = '';
-                otpInputField.focus();
+                if (resendText) resendText.innerText = 'KIRIM ULANG KODE OTP';
             }
         }
         
