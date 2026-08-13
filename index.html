@@ -238,27 +238,72 @@
                     <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-accent"></i> Kontak
                 </a>
 
-                <!-- CONTAINER AUTHENTICATION HEADER -->
-                <div id="auth-header-container" class="inline-flex items-center">
+                <!-- CONTAINER AUTHENTICATION HEADER & USER DROPDOWN MENU -->
+                <div id="auth-header-container" class="inline-flex items-center relative">
+                    
                     <!-- Status 1: Belum Login (Tampil Tombol Login / Register) -->
                     <button id="btn-open-auth" onclick="openAuthModal()" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white btn-primary-glow transition-all">
                         <i data-lucide="user" class="w-3.5 h-3.5 mr-2"></i> Login / Register
                     </button>
 
-                    <!-- Status 2: Sudah Login (Menggantikan tombol saat user berhasil login) -->
-                    <div id="user-logged-badge" class="hidden flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface border border-accent/40 shadow-lg">
-                        <div id="user-role-icon" class="w-6 h-6 rounded-lg bg-accent/20 border border-accent flex items-center justify-center text-accent overflow-hidden">
+                    <!-- Status 2: Sudah Login (Gambar Pertama yang Diklik Membuka Dropdown Pilihan) -->
+                    <div id="user-logged-badge" onclick="toggleUserDropdown(event)" class="hidden relative items-center space-x-2 px-3.5 py-2 rounded-xl bg-surface border border-accent/40 shadow-lg cursor-pointer hover:bg-white/10 transition-all select-none group">
+                        <div id="user-role-icon" class="w-7 h-7 rounded-lg bg-accent/20 border border-accent flex items-center justify-center text-accent overflow-hidden shadow-inner">
                             <img id="user-avatar-badge" src="https://via.placeholder.com/150" alt="Avatar" class="w-full h-full object-cover hidden">
-                            <i id="user-default-icon" data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                            <i id="user-default-icon" data-lucide="user-check" class="w-4 h-4"></i>
                         </div>
-                        <span id="user-display-username" class="text-xs font-mono font-bold text-white max-w-[100px] truncate"></span>
-                        <button onclick="openProfileModal()" title="Edit Profil Akun" class="text-fgMuted hover:text-accent transition-colors p-1">
-                            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="handleLogout()" title="Keluar / Logout" class="text-fgMuted hover:text-rose-400 transition-colors p-1">
-                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-                        </button>
+                        <span id="user-display-username" class="text-xs font-mono font-bold text-white max-w-[110px] truncate"></span>
+                        <i data-lucide="chevron-down" id="dropdown-arrow-icon" class="w-3.5 h-3.5 text-fgMuted group-hover:text-white transition-transform duration-300"></i>
+
+                        <!-- DROPDOWN MENU POPUP KOSTUMISASI UNDERNEATH -->
+                        <div id="user-dropdown-menu" class="hidden absolute top-full right-0 mt-3 w-64 rounded-2xl bg-bgElevated/95 backdrop-blur-2xl border border-accent/40 shadow-2xl p-2 z-50 text-left transition-all duration-200 transform origin-top-right" onclick="event.stopPropagation()">
+                            
+                            <!-- Header Ringkas Pengguna -->
+                            <div class="p-3 border-b border-white/10 mb-1 bg-surface/50 rounded-xl">
+                                <p id="dropdown-user-fullname" class="text-xs font-bold text-white truncate">Pengguna Active</p>
+                                <p id="dropdown-user-username" class="text-[10px] font-mono text-fgMuted truncate mt-0.5">@username</p>
+                                <span id="dropdown-user-role-badge" class="inline-block mt-2 px-2 py-0.5 rounded bg-accent/20 border border-accent/30 text-accent text-[9px] font-mono font-bold uppercase">USER</span>
+                            </div>
+
+                            <!-- Pilihan Menu Kostumisasi & Fitur -->
+                            <div class="space-y-1">
+                                <!-- Option 1: KOSTUMISASI PROFIL (Membuka Modal Kostumisasi) -->
+                                <button onclick="triggerProfileCustomization()" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-accent/20 border border-transparent hover:border-accent/30 text-xs font-semibold text-white transition-all flex items-center group/item">
+                                    <div class="w-7 h-7 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover/item:bg-accent group-hover/item:text-white mr-2.5 transition-colors">
+                                        <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block">Kostumisasi Profil</span>
+                                        <span class="block text-[10px] text-fgMuted group-hover/item:text-indigo-200 font-normal">Upload avatar, bio, & username</span>
+                                    </div>
+                                </button>
+
+                                <!-- Option 2: Admin Panel (Muncul jika SUPER_ADMIN/ADMIN) -->
+                                <button id="dropdown-admin-btn" onclick="navigateToAdminPanel()" class="hidden w-full text-left px-3 py-2.5 rounded-xl hover:bg-amber-500/20 border border-transparent hover:border-amber-500/30 text-xs font-semibold text-amber-300 transition-all flex items-center group/item">
+                                    <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover/item:bg-amber-500 group-hover/item:text-black mr-2.5 transition-colors">
+                                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block">Admin Control Panel</span>
+                                        <span class="block text-[10px] text-amber-400/70 font-normal">Kelola database pengguna</span>
+                                    </div>
+                                </button>
+
+                                <!-- Pemisah Pembatas -->
+                                <div class="my-1 border-t border-white/5"></div>
+
+                                <!-- Option 3: Keluar / Logout -->
+                                <button onclick="executeDropdownLogout()" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-rose-500/20 border border-transparent hover:border-rose-500/30 text-xs font-semibold text-rose-400 transition-all flex items-center group/item">
+                                    <div class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 group-hover/item:bg-rose-500 group-hover/item:text-white mr-2.5 transition-colors">
+                                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <span>Keluar / Logout</span>
+                                </button>
+                            </div>
+
+                        </div>
                     </div>
+
                 </div>
                 
                 <!-- Toggle Menu Mobile -->
@@ -1205,7 +1250,7 @@
         </div>
     </div>
 
-    <!-- ==================== PROFILE CUSTOMIZATION MODAL ==================== -->
+    <!-- ==================== PROFILE CUSTOMIZATION MODAL (KOSTUMISASI PROFIL) ==================== -->
     <div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
         <div class="relative w-full max-w-md card-linear border-accent/40 bg-bgElevated p-6 sm:p-8 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
             
@@ -1325,6 +1370,84 @@
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
 
+        // =========================================================================
+        // USER DROPDOWN MENU HANDLERS (MENAMPILKAN KOSTUMISASI SAAT BADGE DIKLIK)
+        // =========================================================================
+        function toggleUserDropdown(event) {
+            if (event) event.stopPropagation();
+            const dropdown = document.getElementById('user-dropdown-menu');
+            const arrow = document.getElementById('dropdown-arrow-icon');
+            if (!dropdown) return;
+
+            const isHidden = dropdown.classList.contains('hidden');
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                if (arrow) arrow.style.transform = 'rotate(180deg)';
+                populateDropdownUserInfo();
+            } else {
+                closeUserDropdown();
+            }
+        }
+
+        function closeUserDropdown() {
+            const dropdown = document.getElementById('user-dropdown-menu');
+            const arrow = document.getElementById('dropdown-arrow-icon');
+            if (dropdown) dropdown.classList.add('hidden');
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+
+        function populateDropdownUserInfo() {
+            const userJson = localStorage.getItem('osis_user');
+            if (!userJson) return;
+            try {
+                const user = JSON.parse(userJson);
+                const nameEl = document.getElementById('dropdown-user-fullname');
+                const usernameEl = document.getElementById('dropdown-user-username');
+                const roleBadge = document.getElementById('dropdown-user-role-badge');
+                const adminBtn = document.getElementById('dropdown-admin-btn');
+
+                if (nameEl) nameEl.textContent = user.displayName || "Pengguna";
+                if (usernameEl) usernameEl.textContent = "@" + (user.username || "user");
+                if (roleBadge) roleBadge.textContent = user.role || "USER";
+
+                if (adminBtn) {
+                    if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+                        adminBtn.classList.remove('hidden');
+                        adminBtn.classList.add('flex');
+                    } else {
+                        adminBtn.classList.add('hidden');
+                        adminBtn.classList.remove('flex');
+                    }
+                }
+            } catch(e) {}
+        }
+
+        function triggerProfileCustomization() {
+            closeUserDropdown();
+            openProfileModal();
+        }
+
+        function navigateToAdminPanel() {
+            closeUserDropdown();
+            const adminSection = document.getElementById('admin-dashboard-section');
+            if (adminSection) {
+                adminSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function executeDropdownLogout() {
+            closeUserDropdown();
+            handleLogout();
+        }
+
+        // Close Dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const badge = document.getElementById('user-logged-badge');
+            if (badge && !badge.contains(event.target)) {
+                closeUserDropdown();
+            }
+        });
+
         // Memeriksa Status Login dan Membuka Control Panel Jika Memiliki Role SUPER_ADMIN
         function checkLoginStatus() {
             const userJson = localStorage.getItem('osis_user');
@@ -1332,7 +1455,6 @@
             const btnOpenAuth = document.getElementById('btn-open-auth');
             const userLoggedBadge = document.getElementById('user-logged-badge');
             const userDisplayUsername = document.getElementById('user-display-username');
-            const userRoleIcon = document.getElementById('user-role-icon');
             const userAvatarBadge = document.getElementById('user-avatar-badge');
             const userDefaultIcon = document.getElementById('user-default-icon');
             const adminDashboardSection = document.getElementById('admin-dashboard-section');
@@ -1487,6 +1609,7 @@
                 closeModal();
                 closeAuthModal();
                 closeProfileModal();
+                closeUserDropdown();
             }
         });
 
