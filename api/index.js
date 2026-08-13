@@ -10,6 +10,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const fetch = require('node-fetch');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -18,6 +19,8 @@ const https = require('https');
 const path = require('path');
 
 const app = express();
+
+app.use(express.json());
 
 // KONSTANTA & ATURAN WAKTU COOLDOWN
 const MASTER_ADMIN_EMAIL = "osismediateknologiskkkpdg@gmail.com";
@@ -239,6 +242,132 @@ function createSmtpTransporter() {
     tls: { rejectUnauthorized: false }
   });
 }
+
+/**
+ * Fungsi pembantu untuk menyimpan atau memperbarui file pada repositori GitHub API
+ * dengan menangani SHA secara otomatis.
+ * 
+ * @param {Object} options
+ * @param {string} options.owner - Username/Organisasi pemilik repositori GitHub
+ * @param {string} options.repo - Nama repositori GitHub
+ * @param {string} options.filePath - Path file di repositori (contoh: 'User_data.json')
+ * @param {Object|Array} options.fileData - Object/Array data JSON yang ingin disimpan
+ * @param {string} options.commitMessage - Pesan commit penjelasan perubahan
+ * @param {string} options.githubToken - Personal Access Token GitHub
+ * @returns {Promise<Object>} Respon JSON hasil commit dari GitHub API
+ */
+async function commitFileToGitHubRepository({
+    owner,
+    repo,
+    filePath,
+    fileData,
+    commitMessage,
+    githubToken
+}) {
+    const apiEndpoint = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+    
+    const requestHeaders = {
+        'Authorization': `Bearer ${githubToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'Website-OSIS-SMP-App'
+    };
+
+    let existingFileSha = null;
+
+    // LANGKAH 1: Lakukan permintaan GET untuk memeriksa keberadaan file dan mengambil SHA saat ini
+    try {
+        const checkFileResponse = await fetch(apiEndpoint, {
+            method: 'GET',
+            headers: requestHeaders
+        });
+
+        if (checkFileResponse.ok) {
+            const existingFileData = await checkFileResponse.json();
+            existingFileSha = existingFileData.sha;
+            console.log(`[GitHub API] File '${filePath}' ditemukan. SHA saat ini: ${existingFileSha}`);
+        } else if (checkFileResponse.status === 404) {
+            console.log(`[GitHub API] File '${filePath}' belum ada. Membuka mode pembuatan file baru.`);
+        } else {
+            const errorDetails = await checkFileResponse.text();
+            throw new Error(`Gagal memeriksa keberadaan file [HTTP ${checkFileResponse.status}]: ${errorDetails}`);
+        }
+    } catch (checkError) {
+        console.error('[GitHub API Error] Gagal melakukan pengecekan file:', checkError.message);
+        throw checkError;
+    }
+
+    // LANGKAH 2: Konversi data menjadi format JSON String dan Encode ke Base64
+    const jsonStringContent = JSON.stringify(fileData, null, 2);
+    const base64EncodedContent = Buffer.from(jsonStringContent, 'utf-8').toString('base64');
+
+    // LANGKAH 3: Susun payload JSON yang akan dikirim pada permintaan PUT
+    const payloadBody = {
+        message: commitMessage,
+        content: base64EncodedContent
+    };
+
+    // Jika file sudah pernah ada sebelumnya, sertakan SHA agar GitHub API tidak menolak dengan error 422
+    if (existingFileSha) {
+        payloadBody.sha = existingFileSha;
+    }
+
+    // LANGKAH 4: Kirim permintaan PUT untuk menyimpan/memperbarui file di GitHub
+    const updateResponse = await fetch(apiEndpoint, {
+        method: 'PUT',
+        headers: requestHeaders,
+        body: JSON.stringify(payloadBody)
+    });
+
+    if (!updateResponse.ok) {
+        const errorResponseBody = await updateResponse.json();
+        throw new Error(`GitHub API Error [HTTP ${updateResponse.status}]: ${JSON.stringify(errorResponseBody)}`);
+    }
+
+    const responseData = await updateResponse.json();
+    console.log(`[GitHub API Success] File '${filePath}' berhasil diperbarui/dibuat.`);
+    return responseData;
+}
+
+// Endpoint Handler Proses Verifikasi Pendaftaran
+app.post('/api/verify-registration', async (req, res) => {
+    try {
+        const { userData } = req.body;
+
+        const GITHUB_OWNER = process.env.GITHUB_OWNER;
+        const GITHUB_REPO = process.env.GITHUB_REPO;
+        const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+        const FILE_PATH = 'User_data.json';
+
+        if (!userData) {
+            return res.status(400).json({ success: false, message: 'Data pendaftaran tidak valid.' });
+        }
+
+        // Eksekusi pembaruan data ke GitHub dengan fungsi pembantu yang sudah diperbaiki
+        const result = await commitFileToGitHubRepository({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            filePath: FILE_PATH,
+            fileData: userData,
+            commitMessage: `Update data pendaftaran siswa baru: ${userData.nama || 'User'}`,
+            githubToken: GITHUB_TOKEN
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Verifikasi pendaftaran berhasil diselesaikan.',
+            commitData: result.commit
+        });
+
+    } catch (error) {
+        console.error('Error saat verifikasi pendaftaran:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: 'Gagal menyelesaikan verifikasi pendaftaran.',
+            error: error.message
+        });
+    }
+});
 
 async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHeader) {
   const transporter = createSmtpTransporter();
