@@ -245,13 +245,21 @@
                         <i data-lucide="user" class="w-3.5 h-3.5 mr-2"></i> Login / Register
                     </button>
 
-                    <!-- Status 2: Sudah Login (Menggantikan tombol saat user berhasil login) -->
+                    <!-- Status 2: Sudah Login (Menggantikan tombol saat user berhasil login + Tombol Edit Profil) -->
                     <div id="user-logged-badge" class="hidden flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface border border-accent/40 shadow-lg">
-                        <div class="w-6 h-6 rounded-lg bg-accent/20 border border-accent flex items-center justify-center text-accent">
-                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        <div class="w-6 h-6 rounded-full bg-accent/20 border border-accent overflow-hidden flex items-center justify-center text-accent flex-shrink-0">
+                            <img id="user-header-avatar" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                            <span id="user-role-icon"><i data-lucide="user-check" class="w-3.5 h-3.5"></i></span>
                         </div>
-                        <span id="user-display-username" class="text-xs font-mono font-bold text-white"></span>
-                        <button onclick="handleLogout()" title="Keluar / Logout" class="ml-1 text-fgMuted hover:text-rose-400 transition-colors p-1">
+                        <span id="user-display-username" class="text-xs font-mono font-bold text-white max-w-[120px] truncate"></span>
+                        
+                        <!-- Tombol Kustomisasi Profil -->
+                        <button onclick="openProfileModal()" title="Kustomisasi Profil" class="text-accent hover:text-accentBright transition-colors p-1">
+                            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                        </button>
+                        
+                        <!-- Tombol Logout -->
+                        <button onclick="handleLogout()" title="Keluar / Logout" class="text-fgMuted hover:text-rose-400 transition-colors p-1">
                             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -264,7 +272,6 @@
             </div>
 
         </div>
-</div>
 
         <!-- Mobile Drawer -->
         <div id="mobile-menu" class="hidden md:hidden bg-bgElevated/95 backdrop-blur-2xl border-b border-borderDefault px-6 py-6 space-y-4">
@@ -1045,37 +1052,37 @@
         </section>
 
         <!-- ==================== ADMIN EXCLUSIVE DASHBOARD SECTION ==================== -->
-<section id="admin-dashboard-section" class="hidden py-12 px-4 sm:px-8 max-w-7xl mx-auto">
-    <div class="card-linear p-8 sm:p-10 rounded-3xl border-2 border-accent/60 bg-accent/10 shadow-2xl relative overflow-hidden">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between pb-6 border-b border-white/10 mb-8 gap-4">
-            <div>
-                <span class="px-3 py-1 rounded-full bg-accent text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">MASTER CONTROL PANEL</span>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-white mt-2">Administrator System Portal</h2>
-                <p class="text-xs text-fgMuted mt-1">Sistem manajemen penuh akun terdaftar di repositori User_data.json GitHub.</p>
-            </div>
-            <button onclick="fetchAdminUsersList()" class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold text-white bg-accent hover:bg-accentBright transition-all inline-flex items-center">
-                <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> RELOAD USER DATA
-            </button>
-        </div>
+        <section id="admin-dashboard-section" class="hidden py-12 px-4 sm:px-8 max-w-7xl mx-auto">
+            <div class="card-linear p-8 sm:p-10 rounded-3xl border-2 border-accent/60 bg-accent/10 shadow-2xl relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between pb-6 border-b border-white/10 mb-8 gap-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-accent text-white font-mono text-[10px] font-extrabold uppercase tracking-widest">MASTER CONTROL PANEL</span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold text-white mt-2">Administrator System Portal</h2>
+                        <p class="text-xs text-fgMuted mt-1">Sistem manajemen penuh akun terdaftar di repositori User_data.json GitHub.</p>
+                    </div>
+                    <button onclick="fetchAdminUsersList()" class="px-5 py-2.5 rounded-xl font-mono text-xs font-bold text-white bg-accent hover:bg-accentBright transition-all inline-flex items-center">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> RELOAD USER DATA
+                    </button>
+                </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left font-sans text-xs">
-                <thead>
-                    <tr class="border-b border-white/10 font-mono text-fgMuted uppercase text-[10px]">
-                        <th class="p-3">DISPLAY NAME</th>
-                        <th class="p-3">USERNAME</th>
-                        <th class="p-3">EMAIL</th>
-                        <th class="p-3">ROLE</th>
-                        <th class="p-3 text-right">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-users-table-body" class="divide-y divide-white/5">
-                    <!-- Data User Akan Dimuat Otomatis Melalui JavaScript -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</section>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-sans text-xs">
+                        <thead>
+                            <tr class="border-b border-white/10 font-mono text-fgMuted uppercase text-[10px]">
+                                <th class="p-3">DISPLAY NAME</th>
+                                <th class="p-3">USERNAME</th>
+                                <th class="p-3">EMAIL</th>
+                                <th class="p-3">ROLE</th>
+                                <th class="p-3 text-right">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-table-body" class="divide-y divide-white/5">
+                            <!-- Data User Akan Dimuat Otomatis Melalui JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
     </main>
 
@@ -1178,9 +1185,6 @@
                     <input type="text" id="otp-code" maxlength="6" required placeholder="123456" class="w-full text-center tracking-[10px] text-2xl font-mono py-3 rounded-xl bg-surface border border-accent text-white focus:outline-none">
                 </div>
 
-                <!-- ========================================================================= -->
-                <!-- ⬇️ SISIPKAN MODAL TOMBOL RESEND OTP DENGAN TEMA DARK MODE DI SINI ⬇️        -->
-                <!-- ========================================================================= -->
                 <div class="text-center space-y-2 py-1">
                     <button type="button" 
                             id="btnResendOtp" 
@@ -1195,15 +1199,70 @@
                         Mohon tunggu <span id="cooldownSeconds" class="font-bold text-accent">60</span> detik sebelum meminta kode baru.
                     </div>
                 </div>
-                <!-- ========================================================================= -->
-                <!-- ⬆️ AKHIR BAGIAN TOMBOL RESEND OTP ⬆️                                      -->
-                <!-- ========================================================================= -->
 
                 <button type="submit" id="btn-otp-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase">
                     VERIFIKASI & PROSES
                 </button>
             </form>
 
+        </div>
+    </div>
+
+    <!-- ==================== PROFILE CUSTOMIZATION MODAL ==================== -->
+    <div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="relative w-full max-w-lg card-linear border-accent/40 bg-bgElevated p-6 sm:p-8 rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh]">
+            
+            <button onclick="closeProfileModal()" aria-label="Close" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all z-20">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <span class="font-mono text-xs text-accent font-bold uppercase tracking-widest">[ KUSTOMISASI AKUN ]</span>
+                <h3 class="text-2xl font-bold text-white mt-1">Edit Profil Pengguna</h3>
+            </div>
+
+            <!-- ALERT BANNER -->
+            <div id="profile-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-mono border"></div>
+
+            <form id="form-profile" onsubmit="handleProfileSubmit(event)" class="space-y-4">
+                <!-- Avatar Upload Section -->
+                <div class="flex flex-col items-center justify-center space-y-3 pb-4 border-b border-white/10">
+                    <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-accent/60 shadow-lg bg-surface">
+                        <img id="profile-avatar-preview" src="/default-avatar.png" alt="Avatar Profil" class="w-full h-full object-cover">
+                    </div>
+                    <label class="cursor-pointer px-4 py-2 rounded-xl bg-surface hover:bg-white/10 border border-accent/40 text-accent font-mono text-xs font-bold transition-all flex items-center space-x-2">
+                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                        <span>Pilih Foto dari Komputer</span>
+                        <input type="file" id="profile-avatar-input" accept="image/png, image/jpeg, image/webp" class="hidden">
+                    </label>
+                    <span class="text-[10px] text-fgMuted font-mono">Format: JPG, PNG, WEBP (Maksimal 5MB)</span>
+                </div>
+
+                <!-- Display Name Field -->
+                <div>
+                    <label class="block text-[11px] font-mono text-fgMuted mb-1">DISPLAY NAME (NAMA TAMPILAN)</label>
+                    <input type="text" id="profile-display-name" required placeholder="Nama Tampilan Baru" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    <p class="text-[10px] text-amber-400/80 font-mono mt-1">⚠️ Hanya dapat diubah 1x dalam 24 jam.</p>
+                </div>
+
+                <!-- Username Field -->
+                <div>
+                    <label class="block text-[11px] font-mono text-fgMuted mb-1">USERNAME</label>
+                    <input type="text" id="profile-username" required placeholder="username_unik" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    <div id="profile-username-status" class="text-[10px] font-mono mt-1"></div>
+                    <p class="text-[10px] text-amber-400/80 font-mono mt-1">⚠️ Hanya dapat diubah 1x dalam 7 hari & harus unik.</p>
+                </div>
+
+                <!-- Bio / Description Field -->
+                <div>
+                    <label class="block text-[11px] font-mono text-fgMuted mb-1">DESKRIPSI AKUN (BIO)</label>
+                    <textarea id="profile-bio" rows="3" placeholder="Tuliskan sedikit deskripsi diri atau kata-kata bijak Anda..." class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none resize-none"></textarea>
+                </div>
+
+                <button type="submit" id="btn-profile-submit" class="w-full py-3.5 rounded-xl font-bold text-xs text-white btn-primary-glow font-mono uppercase mt-2">
+                    SIMPAN PERUBAHAN PROFIL
+                </button>
+            </form>
         </div>
     </div>
 
@@ -1262,107 +1321,121 @@
         if(yearEl) yearEl.textContent = new Date().getFullYear();
 
         // Memeriksa Status Login dan Membuka Control Panel Jika Memiliki Role SUPER_ADMIN
-function checkLoginStatus() {
-    const userJson = localStorage.getItem('osis_user');
-    const token = localStorage.getItem('osis_token');
-    const btnOpenAuth = document.getElementById('btn-open-auth');
-    const userLoggedBadge = document.getElementById('user-logged-badge');
-    const userDisplayUsername = document.getElementById('user-display-username');
-    const userRoleIcon = document.getElementById('user-role-icon');
-    const adminDashboardSection = document.getElementById('admin-dashboard-section');
+        function checkLoginStatus() {
+            const userJson = localStorage.getItem('osis_user');
+            const token = localStorage.getItem('osis_token');
+            const btnOpenAuth = document.getElementById('btn-open-auth');
+            const userLoggedBadge = document.getElementById('user-logged-badge');
+            const userDisplayUsername = document.getElementById('user-display-username');
+            const userRoleIcon = document.getElementById('user-role-icon');
+            const userHeaderAvatar = document.getElementById('user-header-avatar');
+            const adminDashboardSection = document.getElementById('admin-dashboard-section');
 
-    if (token && userJson) {
-        try {
-            const user = JSON.parse(userJson);
-            if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
-            if (userLoggedBadge) {
-                userLoggedBadge.classList.remove('hidden');
-                userLoggedBadge.classList.add('flex');
-            }
-            if (userDisplayUsername) {
-                userDisplayUsername.textContent = '@' + (user.username || user.displayName);
-            }
+            if (token && userJson) {
+                try {
+                    const user = JSON.parse(userJson);
+                    if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
+                    if (userLoggedBadge) {
+                        userLoggedBadge.classList.remove('hidden');
+                        userLoggedBadge.classList.add('flex');
+                    }
+                    if (userDisplayUsername) {
+                        userDisplayUsername.textContent = '@' + (user.username || user.displayName);
+                    }
 
-            // Memeriksa Hak Akses Administrator
-            if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
-                if (userRoleIcon) {
-                    userRoleIcon.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i>`;
-                }
-                if (adminDashboardSection) {
-                    adminDashboardSection.classList.remove('hidden');
-                    fetchAdminUsersList();
+                    // Menampilkan Foto Avatar di Header Jika Tersedia
+                    if (user.avatarUrl && user.avatarUrl !== '/default-avatar.png' && userHeaderAvatar) {
+                        userHeaderAvatar.src = user.avatarUrl;
+                        userHeaderAvatar.classList.remove('hidden');
+                        if (userRoleIcon) userRoleIcon.classList.add('hidden');
+                    } else {
+                        if (userHeaderAvatar) userHeaderAvatar.classList.add('hidden');
+                        if (userRoleIcon) userRoleIcon.classList.remove('hidden');
+                    }
+
+                    // Memeriksa Hak Akses Administrator
+                    if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+                        if (userRoleIcon && (!user.avatarUrl || user.avatarUrl === '/default-avatar.png')) {
+                            userRoleIcon.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i>`;
+                        }
+                        if (adminDashboardSection) {
+                            adminDashboardSection.classList.remove('hidden');
+                            fetchAdminUsersList();
+                        }
+                    } else {
+                        if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
+                    }
+                } catch (e) {
+                    handleLogout();
                 }
             } else {
+                if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
+                if (userLoggedBadge) {
+                    userLoggedBadge.classList.add('hidden');
+                    userLoggedBadge.classList.remove('flex');
+                }
                 if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
             }
-        } catch (e) {
-            handleLogout();
+            if (window.lucide) lucide.createIcons();
         }
-    } else {
-        if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
-        if (userLoggedBadge) {
-            userLoggedBadge.classList.add('hidden');
-            userLoggedBadge.classList.remove('flex');
+
+        // Mengambil Data Seluruh Pengguna dari API Serverless Vercel
+        async function fetchAdminUsersList() {
+            const token = localStorage.getItem('osis_token');
+            const tbody = document.getElementById('admin-users-table-body');
+            if (!tbody || !token) return;
+
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success && data.users) {
+                    tbody.innerHTML = '';
+                    data.users.forEach(u => {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-white/5 transition-colors";
+                        tr.innerHTML = `
+                            <td class="p-3 font-bold text-white flex items-center space-x-2">
+                                <img src="${u.avatarUrl || '/default-avatar.png'}" class="w-6 h-6 rounded-full object-cover border border-white/10">
+                                <span>${u.displayName}</span>
+                            </td>
+                            <td class="p-3 font-mono text-fgMuted">@${u.username}</td>
+                            <td class="p-3 font-mono text-fgMuted">${u.email}</td>
+                            <td class="p-3 font-mono"><span class="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent font-bold">${u.role}</span></td>
+                            <td class="p-3 text-right">
+                                ${u.role === 'SUPER_ADMIN' ? '<span class="text-xs text-fgMuted italic">Protected</span>' : `
+                                    <button onclick="deleteUserByAdmin('${u.id}')" class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold transition-all">
+                                        DELETE
+                                    </button>
+                                `}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {
+                // Silent catch
+            }
         }
-        if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
-    }
-    if (window.lucide) lucide.createIcons();
-}
 
-// Mengambil Data Seluruh Pengguna dari API Serverless Vercel
-async function fetchAdminUsersList() {
-    const token = localStorage.getItem('osis_token');
-    const tbody = document.getElementById('admin-users-table-body');
-    if (!tbody || !token) return;
-
-    try {
-        const res = await fetch('/api/admin/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-
-        if (data.success && data.users) {
-            tbody.innerHTML = '';
-            data.users.forEach(u => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-white/5 transition-colors";
-                tr.innerHTML = `
-                    <td class="p-3 font-bold text-white">${u.displayName}</td>
-                    <td class="p-3 font-mono text-fgMuted">@${u.username}</td>
-                    <td class="p-3 font-mono text-fgMuted">${u.email}</td>
-                    <td class="p-3 font-mono"><span class="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent font-bold">${u.role}</span></td>
-                    <td class="p-3 text-right">
-                        ${u.role === 'SUPER_ADMIN' ? '<span class="text-xs text-fgMuted italic">Protected</span>' : `
-                            <button onclick="deleteUserByAdmin('${u.id}')" class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold transition-all">
-                                DELETE
-                            </button>
-                        `}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+        // Menghapus Pengguna Spesifik dari Repositori GitHub
+        async function deleteUserByAdmin(userId) {
+            if (!confirm("Apakah Anda yakin ingin menghapus akun ini secara permanen dari sistem?")) return;
+            const token = localStorage.getItem('osis_token');
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                alert(data.message);
+                fetchAdminUsersList();
+            } catch (err) {
+                alert("Gagal menghapus user.");
+            }
         }
-    } catch (err) {
-        // Silent catch
-    }
-}
-
-// Menghapus Pengguna Spesifik dari Repositori GitHub
-async function deleteUserByAdmin(userId) {
-    if (!confirm("Apakah Anda yakin ingin menghapus akun ini secara permanen dari sistem?")) return;
-    const token = localStorage.getItem('osis_token');
-    try {
-        const res = await fetch(`/api/admin/users/${userId}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        alert(data.message);
-        fetchAdminUsersList();
-    } catch (err) {
-        alert("Gagal menghapus user.");
-    }
-}
 
         // Image Preview Modal Functions
         function openModal(imageSrc, name, role, quote) {
@@ -1410,6 +1483,8 @@ async function deleteUserByAdmin(userId) {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
+                closeAuthModal();
+                closeProfileModal();
             }
         });
 
@@ -1417,9 +1492,6 @@ async function deleteUserByAdmin(userId) {
         // COMPREHENSIVE DYNAMIC TRIVIA & BRAINSTORMING ENGINE (25 POOL / 10 ACTIVE)
         // =========================================================================
         
-        /**
-         * Master Question Pool containing 25 scenario-based leadership questions
-         */
         const masterQuizPool = [
             {
                 category: "Karakter Pemimpin",
@@ -1549,7 +1621,7 @@ async function deleteUserByAdmin(userId) {
                     { text: "Kemenangan adalah segalanya, meskipun harus berbuat curang", isCorrect: false },
                     { text: "Menjunjung tinggi kejujuran, sportivitas, dan menghargai lawan bertanding", isCorrect: true },
                     { text: "Membela kelas sendiri walaupun melanggar aturan pertandingan", isCorrect: false },
-                    { text: "Membatalkan pertandingan jika tim favorit mengalami kekalahan", isCorrect: false }
+                    { text: "Membatalan pertandingan jika tim favorit mengalami kekalahan", isCorrect: false }
                 ],
                 explanation: "Nilai sejati olahraga terletak pada pembentukan karakter jujur, disiplin, dan saling menghormati."
             },
@@ -1850,37 +1922,6 @@ async function deleteUserByAdmin(userId) {
         let currentAuthFlow = 'login'; 
         let currentPendingEmail = '';
 
-        function checkLoginStatus() {
-            const userJson = localStorage.getItem('osis_user');
-            const token = localStorage.getItem('osis_token');
-            const btnOpenAuth = document.getElementById('btn-open-auth');
-            const userLoggedBadge = document.getElementById('user-logged-badge');
-            const userDisplayUsername = document.getElementById('user-display-username');
-
-            if (token && userJson) {
-                try {
-                    const user = JSON.parse(userJson);
-                    if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
-                    if (userLoggedBadge) {
-                        userLoggedBadge.classList.remove('hidden');
-                        userLoggedBadge.classList.add('flex');
-                    }
-                    if (userDisplayUsername) {
-                        userDisplayUsername.textContent = '@' + (user.username || user.displayName);
-                    }
-                } catch (e) {
-                    handleLogout();
-                }
-            } else {
-                if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
-                if (userLoggedBadge) {
-                    userLoggedBadge.classList.add('hidden');
-                    userLoggedBadge.classList.remove('flex');
-                }
-            }
-            if (window.lucide) lucide.createIcons();
-        }
-
         function handleLogout() {
             localStorage.removeItem('osis_token');
             localStorage.removeItem('osis_user');
@@ -1964,34 +2005,6 @@ async function deleteUserByAdmin(userId) {
         }
 
         async function handleLoginSubmit(e) {
-    e.preventDefault();
-    const identifier = document.getElementById('login-identifier').value;
-    const password = document.getElementById('login-password').value;
-
-    try {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier, password })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            // Seluruh Akun (Termasuk Admin) Mengikuti Alur Verifikasi OTP
-            currentPendingEmail = data.email;
-            showAlert(data.message, true);
-            document.getElementById('form-login').classList.add('hidden');
-            document.getElementById('form-otp').classList.remove('hidden');
-            document.getElementById('otp-target-email').textContent = data.email;
-        } else {
-            showAlert(data.message, false);
-        }
-    } catch (err) {
-        showAlert("Gagal menghubungi server backend.", false);
-    }
-}
-
-        async function handleLoginSubmit(e) {
             e.preventDefault();
             const identifier = document.getElementById('login-identifier').value;
             const password = document.getElementById('login-password').value;
@@ -2057,82 +2070,251 @@ async function deleteUserByAdmin(userId) {
             }
         }
 
-        // Initialize status on load
+        // =========================================================================
+        // PROFILE CUSTOMIZATION ENGINE (EDIT AVATAR, BIO, DISPLAY NAME, USERNAME)
+        // =========================================================================
+        let currentAvatarBase64 = null;
+        let usernameDebounceTimer = null;
+
+        function openProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            const alertEl = document.getElementById('profile-alert');
+            if (alertEl) alertEl.classList.add('hidden');
+
+            const userJson = localStorage.getItem('osis_user');
+            if (!userJson) {
+                alert("Silakan login terlebih dahulu untuk mengedit profil Anda.");
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userJson);
+                document.getElementById('profile-display-name').value = user.displayName || '';
+                document.getElementById('profile-username').value = user.username || '';
+                document.getElementById('profile-bio').value = user.bio || '';
+
+                const previewImg = document.getElementById('profile-avatar-preview');
+                if (user.avatarUrl && user.avatarUrl !== '/default-avatar.png') {
+                    previewImg.src = user.avatarUrl;
+                    currentAvatarBase64 = user.avatarUrl;
+                } else {
+                    previewImg.src = 'https://via.placeholder.com/120?text=Avatar';
+                    currentAvatarBase64 = null;
+                }
+
+                document.getElementById('profile-username-status').textContent = '';
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('opacity-100', 'pointer-events-auto');
+                if (window.lucide) lucide.createIcons();
+            } catch (err) {
+                console.error('Error openProfileModal:', err);
+            }
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            if (modal) {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        function showProfileAlert(msg, isSuccess = false) {
+            const alertEl = document.getElementById('profile-alert');
+            if (!alertEl) return;
+            alertEl.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300', 'bg-rose-500/10', 'border-rose-500', 'text-rose-300');
+            if (isSuccess) {
+                alertEl.classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300');
+            } else {
+                alertEl.classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-300');
+            }
+            alertEl.textContent = msg;
+        }
+
+        // Listener untuk Input Foto Avatar Komputer & Realtime Username Check
         document.addEventListener('DOMContentLoaded', () => {
+            const avatarInput = document.getElementById('profile-avatar-input');
+            if (avatarInput) {
+                avatarInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        if (file.size > 5 * 1024 * 1024) {
+                            showProfileAlert("Ukuran file gambar maksimal 5MB!", false);
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = function(evt) {
+                            const base64 = evt.target.result;
+                            document.getElementById('profile-avatar-preview').src = base64;
+                            currentAvatarBase64 = base64;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            const usernameInput = document.getElementById('profile-username');
+            if (usernameInput) {
+                usernameInput.addEventListener('input', function() {
+                    clearTimeout(usernameDebounceTimer);
+                    const statusEl = document.getElementById('profile-username-status');
+                    const usernameVal = usernameInput.value.trim();
+
+                    if (!usernameVal) {
+                        statusEl.textContent = '';
+                        return;
+                    }
+
+                    const userJson = localStorage.getItem('osis_user');
+                    let currentUserId = '';
+                    if (userJson) {
+                        try { currentUserId = JSON.parse(userJson).id; } catch(e){}
+                    }
+
+                    usernameDebounceTimer = setTimeout(async () => {
+                        try {
+                            const res = await fetch(`/api/check-username?username=${encodeURIComponent(usernameVal)}&userId=${encodeURIComponent(currentUserId)}`);
+                            const data = await res.json();
+                            if (data.available) {
+                                statusEl.className = "text-[10px] font-mono mt-1 text-emerald-400 font-bold";
+                                statusEl.textContent = "✓ Username tersedia!";
+                            } else {
+                                statusEl.className = "text-[10px] font-mono mt-1 text-rose-400 font-bold";
+                                statusEl.textContent = "✕ Username sudah digunakan oleh akun lain.";
+                            }
+                        } catch (err) {
+                            console.error('Check username error:', err);
+                        }
+                    }, 400);
+                });
+            }
+
             checkLoginStatus();
             if (window.lucide) {
                 lucide.createIcons();
             }
         });
 
-        // =========================================================================
-// CLIENT-SIDE ANTI-INSPECT & ANTI-DEVTOOLS HIGH-SECURITY PROTECTION SHIELD
-// =========================================================================
-(function enforceMaximumSecurity() {
-    'use strict';
-
-    // 1. Lock Context Menu (Mematikan Klik Kanan)
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-    }, false);
-
-    // 2. Lock Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S)
-    document.addEventListener('keydown', function(e) {
-        if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-            (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
-        ) {
+        // Submit Form Pembaruan Profil ke Express Backend
+        async function handleProfileSubmit(e) {
             e.preventDefault();
-            e.stopPropagation();
-            return false;
+            const token = localStorage.getItem('osis_token');
+            const userJson = localStorage.getItem('osis_user');
+            if (!userJson || !token) {
+                showProfileAlert("Sesi login berakhir. Silakan login ulang.", false);
+                return;
+            }
+
+            const user = JSON.parse(userJson);
+            const displayName = document.getElementById('profile-display-name').value.trim();
+            const username = document.getElementById('profile-username').value.trim();
+            const bio = document.getElementById('profile-bio').value.trim();
+
+            const btnSubmit = document.getElementById('btn-profile-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'MEMPROSES...';
+
+            try {
+                const res = await fetch('/api/profile/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        email: user.email,
+                        newDisplayName: displayName,
+                        newUsername: username,
+                        newBio: bio,
+                        newAvatarBase64: currentAvatarBase64
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showProfileAlert(data.message, true);
+                    if (data.user) {
+                        localStorage.setItem('osis_user', JSON.stringify(data.user));
+                    }
+                    if (data.token) {
+                        localStorage.setItem('osis_token', data.token);
+                    }
+                    setTimeout(() => {
+                        closeProfileModal();
+                        checkLoginStatus();
+                    }, 1500);
+                } else {
+                    showProfileAlert(data.message || 'Gagal memperbarui profil.', false);
+                }
+            } catch (err) {
+                showProfileAlert('Terjadi kesalahan koneksi server: ' + err.message, false);
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'SIMPAN PERUBAHAN PROFIL';
+            }
         }
-    }, false);
 
-    // 3. Debugger Anti-Tamper Trap Loop (Jebakan Otomatis Jika DevTools Dipaksa Terbuka)
-    setInterval(function() {
-        const startTime = performance.now();
-        (function() { return false; })["constructor"]("debugger")();
-        const endTime = performance.now();
-        if (endTime - startTime > 100) {
-            document.body.innerHTML = `
-                <div style="background:#050506; color:#f43f5e; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:monospace; text-align:center; padding:20px;">
-                    <h1 style="font-size:24px; font-weight:bold; margin-bottom:10px;">[SECURITY BREACH SHIELD TRIGGERED]</h1>
-                    <p style="color:#8A8F98; font-size:14px; max-width:400px;">Akses Developer Tools / Inspeksi Kode Dilarang Demi Keamanan Portal OSIS.</p>
-                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#5E6AD2; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">MUAT ULANG HALAMAN</button>
-                </div>
-            `;
-        }
-    }, 500);
-
-    // 4. Console Silent Override (Membersihkan Jejak Log)
-    if (typeof window.console === 'object') {
-        const noop = function() {};
-        window.console.log = noop;
-        window.console.warn = noop;
-        window.console.error = noop;
-        window.console.info = noop;
-    }
-})();
-
-// =========================================================================
-        // LOGIKA INTERAKTIF RESEND OTP & COOLDOWN TIMER (SINKRON DENGAN AUTH SYSTEM)
-        // Lokasi: Di dalam tag <script> di bagian bawah file index.html
         // =========================================================================
+        // CLIENT-SIDE ANTI-INSPECT & ANTI-DEVTOOLS HIGH-SECURITY PROTECTION SHIELD
+        // =========================================================================
+        (function enforceMaximumSecurity() {
+            'use strict';
 
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            }, false);
+
+            document.addEventListener('keydown', function(e) {
+                if (
+                    e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+                    (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
+                ) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, false);
+
+            setInterval(function() {
+                const startTime = performance.now();
+                (function() { return false; })["constructor"]("debugger")();
+                const endTime = performance.now();
+                if (endTime - startTime > 100) {
+                    document.body.innerHTML = `
+                        <div style="background:#050506; color:#f43f5e; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:monospace; text-align:center; padding:20px;">
+                            <h1 style="font-size:24px; font-weight:bold; margin-bottom:10px;">[SECURITY BREACH SHIELD TRIGGERED]</h1>
+                            <p style="color:#8A8F98; font-size:14px; max-width:400px;">Akses Developer Tools / Inspeksi Kode Dilarang Demi Keamanan Portal OSIS.</p>
+                            <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#5E6AD2; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">MUAT ULANG HALAMAN</button>
+                        </div>
+                    `;
+                }
+            }, 500);
+
+            if (typeof window.console === 'object') {
+                const noop = function() {};
+                window.console.log = noop;
+                window.console.warn = noop;
+                window.console.error = noop;
+                window.console.info = noop;
+            }
+        })();
+
+        // =========================================================================
+        // LOGIKA INTERAKTIF RESEND OTP & COOLDOWN TIMER
+        // =========================================================================
         let cooldownTimerInterval = null;
-        const DEFAULT_COOLDOWN_TIME = 60; // Durasi penundaan dalam detik
+        const DEFAULT_COOLDOWN_TIME = 60;
 
-        /**
-         * Mengirimkan permintaan pembuatan dan pembaruan OTP baru ke server Backend Express/Vercel
-         */
         async function executeResendOTP() {
             const resendButton = document.getElementById('btnResendOtp');
             const resendText = document.getElementById('btnResendText');
             const otpInputField = document.getElementById('otp-code');
             
-            // Mengambil alamat email aktif dari alur autentikasi website
             if (!currentPendingEmail) {
                 alert('Sesi email tidak ditemukan. Silakan ulangi proses pendaftaran atau login.');
                 return;
@@ -2140,13 +2322,11 @@ async function deleteUserByAdmin(userId) {
 
             if (resendButton.disabled) return;
             
-            // Mengunci tombol saat permintaan sedang diproses
             resendButton.disabled = true;
             resendButton.style.opacity = '0.6';
             if (resendText) resendText.innerText = 'SEDANG MENGIRIM...';
 
             try {
-                // Request API ke backend Express / Vercel
                 const response = await fetch('/api/resend-otp', {
                     method: 'POST',
                     headers: {
@@ -2162,15 +2342,12 @@ async function deleteUserByAdmin(userId) {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Kosongkan input OTP dan fokuskan kembali
                     if (otpInputField) {
                         otpInputField.value = '';
                         otpInputField.focus();
                     }
 
                     alert(`Kode OTP baru berhasil dikirimkan ke email: ${currentPendingEmail}`);
-
-                    // Jalankan timer hitung mundur
                     initiateResendCooldown(DEFAULT_COOLDOWN_TIME);
                 } else {
                     alert('Gagal Mengirim OTP: ' + (result.message || 'Terjadi kesalahan pada sistem.'));
@@ -2184,12 +2361,8 @@ async function deleteUserByAdmin(userId) {
             }
         }
 
-        /**
-         * Mengelola waktu hitung mundur tombol resend
-         */
         function initiateResendCooldown(seconds) {
             const resendButton = document.getElementById('btnResendOtp');
-            const resendText = document.getElementById('btnResendText');
             const timerContainer = document.getElementById('otpTimerContainer');
             const timerDisplay = document.getElementById('cooldownSeconds');
 
@@ -2218,9 +2391,6 @@ async function deleteUserByAdmin(userId) {
             }, 1000);
         }
 
-        /**
-         * Mengembalikan tampilan dan status tombol Resend ke kondisi aktif
-         */
         function resetResendButtonState() {
             const resendButton = document.getElementById('btnResendOtp');
             const resendText = document.getElementById('btnResendText');
@@ -2231,7 +2401,6 @@ async function deleteUserByAdmin(userId) {
                 if (resendText) resendText.innerText = 'KIRIM ULANG KODE OTP';
             }
         }
-        
     </script>
  </body>
 </html>
