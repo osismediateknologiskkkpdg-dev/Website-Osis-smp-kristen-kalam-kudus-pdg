@@ -1,5 +1,19 @@
 [
   {
+    "id": "usr_master_admin_001",
+    "email": "osismediateknologiskkkpdg@gmail.com",
+    "username": "admin osis",
+    "displayName": "Administrator OSIS",
+    "bio": "Master Administrator Resmi OSIS SMP Kristen Kalam Kudus Padang.",
+    "avatar": "https://via.placeholder.com/150",
+    "passwordHash": "$2a$10$Yp6aFDucfi20lCMy.UfyvOvQJbRDArzhka5ZSOC3FdqOwJzFPyvMq",
+    "role": "SUPER_ADMIN",
+    "createdAt": "2026-08-13T03:17:52.903Z",
+    "lastDisplayNameUpdate": null,
+    "lastUsernameUpdate": null,
+    "verified": true
+  },
+  {
     "id": "usr_001",
     "username": "osis_admin",
     "displayName": "Pengurus OSIS 2026",
