@@ -1,10 +1,18 @@
 /**
  * ============================================================================
- * SERVER BACKEND UTAMA SYSTEM AUTHENTICATION & PROFILE MANAGEMENT
- * OSIS SMP KRISTEN KALAM KUDUS PADANG
+ * SERVER BACKEND UTAMA SYSTEM AUTHENTICATION OSIS SMP KALAM KUDUS PADANG
  * File: api/index.js
  * Engine: Express.js Unified Serverless Handler for Vercel
- * Version: 2.8.0 (Multi-Fallback User Lookup & Robust Identity Resolver)
+ * Version: 2.6.0 (Production-Grade Security & Mandatory OTP Enforcement)
+ * ============================================================================
+ * 
+ * DESKRIPSI PEMBARUAN KEAMANAN & FITUR:
+ * 1. Otentikasi OTP Wajib untuk Seluruh Akun (Termasuk Master Administrator).
+ * 2. Endpoint Resend OTP terintegrasi penuh dengan SMTP Transporter Nodemailer.
+ * 3. Sistem Anti-Duplikasi Otomatis: Pengecekan pra-seeding berbasis keberadaan 
+ *    Identifier Email/Username di repositori User_data.json GitHub.
+ * 4. Token Sanitizer & Native HTTPS Transceiver tanpa dependensi eksternal.
+ * 5. Hashing Password menggunakan BcryptJS dengan Cost Factor Salt 10.
  * ============================================================================
  */
 
@@ -19,15 +27,17 @@ const path = require('path');
 
 const app = express();
 
-// KONSTANTA & ATURAN WAKTU COOLDOWN
+// ============================================================================
+// KONSTANTA MASTER ADMINISTRATOR UTAMA
+// ============================================================================
 const MASTER_ADMIN_EMAIL = "osismediateknologiskkkpdg@gmail.com";
 const MASTER_ADMIN_USERNAME = "admin osis";
 const MASTER_ADMIN_DISPLAY = "Administrator OSIS";
 const MASTER_ADMIN_RAW_PASS = "skkk2019osismedia&teknologi";
 
-const DISPLAY_NAME_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 1 Hari
-const USERNAME_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;  // 1 Minggu
-
+// ============================================================================
+// GLOBAL PROCESS SAFETY & UNCAUGHT EXCEPTION SHIELD
+// ============================================================================
 process.on('uncaughtException', (err) => {
   console.error('[CRITICAL SYSTEM ERROR] Uncaught Exception Detected:', err.stack || err.message || err);
 });
@@ -36,6 +46,9 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[CRITICAL SYSTEM ERROR] Unhandled Promise Rejection at:', promise, 'reason:', reason);
 });
 
+// ============================================================================
+// EXPRESS MIDDLEWARE CONFIGURATION
+// ============================================================================
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -45,57 +58,57 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Memory Storage Global untuk Pengelolaan Sesi Kode OTP sementara
 global.otpMemoryStore = global.otpMemoryStore || {};
 
+// ============================================================================
+// HELPER UTILITIES: SANITIZATION & DIAGNOSTICS
+// ============================================================================
+
+/**
+ * Membersihkan Token GitHub dari spasi, baris baru, atau karakter tanda petik tak sengaja.
+ * @param {string} rawToken 
+ * @returns {string|null}
+ */
 function sanitizeGitHubToken(rawToken) {
   if (!rawToken || typeof rawToken !== 'string') return null;
   return rawToken.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
 }
 
+/**
+ * Menyamarkan string token untuk keamanan pencatatan log diagnostik.
+ * @param {string} token 
+ * @returns {string}
+ */
 function maskTokenForDiagnostics(token) {
   if (!token) return '[NOT CONFIGURED]';
   if (token.length <= 8) return '****';
   return `${token.substring(0, 6)}...${token.substring(token.length - 4)}`;
 }
 
-function checkCooldown(lastUpdateIsoString, cooldownMs) {
-  if (!lastUpdateIsoString) return { canUpdate: true, remainingText: null };
+// ============================================================================
+// HELPER 1: NATIVE HTTPS GITHUB REST API TRANSCEIVER ENGINE
+// ============================================================================
 
-  const lastUpdate = new Date(lastUpdateIsoString).getTime();
-  const now = Date.now();
-  const elapsed = now - lastUpdate;
-
-  if (elapsed < cooldownMs) {
-    const remainingMs = cooldownMs - elapsed;
-    const totalHours = Math.floor(remainingMs / (1000 * 60 * 60));
-    const days = Math.floor(totalHours / 24);
-    const hours = totalHours % 24;
-    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-
-    let remainingText = '';
-    if (days > 0) {
-      remainingText = `${days} hari ${hours} jam lagi`;
-    } else if (hours > 0) {
-      remainingText = `${hours} jam ${minutes} menit lagi`;
-    } else {
-      remainingText = `${minutes} menit lagi`;
-    }
-
-    return { canUpdate: false, remainingText };
-  }
-
-  return { canUpdate: true, remainingText: null };
-}
-
+/**
+ * Melakukan HTTP REST API Request ke GitHub Repositori secara Asinkron
+ * @param {string} endpointMethod 
+ * @param {string} apiPath 
+ * @param {object|null} requestBodyData 
+ * @returns {Promise<object>}
+ */
 function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   return new Promise((resolve, reject) => {
-    const rawToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+    const rawToken = process.env.GITHUB_TOKEN;
     const cleanToken = sanitizeGitHubToken(rawToken);
-    const rawOwner = process.env.GITHUB_OWNER ? process.env.GITHUB_OWNER.trim() : (process.env.REPO_OWNER ? process.env.REPO_OWNER.trim() : 'osismediateknologiskkkpdg-dev');
-    const rawRepo = process.env.GITHUB_REPO ? process.env.GITHUB_REPO.trim() : (process.env.REPO_NAME ? process.env.REPO_NAME.trim() : 'Website-Osis-smp-kristen-kalam-kudus-pdg');
+    const rawOwner = process.env.GITHUB_OWNER ? process.env.GITHUB_OWNER.trim() : null;
+    const rawRepo = process.env.GITHUB_REPO ? process.env.GITHUB_REPO.trim() : null;
 
     if (!cleanToken) {
-      return reject(new Error("Konfigurasi 'GITHUB_TOKEN' atau 'GH_TOKEN' tidak ditemukan di Environment Variables Vercel."));
+      return reject(new Error("Konfigurasi 'GITHUB_TOKEN' tidak ditemukan di Environment Variables Vercel."));
+    }
+    if (!rawOwner || !rawRepo) {
+      return reject(new Error("Konfigurasi 'GITHUB_OWNER' atau 'GITHUB_REPO' belum diisi di Environment Variables Vercel."));
     }
 
     const requestPayload = requestBodyData ? JSON.stringify(requestBodyData) : null;
@@ -151,6 +164,10 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   });
 }
 
+/**
+ * Membaca File User_data.json dari GitHub & Menjamin Anti-Duplikasi Administrator
+ * Jika Akun Administrator Sudah Ada di File, Maka TIDAK AKAN DIBUAT ULANG.
+ */
 async function fetchUserDataFromGitHub() {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   try {
@@ -162,11 +179,15 @@ async function fetchUserDataFromGitHub() {
       parsedUsers = [];
     }
 
+    // ========================================================================
+    // PENGECEKAN DUPLIKASI ADMINISTRATOR UTAMA (STRICT ANTI-DUPLICATE CHECK)
+    // ========================================================================
     const adminExists = parsedUsers.some(
-      (user) => (user.email && user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) ||
-                (user.username && user.username.toLowerCase() === MASTER_ADMIN_USERNAME.toLowerCase())
+      (user) => user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase() ||
+                user.username.toLowerCase() === MASTER_ADMIN_USERNAME.toLowerCase()
     );
 
+    // HANYA buat akun jika SAMA SEKALI BELUM ADA di User_data.json
     if (!adminExists) {
       console.log('[AUTO-SEED] Akun Administrator belum ditemukan. Melakukan Inisialisasi Akun Master...');
       
@@ -178,19 +199,19 @@ async function fetchUserDataFromGitHub() {
         email: MASTER_ADMIN_EMAIL.toLowerCase(),
         username: MASTER_ADMIN_USERNAME.toLowerCase(),
         displayName: MASTER_ADMIN_DISPLAY,
-        bio: "Master Administrator Resmi OSIS SMP Kristen Kalam Kudus Padang.",
-        avatar: "https://via.placeholder.com/150",
         passwordHash: adminHashedPass,
         role: "SUPER_ADMIN",
         createdAt: new Date().toISOString(),
-        lastDisplayNameUpdate: null,
-        lastUsernameUpdate: null,
         verified: true
       };
 
       parsedUsers.unshift(adminUserObj);
+      
+      // Simpan perubahan initial seeding ke GitHub
       await saveUserDataToGitHub(parsedUsers, responseData.sha);
       console.log('[AUTO-SEED SUCCESS] Akun Administrator berhasil dibuat & tersimpan di User_data.json GitHub.');
+    } else {
+      console.log('[AUTO-CHECK] Akun Administrator sudah terdaftar di User_data.json. Mencegah pembuatan ulang.');
     }
 
     return {
@@ -203,12 +224,15 @@ async function fetchUserDataFromGitHub() {
   }
 }
 
+/**
+ * Menyimpan / Meng-commit Pembaruan Array User_data.json ke GitHub Repositori
+ */
 async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   const base64EncodedContent = Buffer.from(JSON.stringify(updatedUsersArray, null, 2)).toString('base64');
 
   const commitPayload = {
-    message: 'chore(user): update User_data.json profile state via API',
+    message: 'chore(auth): update User_data.json via Express Serverless API',
     content: base64EncodedContent,
     branch: branchName
   };
@@ -219,6 +243,10 @@ async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
 
   return await makeGitHubApiRequest('PUT', 'contents/User_data.json', commitPayload);
 }
+
+// ============================================================================
+// HELPER 2: NODEMAILER SMTP TRANSPORTER ENGINE
+// ============================================================================
 
 function createSmtpTransporter() {
   const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
@@ -234,11 +262,19 @@ function createSmtpTransporter() {
     host: host,
     port: port,
     secure: port === 465,
-    auth: { user, pass },
-    tls: { rejectUnauthorized: false }
+    auth: {
+      user: user,
+      pass: pass
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 }
 
+/**
+ * Mengirimkan Email Kode OTP Verifikasi Keamanan ke Email Tujuan
+ */
 async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHeader) {
   const transporter = createSmtpTransporter();
 
@@ -267,47 +303,9 @@ async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHe
   });
 }
 
-function authenticateUserToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    if (req.body && (req.body.userId || req.body.email || req.body.currentUsername)) {
-      req.user = { 
-        id: req.body.userId, 
-        email: req.body.email, 
-        username: req.body.currentUsername 
-      };
-      return next();
-    }
-    if (req.query && (req.query.userId || req.query.email || req.query.username)) {
-      req.user = { 
-        id: req.query.userId, 
-        email: req.query.email, 
-        username: req.query.username 
-      };
-      return next();
-    }
-    return res.status(401).json({ success: false, message: 'Akses Ditolak! Token otentikasi atau User ID tidak ditemukan.' });
-  }
-
-  const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
-  jwt.verify(token, secretKey, (err, decodedUser) => {
-    if (err) {
-      if (req.body && (req.body.userId || req.body.email || req.body.currentUsername)) {
-        req.user = { 
-          id: req.body.userId, 
-          email: req.body.email, 
-          username: req.body.currentUsername 
-        };
-        return next();
-      }
-      return res.status(403).json({ success: false, message: 'Sesi token tidak valid atau telah kedaluwarsa!' });
-    }
-    req.user = decodedUser;
-    next();
-  });
-}
+// ============================================================================
+// AUTHENTICATION & ROLE-BASED ACCESS CONTROL (RBAC) MIDDLEWARE
+// ============================================================================
 
 function authenticateAdminToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -332,25 +330,32 @@ function authenticateAdminToken(req, res, next) {
   });
 }
 
+// ============================================================================
+// EXPRESS ROUTING HANDLERS
+// ============================================================================
+
+// FRONTEND ROUTE: Menyajikan index.html saat GET / dipanggil
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
+// HEALTH & DIAGNOSTICS CHECK ROUTE
 app.get(['/api/health', '/health'], async (req, res) => {
-  const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN || process.env.GH_TOKEN);
+  const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN);
   return res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
     diagnostics: {
       smtpUserConfigured: !!process.env.SMTP_USER,
-      githubOwnerConfigured: !!(process.env.GITHUB_OWNER || process.env.REPO_OWNER),
-      githubRepoConfigured: !!(process.env.GITHUB_REPO || process.env.REPO_NAME),
+      githubOwnerConfigured: !!process.env.GITHUB_OWNER,
+      githubRepoConfigured: !!process.env.GITHUB_REPO,
       githubTokenMask: maskTokenForDiagnostics(tokenClean)
     }
   });
 });
 
+// ROUTE 1: REGISTER USER (REQUEST OTP)
 app.post(['/api/register', '/register'], async (req, res) => {
   try {
     const { email, username, displayName, password, confirmPassword } = req.body || {};
@@ -372,8 +377,7 @@ app.post(['/api/register', '/register'], async (req, res) => {
 
     const { usersList } = await fetchUserDataFromGitHub();
     const isDuplicate = usersList.some(
-      (u) => (u.email && u.email.toLowerCase() === normalizedEmail) || 
-             (u.username && u.username.toLowerCase() === normalizedUsername)
+      (u) => u.email.toLowerCase() === normalizedEmail || u.username.toLowerCase() === normalizedUsername
     );
 
     if (isDuplicate) {
@@ -413,6 +417,7 @@ app.post(['/api/register', '/register'], async (req, res) => {
   }
 });
 
+// ROUTE 2: VERIFY REGISTER OTP & SAVE TO GITHUB
 app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
   try {
     const { email, otp } = req.body || {};
@@ -447,13 +452,9 @@ app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
       email: cachedData.payload.email,
       username: cachedData.payload.username,
       displayName: cachedData.payload.displayName,
-      bio: "Siswa SMP Kristen Kalam Kudus Padang.",
-      avatar: "https://via.placeholder.com/150",
       passwordHash: hashedPassword,
       role: cachedData.payload.role || "USER",
       createdAt: new Date().toISOString(),
-      lastDisplayNameUpdate: null,
-      lastUsernameUpdate: null,
       verified: true
     };
 
@@ -465,7 +466,7 @@ app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Registrasi Berhasil! Data Akun Anda telah tersimpan. Silakan Login.'
+      message: 'Registrasi Berhasil! Data Akun Anda telah tersimpan di User_data.json. Silakan Login.'
     });
   } catch (error) {
     console.error('Error /api/verify-register:', error.message || error);
@@ -476,6 +477,7 @@ app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
   }
 });
 
+// ROUTE 3: LOGIN USER (REQUEST OTP - BERLAKU UNTUK SEMUA AKUN TERMASUK ADMIN)
 app.post(['/api/login', '/login'], async (req, res) => {
   try {
     const { identifier, password } = req.body || {};
@@ -485,11 +487,12 @@ app.post(['/api/login', '/login'], async (req, res) => {
     }
 
     const cleanIdentifier = identifier.trim().toLowerCase();
+    
+    // Ambil data user dari GitHub (sekaligus melakukan auto-seed jika belum pernah ada)
     const { usersList } = await fetchUserDataFromGitHub();
 
     const foundUser = usersList.find(
-      (u) => (u.email && u.email.toLowerCase() === cleanIdentifier) || 
-             (u.username && u.username.toLowerCase() === cleanIdentifier)
+      (u) => u.email.toLowerCase() === cleanIdentifier || u.username.toLowerCase() === cleanIdentifier
     );
 
     if (!foundUser) {
@@ -500,6 +503,7 @@ app.post(['/api/login', '/login'], async (req, res) => {
       });
     }
 
+    // Verifikasi Password Hash dengan BcryptJS
     const isMatch = await bcrypt.compare(password, foundUser.passwordHash);
 
     if (!isMatch) {
@@ -510,6 +514,9 @@ app.post(['/api/login', '/login'], async (req, res) => {
       });
     }
 
+    // ========================================================================
+    // MANDATORY OTP ENFORCEMENT (TETAP KIRIM OTP UNTUK EMAIL ADMIN/SEMUA AKUN)
+    // ========================================================================
     const loginOtp = Math.floor(100000 + Math.random() * 900000).toString();
     const cacheKey = 'login_' + foundUser.email.toLowerCase();
 
@@ -519,6 +526,7 @@ app.post(['/api/login', '/login'], async (req, res) => {
       expiresAt: Date.now() + 5 * 60 * 1000
     };
 
+    // Dispatch Kode OTP via Gmail Nodemailer
     await dispatchOTPEmail(foundUser.email, loginOtp, 'Verifikasi Otentikasi Masuk');
 
     return res.status(200).json({
@@ -535,6 +543,7 @@ app.post(['/api/login', '/login'], async (req, res) => {
   }
 });
 
+// ROUTE 4: VERIFY LOGIN OTP & GENERATE JWT TOKEN
 app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
   try {
     const { email, otp } = req.body || {};
@@ -560,6 +569,7 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
       return res.status(400).json({ success: false, message: 'Kode OTP Verifikasi Login tidak valid!' });
     }
 
+    // Penerbitan JWT Token dengan Payload Role Pengguna
     const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
     const jwtToken = jwt.sign(
       {
@@ -580,15 +590,10 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
       message: 'Autentikasi Berhasil! Selamat datang di Portal OSIS SMP Kalam Kudus Padang.',
       token: jwtToken,
       user: {
-        id: cachedData.userData.id,
         displayName: cachedData.userData.displayName,
         username: cachedData.userData.username,
         email: cachedData.userData.email,
-        bio: cachedData.userData.bio || "",
-        avatar: cachedData.userData.avatar || "https://via.placeholder.com/150",
-        role: cachedData.userData.role || 'USER',
-        lastDisplayNameUpdate: cachedData.userData.lastDisplayNameUpdate || null,
-        lastUsernameUpdate: cachedData.userData.lastUsernameUpdate || null
+        role: cachedData.userData.role || 'USER'
       }
     });
   } catch (error) {
@@ -600,6 +605,7 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
   }
 });
 
+// ROUTE 5: KIRIM ULANG KODE OTP (RESEND OTP HANDLER)
 app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
   try {
     const { email } = req.body || {};
@@ -615,22 +621,25 @@ app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
     const loginCacheKey = 'login_' + normalizedEmail;
     
     const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 5 * 60 * 1000;
+    const expiresAt = Date.now() + 5 * 60 * 1000; // Masa berlaku 5 menit
 
     let sessionFound = false;
 
+    // 1. Perbarui Sesi Login jika user sedang dalam alur Login
     if (global.otpMemoryStore[loginCacheKey]) {
       global.otpMemoryStore[loginCacheKey].otp = newOtpCode;
       global.otpMemoryStore[loginCacheKey].expiresAt = expiresAt;
       sessionFound = true;
     }
 
+    // 2. Perbarui Sesi Registrasi jika user sedang dalam alur Register
     if (global.otpMemoryStore[normalizedEmail]) {
       global.otpMemoryStore[normalizedEmail].otp = newOtpCode;
       global.otpMemoryStore[normalizedEmail].expiresAt = expiresAt;
       sessionFound = true;
     }
 
+    // 3. Jika tidak ada sesi di memori, buatkan entri cadangan baru
     if (!sessionFound) {
       global.otpMemoryStore[normalizedEmail] = {
         otp: newOtpCode,
@@ -638,7 +647,10 @@ app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
       };
     }
 
+    // Kirim ulang email berisi Kode OTP baru via Nodemailer
     await dispatchOTPEmail(normalizedEmail, newOtpCode, 'Kirim Ulang Kode OTP');
+
+    console.log(`[RESEND OTP SUCCESS] Kode OTP baru (${newOtpCode}) dikirim ke: ${normalizedEmail}`);
 
     return res.status(200).json({
       success: true,
@@ -648,249 +660,19 @@ app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error /api/resend-otp:', error.message || error);
+    console.error('Error pada endpoint /api/resend-otp:', error.message || error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengirim ulang OTP: ' + (error.message || 'Terjadi kesalahan internal.')
+      message: 'Gagal mengirim ulang OTP akibat kendala server: ' + (error.message || 'Terjadi kesalahan internal.')
     });
   }
 });
 
-app.get(['/api/user/check-username', '/api/check-username'], async (req, res) => {
-  try {
-    const { username, userId, email } = req.query;
+// ============================================================================
+// SUPER ADMIN CONTROL ENDPOINTS
+// ============================================================================
 
-    if (!username) {
-      return res.status(400).json({ success: false, message: 'Username tidak boleh kosong.' });
-    }
-
-    const cleanUsername = username.trim().toLowerCase();
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-
-    if (!usernameRegex.test(cleanUsername)) {
-      return res.status(400).json({
-        success: false,
-        available: false,
-        message: 'Username harus berukuran 3-20 karakter dan hanya berisi huruf, angka, atau underscore (_).'
-      });
-    }
-
-    const { usersList } = await fetchUserDataFromGitHub();
-
-    const isTaken = usersList.some(u => {
-      const sameUsername = u.username && u.username.toLowerCase() === cleanUsername;
-      const isSameUserById = userId && u.id === userId;
-      const isSameUserByEmail = email && u.email && u.email.toLowerCase() === email.toLowerCase();
-      return sameUsername && !isSameUserById && !isSameUserByEmail;
-    });
-
-    if (isTaken) {
-      return res.status(200).json({
-        success: true,
-        available: false,
-        message: 'Username sudah digunakan oleh akun lain.'
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      available: true,
-      message: 'Username tersedia!'
-    });
-  } catch (error) {
-    console.error('Error /api/user/check-username:', error.message || error);
-    return res.status(500).json({ success: false, message: 'Gagal mengecek username: ' + error.message });
-  }
-});
-
-app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserToken, async (req, res) => {
-  try {
-    const { userId, email, currentUsername, displayName, username, bio, avatar } = req.body || {};
-    const reqUser = req.user || {};
-
-    const { usersList, fileSha } = await fetchUserDataFromGitHub();
-
-    if (!usersList || usersList.length === 0) {
-      return res.status(500).json({ success: false, message: 'Gagal membaca repositori database pengguna.' });
-    }
-
-    let userIndex = usersList.findIndex(u => {
-      if (userId && u.id && u.id === userId) return true;
-      if (reqUser.id && u.id && u.id === reqUser.id) return true;
-      if (email && u.email && u.email.toLowerCase() === email.trim().toLowerCase()) return true;
-      if (reqUser.email && u.email && u.email.toLowerCase() === reqUser.email.trim().toLowerCase()) return true;
-      if (currentUsername && u.username && u.username.toLowerCase() === currentUsername.trim().toLowerCase()) return true;
-      if (reqUser.username && u.username && u.username.toLowerCase() === reqUser.username.trim().toLowerCase()) return true;
-      return false;
-    });
-
-    if (userIndex === -1) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Data pengguna tidak ditemukan di sistem! Silakan lakukan logout dan login kembali.' 
-      });
-    }
-
-    const currentUser = usersList[userIndex];
-    const nowIso = new Date().toISOString();
-    let displayNameChanged = false;
-    let usernameChanged = false;
-
-    if (displayName && displayName.trim() !== currentUser.displayName) {
-      const newDisplayName = displayName.trim();
-
-      if (newDisplayName.length < 2 || newDisplayName.length > 30) {
-        return res.status(400).json({
-          success: false,
-          message: 'Display Name harus berukuran antara 2 hingga 30 karakter.'
-        });
-      }
-
-      const cooldownStatus = checkCooldown(currentUser.lastDisplayNameUpdate, DISPLAY_NAME_COOLDOWN_MS);
-      if (!cooldownStatus.canUpdate) {
-        return res.status(429).json({
-          success: false,
-          message: `Anda hanya bisa mengganti Display Name 1 kali dalam 24 jam. Silakan coba lagi dalam ${cooldownStatus.remainingText}.`
-        });
-      }
-
-      currentUser.displayName = newDisplayName;
-      currentUser.lastDisplayNameUpdate = nowIso;
-      displayNameChanged = true;
-    }
-
-    if (username && username.trim().toLowerCase() !== currentUser.username.toLowerCase()) {
-      const newUsername = username.trim().toLowerCase();
-      const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-
-      if (!usernameRegex.test(newUsername)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Username harus berukuran 3-20 karakter (hanya huruf, angka, dan underscore).'
-        });
-      }
-
-      const isTaken = usersList.some((u, idx) => idx !== userIndex && u.username && u.username.toLowerCase() === newUsername);
-      if (isTaken) {
-        return res.status(409).json({
-          success: false,
-          message: 'Username telah digunakan oleh pengguna lain. Silakan pilih username yang berbeda.'
-        });
-      }
-
-      const cooldownStatus = checkCooldown(currentUser.lastUsernameUpdate, USERNAME_COOLDOWN_MS);
-      if (!cooldownStatus.canUpdate) {
-        return res.status(429).json({
-          success: false,
-          message: `Anda hanya bisa mengganti Username 1 kali dalam 1 minggu. Silakan coba lagi dalam ${cooldownStatus.remainingText}.`
-        });
-      }
-
-      currentUser.username = newUsername;
-      currentUser.lastUsernameUpdate = nowIso;
-      usernameChanged = true;
-    }
-
-    if (typeof bio === 'string') {
-      if (bio.length > 250) {
-        return res.status(400).json({
-          success: false,
-          message: 'Deskripsi akun (bio) tidak boleh melebihi 250 karakter.'
-        });
-      }
-      currentUser.bio = bio.trim();
-    }
-
-    if (avatar && avatar.length > 20) {
-      currentUser.avatar = avatar;
-    }
-
-    usersList[userIndex] = currentUser;
-    await saveUserDataToGitHub(usersList, fileSha);
-
-    const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
-    const newToken = jwt.sign(
-      {
-        id: currentUser.id,
-        email: currentUser.email,
-        username: currentUser.username,
-        displayName: currentUser.displayName,
-        role: currentUser.role || 'USER'
-      },
-      secretKey,
-      { expiresIn: '24h' }
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: 'Profil berhasil diperbarui dan disimpan!',
-      token: newToken,
-      user: {
-        id: currentUser.id,
-        email: currentUser.email,
-        username: currentUser.username,
-        displayName: currentUser.displayName,
-        bio: currentUser.bio || "",
-        avatar: currentUser.avatar || "https://via.placeholder.com/150",
-        role: currentUser.role || 'USER',
-        lastDisplayNameUpdate: currentUser.lastDisplayNameUpdate || null,
-        lastUsernameUpdate: currentUser.lastUsernameUpdate || null
-      },
-      updates: {
-        displayNameChanged,
-        usernameChanged
-      }
-    });
-
-  } catch (error) {
-    console.error('Error /api/user/update-profile:', error.message || error);
-    return res.status(500).json({
-      success: false,
-      message: 'Gagal memperbarui profil: ' + (error.message || 'Terjadi kesalahan sistem internal.')
-    });
-  }
-});
-
-app.get(['/api/user/profile', '/api/profile'], authenticateUserToken, async (req, res) => {
-  try {
-    const userId = req.query.userId || (req.user && req.user.id);
-    const email = req.query.email || (req.user && req.user.email);
-    const username = req.query.username || (req.user && req.user.username);
-
-    const { usersList } = await fetchUserDataFromGitHub();
-
-    const foundUser = usersList.find(u => {
-      if (userId && u.id === userId) return true;
-      if (email && u.email && u.email.toLowerCase() === email.toLowerCase()) return true;
-      if (username && u.username && u.username.toLowerCase() === username.toLowerCase()) return true;
-      return false;
-    });
-
-    if (!foundUser) {
-      return res.status(404).json({ success: false, message: 'Profil pengguna tidak ditemukan.' });
-    }
-
-    return res.status(200).json({
-      success: true,
-      user: {
-        id: foundUser.id,
-        email: foundUser.email,
-        username: foundUser.username,
-        displayName: foundUser.displayName,
-        bio: foundUser.bio || "",
-        avatar: foundUser.avatar || "https://via.placeholder.com/150",
-        role: foundUser.role || 'USER',
-        lastDisplayNameUpdate: foundUser.lastDisplayNameUpdate || null,
-        lastUsernameUpdate: foundUser.lastUsernameUpdate || null,
-        createdAt: foundUser.createdAt
-      }
-    });
-  } catch (error) {
-    console.error('Error /api/user/profile:', error.message || error);
-    return res.status(500).json({ success: false, message: 'Gagal mengambil profil: ' + error.message });
-  }
-});
-
+// ADMIN ROUTE 1: GET ALL USERS (Khusus Administrator)
 app.get(['/api/admin/users', '/admin/users'], authenticateAdminToken, async (req, res) => {
   try {
     const { usersList } = await fetchUserDataFromGitHub();
@@ -899,8 +681,6 @@ app.get(['/api/admin/users', '/admin/users'], authenticateAdminToken, async (req
       email: u.email,
       username: u.username,
       displayName: u.displayName,
-      bio: u.bio || "",
-      avatar: u.avatar || "https://via.placeholder.com/150",
       role: u.role || 'USER',
       createdAt: u.createdAt,
       verified: u.verified
@@ -916,6 +696,7 @@ app.get(['/api/admin/users', '/admin/users'], authenticateAdminToken, async (req
   }
 });
 
+// ADMIN ROUTE 2: DELETE USER BY ID (Khusus Administrator)
 app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken, async (req, res) => {
   try {
     const targetUserId = req.params.id;
@@ -926,7 +707,7 @@ app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken,
       return res.status(404).json({ success: false, message: 'User tidak ditemukan!' });
     }
 
-    if (targetUser.role === 'SUPER_ADMIN' || (targetUser.email && targetUser.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase())) {
+    if (targetUser.role === 'SUPER_ADMIN' || targetUser.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
       return res.status(403).json({ success: false, message: 'Dilarang menghapus Akun Master Administrator Utama!' });
     }
 
@@ -942,6 +723,7 @@ app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken,
   }
 });
 
+// Fallback Unmatched Route
 app.use((req, res) => {
   return res.status(404).json({
     success: false,
@@ -949,6 +731,7 @@ app.use((req, res) => {
   });
 });
 
+// Global Express Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error('[EXPRESS GLOBAL ERROR]:', err.stack || err);
   return res.status(500).json({
