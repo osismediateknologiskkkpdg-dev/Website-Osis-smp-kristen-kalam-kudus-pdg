@@ -1,22 +1,20 @@
 [
   {
-    "id": "usr_master_admin_001",
-    "email": "osismediateknologiskkkpdg@gmail.com",
-    "username": "admin osis",
-    "displayName": "Administrator OSIS",
-    "passwordHash": "$2a$10$D5dwfWZGhq9S.6DMDVOqJ.PjsGQR1DzUOJtAGSVpGMNtMWMu2CDHq",
-    "role": "SUPER_ADMIN",
-    "createdAt": "2026-08-12T05:31:37.522Z",
-    "verified": true
+    "id": "usr_001",
+    "username": "osis_admin",
+    "displayName": "Pengurus OSIS 2026",
+    "bio": "Selamat datang di website resmi OSIS SMP Kristen Kalam Kudus Padang!",
+    "avatar": "https://via.placeholder.com/150",
+    "lastDisplayNameUpdate": "2026-08-01T10:00:00.000Z",
+    "lastUsernameUpdate": "2026-08-01T10:00:00.000Z"
   },
   {
-    "id": "usr_1786512792746",
-    "email": "gbnpro28@gmail.com",
-    "username": "gbnpro28",
-    "displayName": "gbnpro28",
-    "passwordHash": "$2a$10$h70N679Gc9tpDmlXk/doiOo5R6CHtXj2qffrXKj8ycGiT6f3XoJxC",
-    "role": "USER",
-    "createdAt": "2026-08-12T05:33:12.746Z",
-    "verified": true
+    "id": "usr_002",
+    "username": "guido_nugroho",
+    "displayName": "Guido Bryan Nugroho",
+    "bio": "Siswa SMP Kristen Kalam Kudus Padang Kelas 9.",
+    "avatar": "https://via.placeholder.com/150",
+    "lastDisplayNameUpdate": null,
+    "lastUsernameUpdate": null
   }
 ]
