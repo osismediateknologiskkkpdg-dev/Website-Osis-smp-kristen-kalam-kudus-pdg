@@ -14,15 +14,6 @@
     "verified": true
   },
   {
-    "id": "usr_001",
-    "username": "osis_admin",
-    "displayName": "Pengurus OSIS 2026",
-    "bio": "Selamat datang di website resmi OSIS SMP Kristen Kalam Kudus Padang!",
-    "avatar": "https://via.placeholder.com/150",
-    "lastDisplayNameUpdate": "2026-08-01T10:00:00.000Z",
-    "lastUsernameUpdate": "2026-08-01T10:00:00.000Z"
-  },
-  {
     "id": "usr_002",
     "username": "guido_nugroho",
     "displayName": "Guido Bryan Nugroho",
