@@ -8,5 +8,15 @@
     "role": "SUPER_ADMIN",
     "createdAt": "2026-08-13T11:56:40.713Z",
     "verified": true
+  },
+  {
+    "id": "usr_1786665239637",
+    "email": "271417-guidobryan.martinus@kalamkuduspadangdigital.sch.id",
+    "username": "guido_bryan28",
+    "displayName": "Guido Bryan",
+    "passwordHash": "$2a$10$IsXYF4w56UVxdVsxCw2vxeQEOtc3OcRnb3VYEaVL.YzuIIipyYQxS",
+    "role": "USER",
+    "createdAt": "2026-08-13T23:53:59.637Z",
+    "verified": true
   }
 ]
