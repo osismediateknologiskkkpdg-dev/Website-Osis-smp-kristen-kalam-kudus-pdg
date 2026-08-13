@@ -8,5 +8,15 @@
     "role": "SUPER_ADMIN",
     "createdAt": "2026-08-13T06:32:21.210Z",
     "verified": true
+  },
+  {
+    "id": "usr_1786603009187",
+    "email": "gbnpro28@gmail.com",
+    "username": "gbnpro28",
+    "displayName": "gbnpro28",
+    "passwordHash": "$2a$10$CUpNm.T0jYsh5H9Avn4aIeZK8ZJzZas.JEO76b4710GPrABUcU8K2",
+    "role": "USER",
+    "createdAt": "2026-08-13T06:36:49.187Z",
+    "verified": true
   }
 ]
