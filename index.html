@@ -246,7 +246,7 @@
                         <i data-lucide="user" class="w-3.5 h-3.5 mr-2"></i> Login / Register
                     </button>
 
-                    <!-- Status 2: Sudah Login (Gambar Pertama yang Diklik Membuka Dropdown Pilihan) -->
+                    <!-- Status 2: Sudah Login (Badge Pengguna Yang Diklik Membuka Dropdown Pilihan) -->
                     <div id="user-logged-badge" onclick="toggleUserDropdown(event)" class="hidden relative items-center space-x-2 px-3.5 py-2 rounded-xl bg-surface border border-accent/40 shadow-lg cursor-pointer hover:bg-white/10 transition-all select-none group">
                         <div id="user-role-icon" class="w-7 h-7 rounded-lg bg-accent/20 border border-accent flex items-center justify-center text-accent overflow-hidden shadow-inner">
                             <img id="user-avatar-badge" src="https://via.placeholder.com/150" alt="Avatar" class="w-full h-full object-cover hidden">
@@ -255,7 +255,7 @@
                         <span id="user-display-username" class="text-xs font-mono font-bold text-white max-w-[110px] truncate"></span>
                         <i data-lucide="chevron-down" id="dropdown-arrow-icon" class="w-3.5 h-3.5 text-fgMuted group-hover:text-white transition-transform duration-300"></i>
 
-                        <!-- DROPDOWN MENU POPUP KOSTUMISASI UNDERNEATH -->
+                        <!-- DROPDOWN MENU POPUP KOSTUMISASI -->
                         <div id="user-dropdown-menu" class="hidden absolute top-full right-0 mt-3 w-64 rounded-2xl bg-bgElevated/95 backdrop-blur-2xl border border-accent/40 shadow-2xl p-2 z-50 text-left transition-all duration-200 transform origin-top-right" onclick="event.stopPropagation()">
                             
                             <!-- Header Ringkas Pengguna -->
@@ -267,7 +267,7 @@
 
                             <!-- Pilihan Menu Kostumisasi & Fitur -->
                             <div class="space-y-1">
-                                <!-- Option 1: KOSTUMISASI PROFIL (Membuka Modal Kostumisasi) -->
+                                <!-- Option 1: KOSTUMISASI PROFIL -->
                                 <button onclick="triggerProfileCustomization()" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-accent/20 border border-transparent hover:border-accent/30 text-xs font-semibold text-white transition-all flex items-center group/item">
                                     <div class="w-7 h-7 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover/item:bg-accent group-hover/item:text-white mr-2.5 transition-colors">
                                         <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
@@ -2295,6 +2295,7 @@
 
         // =========================================================================
         // FITUR KUSTOMISASI PROFIL ENGINE (AVATAR, BIO, DISPLAY NAME & USERNAME)
+        // MULTI-IDENTIFIER PAYLOAD SYNC
         // =========================================================================
         let profileAvatarBase64 = "";
         let originalUsername = "";
@@ -2305,24 +2306,33 @@
             const modal = document.getElementById('profile-modal');
             const userJson = localStorage.getItem('osis_user');
 
-            if (!userJson) return;
+            if (!userJson) {
+                alert("Silakan login terlebih dahulu untuk mengakses menu kostumisasi profil.");
+                openAuthModal();
+                return;
+            }
 
-            const user = JSON.parse(userJson);
-            originalUsername = user.username || "";
+            try {
+                const user = JSON.parse(userJson);
+                originalUsername = user.username || "";
 
-            document.getElementById('profile-displayname-input').value = user.displayName || "";
-            document.getElementById('profile-username-input').value = user.username || "";
-            document.getElementById('profile-bio-input').value = user.bio || "";
-            document.getElementById('profile-avatar-preview').src = user.avatar || "https://via.placeholder.com/150";
-            
-            profileAvatarBase64 = user.avatar || "";
-            updateBioCounter();
-            document.getElementById('profile-username-status').textContent = "";
-            document.getElementById('profile-alert').classList.add('hidden');
+                document.getElementById('profile-displayname-input').value = user.displayName || "";
+                document.getElementById('profile-username-input').value = user.username || "";
+                document.getElementById('profile-bio-input').value = user.bio || "";
+                document.getElementById('profile-avatar-preview').src = user.avatar || "https://via.placeholder.com/150";
+                
+                profileAvatarBase64 = user.avatar || "";
+                updateBioCounter();
+                document.getElementById('profile-username-status').textContent = "";
+                document.getElementById('profile-alert').classList.add('hidden');
 
-            if (modal) {
-                modal.classList.remove('opacity-0', 'pointer-events-none');
-                modal.classList.add('opacity-100', 'pointer-events-auto');
+                if (modal) {
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('opacity-100', 'pointer-events-auto');
+                }
+            } catch(e) {
+                alert("Gagal membaca data sesi login. Silakan login kembali.");
+                handleLogout();
             }
         }
 
@@ -2377,7 +2387,7 @@
 
             clearTimeout(usernameDebounceTimer);
 
-            if (usernameInput === originalUsername.toLowerCase()) {
+            if (usernameInput === (originalUsername || "").toLowerCase()) {
                 statusEl.textContent = "";
                 isProfileUsernameValid = true;
                 btnSave.disabled = false;
@@ -2394,7 +2404,7 @@
 
             usernameDebounceTimer = setTimeout(async () => {
                 try {
-                    const res = await fetch(`/api/user/check-username?username=${encodeURIComponent(usernameInput)}&userId=${user.id}`);
+                    const res = await fetch(`/api/user/check-username?username=${encodeURIComponent(usernameInput)}&userId=${encodeURIComponent(user.id || '')}&email=${encodeURIComponent(user.email || '')}`);
                     const data = await res.json();
 
                     if (data.available) {
@@ -2414,6 +2424,7 @@
             }, 400);
         }
 
+        // PENGIRIMAN MULTI-IDENTIFIER PAYLOAD LENGKAP KE BACKEND
         async function handleProfileSubmit(e) {
             e.preventDefault();
 
@@ -2424,17 +2435,25 @@
 
             const token = localStorage.getItem('osis_token');
             const userJson = localStorage.getItem('osis_user');
-            const currentUser = userJson ? JSON.parse(userJson) : {};
+
+            if (!token || !userJson) {
+                showProfileAlert("Sesi login tidak ditemukan. Silakan login kembali.", false);
+                return;
+            }
+
+            const currentUser = JSON.parse(userJson);
 
             const btnSave = document.getElementById('btn-profile-save');
             btnSave.disabled = true;
-            btnSave.textContent = "SAVING...";
+            btnSave.textContent = "MEMPROSES & MENYIMPAN...";
 
             const payload = {
-                userId: currentUser.id,
-                displayName: document.getElementById('profile-displayname-input').value,
-                username: document.getElementById('profile-username-input').value,
-                bio: document.getElementById('profile-bio-input').value,
+                userId: currentUser.id || currentUser._id || "",
+                email: currentUser.email || "",
+                currentUsername: currentUser.username || "",
+                displayName: document.getElementById('profile-displayname-input').value.trim(),
+                username: document.getElementById('profile-username-input').value.trim(),
+                bio: document.getElementById('profile-bio-input').value.trim(),
                 avatar: profileAvatarBase64
             };
 
@@ -2451,10 +2470,18 @@
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    showProfileAlert(data.message, true);
+                    showProfileAlert(data.message || "Profil berhasil diperbarui!", true);
                     
                     if (data.token) localStorage.setItem('osis_token', data.token);
-                    if (data.user) localStorage.setItem('osis_user', JSON.stringify(data.user));
+                    if (data.user) {
+                        localStorage.setItem('osis_user', JSON.stringify(data.user));
+                    } else {
+                        currentUser.displayName = payload.displayName;
+                        currentUser.username = payload.username;
+                        currentUser.bio = payload.bio;
+                        currentUser.avatar = payload.avatar;
+                        localStorage.setItem('osis_user', JSON.stringify(currentUser));
+                    }
 
                     checkLoginStatus();
 

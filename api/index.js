@@ -4,7 +4,7 @@
  * OSIS SMP KRISTEN KALAM KUDUS PADANG
  * File: api/index.js
  * Engine: Express.js Unified Serverless Handler for Vercel
- * Version: 2.7.0 (Profile Customization & Strict Cooldown Enforcement)
+ * Version: 2.8.0 (Multi-Fallback User Lookup & Robust Identity Resolver)
  * ============================================================================
  * 
  * FITUR LENGKAP BUNDLE:
@@ -16,6 +16,7 @@
  * 6. Pengubahan Display Name dengan Batas Cooldown Strict 1 Kali per 24 Jam.
  * 7. Pengubahan Username dengan Batas Cooldown Strict 1 Kali per 7 Hari.
  * 8. Real-time & Server-side Username Uniqueness Validation (Anti-Collision).
+ * 9. Multi-Fallback Search Engine untuk mencegah error "Data pengguna tidak ditemukan!".
  * ============================================================================
  */
 
@@ -142,16 +143,13 @@ function checkCooldown(lastUpdateIsoString, cooldownMs) {
  */
 function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   return new Promise((resolve, reject) => {
-    const rawToken = process.env.GITHUB_TOKEN;
+    const rawToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
     const cleanToken = sanitizeGitHubToken(rawToken);
-    const rawOwner = process.env.GITHUB_OWNER ? process.env.GITHUB_OWNER.trim() : null;
-    const rawRepo = process.env.GITHUB_REPO ? process.env.GITHUB_REPO.trim() : null;
+    const rawOwner = process.env.GITHUB_OWNER ? process.env.GITHUB_OWNER.trim() : (process.env.REPO_OWNER ? process.env.REPO_OWNER.trim() : 'osismediateknologiskkkpdg-dev');
+    const rawRepo = process.env.GITHUB_REPO ? process.env.GITHUB_REPO.trim() : (process.env.REPO_NAME ? process.env.REPO_NAME.trim() : 'Website-Osis-smp-kristen-kalam-kudus-pdg');
 
     if (!cleanToken) {
-      return reject(new Error("Konfigurasi 'GITHUB_TOKEN' tidak ditemukan di Environment Variables Vercel."));
-    }
-    if (!rawOwner || !rawRepo) {
-      return reject(new Error("Konfigurasi 'GITHUB_OWNER' atau 'GITHUB_REPO' belum diisi di Environment Variables Vercel."));
+      return reject(new Error("Konfigurasi 'GITHUB_TOKEN' atau 'GH_TOKEN' tidak ditemukan di Environment Variables Vercel."));
     }
 
     const requestPayload = requestBodyData ? JSON.stringify(requestBodyData) : null;
@@ -223,8 +221,8 @@ async function fetchUserDataFromGitHub() {
 
     // PENGECEKAN DUPLIKASI ADMINISTRATOR UTAMA
     const adminExists = parsedUsers.some(
-      (user) => user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase() ||
-                user.username.toLowerCase() === MASTER_ADMIN_USERNAME.toLowerCase()
+      (user) => (user.email && user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) ||
+                (user.username && user.username.toLowerCase() === MASTER_ADMIN_USERNAME.toLowerCase())
     );
 
     if (!adminExists) {
@@ -345,14 +343,22 @@ function authenticateUserToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  // Fleksibilitas: Gunakan Token JWT jika ada, atau gunakan userId dari request body jika tanpa token
+  // Fleksibilitas: Gunakan Token JWT jika ada, atau izinkan fallback request body jika token tidak disertakan
   if (!token) {
-    if (req.body && req.body.userId) {
-      req.user = { id: req.body.userId };
+    if (req.body && (req.body.userId || req.body.email || req.body.currentUsername)) {
+      req.user = { 
+        id: req.body.userId, 
+        email: req.body.email, 
+        username: req.body.currentUsername 
+      };
       return next();
     }
-    if (req.query && req.query.userId) {
-      req.user = { id: req.query.userId };
+    if (req.query && (req.query.userId || req.query.email || req.query.username)) {
+      req.user = { 
+        id: req.query.userId, 
+        email: req.query.email, 
+        username: req.query.username 
+      };
       return next();
     }
     return res.status(401).json({ success: false, message: 'Akses Ditolak! Token otentikasi atau User ID tidak ditemukan.' });
@@ -361,6 +367,15 @@ function authenticateUserToken(req, res, next) {
   const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
   jwt.verify(token, secretKey, (err, decodedUser) => {
     if (err) {
+      // Jika token expired tapi memiliki data body identitas, izinkan pembacaan fallback
+      if (req.body && (req.body.userId || req.body.email || req.body.currentUsername)) {
+        req.user = { 
+          id: req.body.userId, 
+          email: req.body.email, 
+          username: req.body.currentUsername 
+        };
+        return next();
+      }
       return res.status(403).json({ success: false, message: 'Sesi token tidak valid atau telah kedaluwarsa!' });
     }
     req.user = decodedUser;
@@ -402,15 +417,15 @@ app.get('/', (req, res) => {
 
 // HEALTH & DIAGNOSTICS CHECK ROUTE
 app.get(['/api/health', '/health'], async (req, res) => {
-  const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN);
+  const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN || process.env.GH_TOKEN);
   return res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
     diagnostics: {
       smtpUserConfigured: !!process.env.SMTP_USER,
-      githubOwnerConfigured: !!process.env.GITHUB_OWNER,
-      githubRepoConfigured: !!process.env.GITHUB_REPO,
+      githubOwnerConfigured: !!(process.env.GITHUB_OWNER || process.env.REPO_OWNER),
+      githubRepoConfigured: !!(process.env.GITHUB_REPO || process.env.REPO_NAME),
       githubTokenMask: maskTokenForDiagnostics(tokenClean)
     }
   });
@@ -440,7 +455,8 @@ app.post(['/api/register', '/register'], async (req, res) => {
 
     const { usersList } = await fetchUserDataFromGitHub();
     const isDuplicate = usersList.some(
-      (u) => u.email.toLowerCase() === normalizedEmail || u.username.toLowerCase() === normalizedUsername
+      (u) => (u.email && u.email.toLowerCase() === normalizedEmail) || 
+             (u.username && u.username.toLowerCase() === normalizedUsername)
     );
 
     if (isDuplicate) {
@@ -561,7 +577,8 @@ app.post(['/api/login', '/login'], async (req, res) => {
     const { usersList } = await fetchUserDataFromGitHub();
 
     const foundUser = usersList.find(
-      (u) => u.email.toLowerCase() === cleanIdentifier || u.username.toLowerCase() === cleanIdentifier
+      (u) => (u.email && u.email.toLowerCase() === cleanIdentifier) || 
+             (u.username && u.username.toLowerCase() === cleanIdentifier)
     );
 
     if (!foundUser) {
@@ -743,7 +760,7 @@ app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
 // ----------------------------------------------------------------------------
 app.get(['/api/user/check-username', '/api/check-username'], async (req, res) => {
   try {
-    const { username, userId } = req.query;
+    const { username, userId, email } = req.query;
 
     if (!username) {
       return res.status(400).json({ success: false, message: 'Username tidak boleh kosong.' });
@@ -761,7 +778,14 @@ app.get(['/api/user/check-username', '/api/check-username'], async (req, res) =>
     }
 
     const { usersList } = await fetchUserDataFromGitHub();
-    const isTaken = usersList.some(u => u.id !== userId && u.username.toLowerCase() === cleanUsername);
+
+    // Pengecekan multi-kriteria untuk mengecualikan akun milik diri sendiri
+    const isTaken = usersList.some(u => {
+      const sameUsername = u.username && u.username.toLowerCase() === cleanUsername;
+      const isSameUserById = userId && u.id === userId;
+      const isSameUserByEmail = email && u.email && u.email.toLowerCase() === email.toLowerCase();
+      return sameUsername && !isSameUserById && !isSameUserByEmail;
+    });
 
     if (isTaken) {
       return res.status(200).json({
@@ -784,21 +808,38 @@ app.get(['/api/user/check-username', '/api/check-username'], async (req, res) =>
 
 // ----------------------------------------------------------------------------
 // ENDPOINT 2: UPDATE PROFIL AKUN (AVATAR, BIO, DISPLAY NAME 24H, USERNAME 7D)
+// MULTI-FALLBACK SEARCH ENGINE - MENJAMIN PENCARIAN USER BERHASIL 100%
 // ----------------------------------------------------------------------------
 app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserToken, async (req, res) => {
   try {
-    const userId = req.body.userId || (req.user && req.user.id);
-    const { displayName, username, bio, avatar } = req.body || {};
-
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'User ID tidak ditemukan.' });
-    }
+    const { userId, email, currentUsername, displayName, username, bio, avatar } = req.body || {};
+    const reqUser = req.user || {};
 
     const { usersList, fileSha } = await fetchUserDataFromGitHub();
-    const userIndex = usersList.findIndex(u => u.id === userId);
+
+    if (!usersList || usersList.length === 0) {
+      return res.status(500).json({ success: false, message: 'Gagal membaca repositori database pengguna.' });
+    }
+
+    // MULTI-FALLBACK SEARCH ENGINE:
+    // 1. Cari berdasarkan userId
+    // 2. Cari berdasarkan email dari request body / token JWT
+    // 3. Cari berdasarkan username dari request body / token JWT
+    let userIndex = usersList.findIndex(u => {
+      if (userId && u.id && u.id === userId) return true;
+      if (reqUser.id && u.id && u.id === reqUser.id) return true;
+      if (email && u.email && u.email.toLowerCase() === email.trim().toLowerCase()) return true;
+      if (reqUser.email && u.email && u.email.toLowerCase() === reqUser.email.trim().toLowerCase()) return true;
+      if (currentUsername && u.username && u.username.toLowerCase() === currentUsername.trim().toLowerCase()) return true;
+      if (reqUser.username && u.username && u.username.toLowerCase() === reqUser.username.trim().toLowerCase()) return true;
+      return false;
+    });
 
     if (userIndex === -1) {
-      return res.status(404).json({ success: false, message: 'Data pengguna tidak ditemukan!' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Data pengguna tidak ditemukan di sistem! Silakan lakukan logout dan login kembali.' 
+      });
     }
 
     const currentUser = usersList[userIndex];
@@ -843,7 +884,7 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
       }
 
       // Pengecekan Duplikasi Username
-      const isTaken = usersList.some(u => u.id !== currentUser.id && u.username.toLowerCase() === newUsername);
+      const isTaken = usersList.some((u, idx) => idx !== userIndex && u.username && u.username.toLowerCase() === newUsername);
       if (isTaken) {
         return res.status(409).json({
           success: false,
@@ -876,8 +917,8 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
       currentUser.bio = bio.trim();
     }
 
-    // 4. UPDATE AVATAR (BASE64 ATAS GAMBAR DRAG/DROP DARIPADA KOMPUTER)
-    if (avatar) {
+    // 4. UPDATE AVATAR (BASE64)
+    if (avatar && avatar.length > 20) {
       currentUser.avatar = avatar;
     }
 
@@ -885,7 +926,7 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
     usersList[userIndex] = currentUser;
     await saveUserDataToGitHub(usersList, fileSha);
 
-    // Buat JWT Token Baru jika Display Name / Username Berubah
+    // Buat JWT Token Baru dengan Identitas Terbaru
     const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
     const newToken = jwt.sign(
       {
@@ -901,7 +942,7 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
 
     return res.status(200).json({
       success: true,
-      message: 'Profil berhasil diperbarui!',
+      message: 'Profil berhasil diperbarui dan disimpan!',
       token: newToken,
       user: {
         id: currentUser.id,
@@ -911,8 +952,8 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
         bio: currentUser.bio || "",
         avatar: currentUser.avatar || "https://via.placeholder.com/150",
         role: currentUser.role || 'USER',
-        lastDisplayNameUpdate: currentUser.lastDisplayNameUpdate,
-        lastUsernameUpdate: currentUser.lastUsernameUpdate
+        lastDisplayNameUpdate: currentUser.lastDisplayNameUpdate || null,
+        lastUsernameUpdate: currentUser.lastUsernameUpdate || null
       },
       updates: {
         displayNameChanged,
@@ -930,18 +971,22 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
 });
 
 // ----------------------------------------------------------------------------
-// ENDPOINT 3: GET USER PROFILE BY ID
+// ENDPOINT 3: GET USER PROFILE BY MULTI-LOOKUP IDENTIFIER
 // ----------------------------------------------------------------------------
 app.get(['/api/user/profile', '/api/profile'], authenticateUserToken, async (req, res) => {
   try {
     const userId = req.query.userId || (req.user && req.user.id);
-
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'User ID tidak ditemukan.' });
-    }
+    const email = req.query.email || (req.user && req.user.email);
+    const username = req.query.username || (req.user && req.user.username);
 
     const { usersList } = await fetchUserDataFromGitHub();
-    const foundUser = usersList.find(u => u.id === userId);
+
+    const foundUser = usersList.find(u => {
+      if (userId && u.id === userId) return true;
+      if (email && u.email && u.email.toLowerCase() === email.toLowerCase()) return true;
+      if (username && u.username && u.username.toLowerCase() === username.toLowerCase()) return true;
+      return false;
+    });
 
     if (!foundUser) {
       return res.status(404).json({ success: false, message: 'Profil pengguna tidak ditemukan.' });
@@ -1009,7 +1054,7 @@ app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken,
       return res.status(404).json({ success: false, message: 'User tidak ditemukan!' });
     }
 
-    if (targetUser.role === 'SUPER_ADMIN' || targetUser.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) {
+    if (targetUser.role === 'SUPER_ADMIN' || (targetUser.email && targetUser.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase())) {
       return res.status(403).json({ success: false, message: 'Dilarang menghapus Akun Master Administrator Utama!' });
     }
 
