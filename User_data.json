@@ -1,1 +1,12 @@
-[ ]
+[
+  {
+    "id": "usr_master_admin_001",
+    "email": "osismediateknologiskkkpdg@gmail.com",
+    "username": "admin osis",
+    "displayName": "Administrator OSIS",
+    "passwordHash": "$2a$10$ESFwZcRXIi9kzdrw2UHHmeb0CemTGlaOaeFzfripDhiGlns6bDV.S",
+    "role": "SUPER_ADMIN",
+    "createdAt": "2026-08-13T11:56:40.713Z",
+    "verified": true
+  }
+]
