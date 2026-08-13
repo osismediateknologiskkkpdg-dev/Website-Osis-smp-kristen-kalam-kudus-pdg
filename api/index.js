@@ -6,18 +6,6 @@
  * Engine: Express.js Unified Serverless Handler for Vercel
  * Version: 2.8.0 (Multi-Fallback User Lookup & Robust Identity Resolver)
  * ============================================================================
- * 
- * FITUR LENGKAP BUNDLE:
- * 1. Otentikasi OTP Wajib untuk Seluruh Akun (Termasuk Master Administrator).
- * 2. Endpoint Resend OTP terintegrasi penuh dengan SMTP Transporter Nodemailer.
- * 3. Native HTTPS GitHub Transceiver untuk Operasi Read/Write User_data.json.
- * 4. Kustomisasi Avatar (Base64 / Image Data) dari Komputer.
- * 5. Kustomisasi Deskripsi Akun (Bio).
- * 6. Pengubahan Display Name dengan Batas Cooldown Strict 1 Kali per 24 Jam.
- * 7. Pengubahan Username dengan Batas Cooldown Strict 1 Kali per 7 Hari.
- * 8. Real-time & Server-side Username Uniqueness Validation (Anti-Collision).
- * 9. Multi-Fallback Search Engine untuk mencegah error "Data pengguna tidak ditemukan!".
- * ============================================================================
  */
 
 require('dotenv').config();
@@ -31,21 +19,15 @@ const path = require('path');
 
 const app = express();
 
-// ============================================================================
 // KONSTANTA & ATURAN WAKTU COOLDOWN
-// ============================================================================
 const MASTER_ADMIN_EMAIL = "osismediateknologiskkkpdg@gmail.com";
 const MASTER_ADMIN_USERNAME = "admin osis";
 const MASTER_ADMIN_DISPLAY = "Administrator OSIS";
 const MASTER_ADMIN_RAW_PASS = "skkk2019osismedia&teknologi";
 
-// Batas Cooldown Perubahan Identitas (dalam Milidetik)
-const DISPLAY_NAME_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 1 Hari = 24 Jam
-const USERNAME_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;  // 1 Minggu = 7 Hari
+const DISPLAY_NAME_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 1 Hari
+const USERNAME_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;  // 1 Minggu
 
-// ============================================================================
-// GLOBAL PROCESS SAFETY & UNCAUGHT EXCEPTION SHIELD
-// ============================================================================
 process.on('uncaughtException', (err) => {
   console.error('[CRITICAL SYSTEM ERROR] Uncaught Exception Detected:', err.stack || err.message || err);
 });
@@ -54,53 +36,28 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[CRITICAL SYSTEM ERROR] Unhandled Promise Rejection at:', promise, 'reason:', reason);
 });
 
-// ============================================================================
-// EXPRESS MIDDLEWARE CONFIGURATION
-// ============================================================================
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// Konfigurasi limit body parser untuk menerima gambar Base64 avatar
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Memory Storage Global untuk Pengelolaan Sesi Kode OTP Sementara
 global.otpMemoryStore = global.otpMemoryStore || {};
 
-// ============================================================================
-// HELPER UTILITIES: SANITIZATION, DIAGNOSTICS & COOLDOWN CALCULATOR
-// ============================================================================
-
-/**
- * Membersihkan Token GitHub dari spasi, baris baru, atau karakter tanda petik.
- * @param {string} rawToken 
- * @returns {string|null}
- */
 function sanitizeGitHubToken(rawToken) {
   if (!rawToken || typeof rawToken !== 'string') return null;
   return rawToken.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
 }
 
-/**
- * Menyamarkan string token untuk keamanan pencatatan log diagnostik.
- * @param {string} token 
- * @returns {string}
- */
 function maskTokenForDiagnostics(token) {
   if (!token) return '[NOT CONFIGURED]';
   if (token.length <= 8) return '****';
   return `${token.substring(0, 6)}...${token.substring(token.length - 4)}`;
 }
 
-/**
- * Memeriksa sisa waktu cooldown dalam format teks deskriptif
- * @param {string|null} lastUpdateIsoString 
- * @param {number} cooldownMs 
- * @returns {{ canUpdate: boolean, remainingText: string|null }}
- */
 function checkCooldown(lastUpdateIsoString, cooldownMs) {
   if (!lastUpdateIsoString) return { canUpdate: true, remainingText: null };
 
@@ -130,17 +87,6 @@ function checkCooldown(lastUpdateIsoString, cooldownMs) {
   return { canUpdate: true, remainingText: null };
 }
 
-// ============================================================================
-// HELPER 1: NATIVE HTTPS GITHUB REST API TRANSCEIVER ENGINE
-// ============================================================================
-
-/**
- * Melakukan HTTP REST API Request ke GitHub Repositori secara Asinkron
- * @param {string} endpointMethod 
- * @param {string} apiPath 
- * @param {object|null} requestBodyData 
- * @returns {Promise<object>}
- */
 function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   return new Promise((resolve, reject) => {
     const rawToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
@@ -205,9 +151,6 @@ function makeGitHubApiRequest(endpointMethod, apiPath, requestBodyData = null) {
   });
 }
 
-/**
- * Membaca File User_data.json dari GitHub & Menjamin Anti-Duplikasi Administrator
- */
 async function fetchUserDataFromGitHub() {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   try {
@@ -219,7 +162,6 @@ async function fetchUserDataFromGitHub() {
       parsedUsers = [];
     }
 
-    // PENGECEKAN DUPLIKASI ADMINISTRATOR UTAMA
     const adminExists = parsedUsers.some(
       (user) => (user.email && user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) ||
                 (user.username && user.username.toLowerCase() === MASTER_ADMIN_USERNAME.toLowerCase())
@@ -261,9 +203,6 @@ async function fetchUserDataFromGitHub() {
   }
 }
 
-/**
- * Menyimpan / Meng-commit Pembaruan Array User_data.json ke GitHub Repositori
- */
 async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
   const branchName = process.env.GITHUB_BRANCH ? process.env.GITHUB_BRANCH.trim() : 'main';
   const base64EncodedContent = Buffer.from(JSON.stringify(updatedUsersArray, null, 2)).toString('base64');
@@ -280,10 +219,6 @@ async function saveUserDataToGitHub(updatedUsersArray, currentSha) {
 
   return await makeGitHubApiRequest('PUT', 'contents/User_data.json', commitPayload);
 }
-
-// ============================================================================
-// HELPER 2: NODEMAILER SMTP TRANSPORTER ENGINE
-// ============================================================================
 
 function createSmtpTransporter() {
   const user = process.env.SMTP_USER ? process.env.SMTP_USER.trim() : null;
@@ -304,9 +239,6 @@ function createSmtpTransporter() {
   });
 }
 
-/**
- * Mengirimkan Email Kode OTP Verifikasi Keamanan
- */
 async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHeader) {
   const transporter = createSmtpTransporter();
 
@@ -335,15 +267,10 @@ async function dispatchOTPEmail(targetEmailAddress, otpCodeNumber, actionTitleHe
   });
 }
 
-// ============================================================================
-// MIDDLEWARE OTENTIKASI (JWT AUTH)
-// ============================================================================
-
 function authenticateUserToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  // Fleksibilitas: Gunakan Token JWT jika ada, atau izinkan fallback request body jika token tidak disertakan
   if (!token) {
     if (req.body && (req.body.userId || req.body.email || req.body.currentUsername)) {
       req.user = { 
@@ -367,7 +294,6 @@ function authenticateUserToken(req, res, next) {
   const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
   jwt.verify(token, secretKey, (err, decodedUser) => {
     if (err) {
-      // Jika token expired tapi memiliki data body identitas, izinkan pembacaan fallback
       if (req.body && (req.body.userId || req.body.email || req.body.currentUsername)) {
         req.user = { 
           id: req.body.userId, 
@@ -406,16 +332,10 @@ function authenticateAdminToken(req, res, next) {
   });
 }
 
-// ============================================================================
-// EXPRESS ROUTING HANDLERS
-// ============================================================================
-
-// FRONTEND ROUTE: Menyajikan index.html saat GET / dipanggil
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
-// HEALTH & DIAGNOSTICS CHECK ROUTE
 app.get(['/api/health', '/health'], async (req, res) => {
   const tokenClean = sanitizeGitHubToken(process.env.GITHUB_TOKEN || process.env.GH_TOKEN);
   return res.status(200).json({
@@ -431,9 +351,6 @@ app.get(['/api/health', '/health'], async (req, res) => {
   });
 });
 
-// ----------------------------------------------------------------------------
-// ROUTE 1: REGISTER USER (REQUEST OTP)
-// ----------------------------------------------------------------------------
 app.post(['/api/register', '/register'], async (req, res) => {
   try {
     const { email, username, displayName, password, confirmPassword } = req.body || {};
@@ -496,9 +413,6 @@ app.post(['/api/register', '/register'], async (req, res) => {
   }
 });
 
-// ----------------------------------------------------------------------------
-// ROUTE 2: VERIFY REGISTER OTP & SAVE TO GITHUB
-// ----------------------------------------------------------------------------
 app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
   try {
     const { email, otp } = req.body || {};
@@ -562,9 +476,6 @@ app.post(['/api/verify-register', '/verify-register'], async (req, res) => {
   }
 });
 
-// ----------------------------------------------------------------------------
-// ROUTE 3: LOGIN USER (REQUEST OTP)
-// ----------------------------------------------------------------------------
 app.post(['/api/login', '/login'], async (req, res) => {
   try {
     const { identifier, password } = req.body || {};
@@ -624,9 +535,6 @@ app.post(['/api/login', '/login'], async (req, res) => {
   }
 });
 
-// ----------------------------------------------------------------------------
-// ROUTE 4: VERIFY LOGIN OTP & GENERATE JWT TOKEN
-// ----------------------------------------------------------------------------
 app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
   try {
     const { email, otp } = req.body || {};
@@ -692,9 +600,6 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res) => {
   }
 });
 
-// ----------------------------------------------------------------------------
-// ROUTE 5: KIRIM ULANG KODE OTP (RESEND OTP HANDLER)
-// ----------------------------------------------------------------------------
 app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
   try {
     const { email } = req.body || {};
@@ -751,13 +656,6 @@ app.post(['/api/resend-otp', '/resend-otp'], async (req, res) => {
   }
 });
 
-// ============================================================================
-// FITUR KUSTOMISASI PROFIL (AVATAR, BIO, DISPLAY NAME, & USERNAME)
-// ============================================================================
-
-// ----------------------------------------------------------------------------
-// ENDPOINT 1: CHECK USERNAME AVAILABILITY (VALIDASI REAL-TIME ANTI-TABRAKAN)
-// ----------------------------------------------------------------------------
 app.get(['/api/user/check-username', '/api/check-username'], async (req, res) => {
   try {
     const { username, userId, email } = req.query;
@@ -779,7 +677,6 @@ app.get(['/api/user/check-username', '/api/check-username'], async (req, res) =>
 
     const { usersList } = await fetchUserDataFromGitHub();
 
-    // Pengecekan multi-kriteria untuk mengecualikan akun milik diri sendiri
     const isTaken = usersList.some(u => {
       const sameUsername = u.username && u.username.toLowerCase() === cleanUsername;
       const isSameUserById = userId && u.id === userId;
@@ -806,10 +703,6 @@ app.get(['/api/user/check-username', '/api/check-username'], async (req, res) =>
   }
 });
 
-// ----------------------------------------------------------------------------
-// ENDPOINT 2: UPDATE PROFIL AKUN (AVATAR, BIO, DISPLAY NAME 24H, USERNAME 7D)
-// MULTI-FALLBACK SEARCH ENGINE - MENJAMIN PENCARIAN USER BERHASIL 100%
-// ----------------------------------------------------------------------------
 app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserToken, async (req, res) => {
   try {
     const { userId, email, currentUsername, displayName, username, bio, avatar } = req.body || {};
@@ -821,10 +714,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
       return res.status(500).json({ success: false, message: 'Gagal membaca repositori database pengguna.' });
     }
 
-    // MULTI-FALLBACK SEARCH ENGINE:
-    // 1. Cari berdasarkan userId
-    // 2. Cari berdasarkan email dari request body / token JWT
-    // 3. Cari berdasarkan username dari request body / token JWT
     let userIndex = usersList.findIndex(u => {
       if (userId && u.id && u.id === userId) return true;
       if (reqUser.id && u.id && u.id === reqUser.id) return true;
@@ -847,7 +736,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
     let displayNameChanged = false;
     let usernameChanged = false;
 
-    // 1. VALIDASI PERUBAHAN DISPLAY NAME (LIMIT: 1 KALI PER 24 JAM)
     if (displayName && displayName.trim() !== currentUser.displayName) {
       const newDisplayName = displayName.trim();
 
@@ -871,7 +759,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
       displayNameChanged = true;
     }
 
-    // 2. VALIDASI PERUBAHAN USERNAME (LIMIT: 1 KALI PER 7 HARI & HARUS UNIK)
     if (username && username.trim().toLowerCase() !== currentUser.username.toLowerCase()) {
       const newUsername = username.trim().toLowerCase();
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
@@ -883,7 +770,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
         });
       }
 
-      // Pengecekan Duplikasi Username
       const isTaken = usersList.some((u, idx) => idx !== userIndex && u.username && u.username.toLowerCase() === newUsername);
       if (isTaken) {
         return res.status(409).json({
@@ -892,7 +778,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
         });
       }
 
-      // Pengecekan Cooldown 1 Minggu (7 Hari)
       const cooldownStatus = checkCooldown(currentUser.lastUsernameUpdate, USERNAME_COOLDOWN_MS);
       if (!cooldownStatus.canUpdate) {
         return res.status(429).json({
@@ -906,7 +791,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
       usernameChanged = true;
     }
 
-    // 3. UPDATE DESKRIPSI AKUN (BIO)
     if (typeof bio === 'string') {
       if (bio.length > 250) {
         return res.status(400).json({
@@ -917,16 +801,13 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
       currentUser.bio = bio.trim();
     }
 
-    // 4. UPDATE AVATAR (BASE64)
     if (avatar && avatar.length > 20) {
       currentUser.avatar = avatar;
     }
 
-    // Simpan Perubahan ke Repositori GitHub
     usersList[userIndex] = currentUser;
     await saveUserDataToGitHub(usersList, fileSha);
 
-    // Buat JWT Token Baru dengan Identitas Terbaru
     const secretKey = process.env.JWT_SECRET || 'osis_kalam_kudus_padang_secret_key_2026';
     const newToken = jwt.sign(
       {
@@ -970,9 +851,6 @@ app.post(['/api/user/update-profile', '/api/update-profile'], authenticateUserTo
   }
 });
 
-// ----------------------------------------------------------------------------
-// ENDPOINT 3: GET USER PROFILE BY MULTI-LOOKUP IDENTIFIER
-// ----------------------------------------------------------------------------
 app.get(['/api/user/profile', '/api/profile'], authenticateUserToken, async (req, res) => {
   try {
     const userId = req.query.userId || (req.user && req.user.id);
@@ -1013,11 +891,6 @@ app.get(['/api/user/profile', '/api/profile'], authenticateUserToken, async (req
   }
 });
 
-// ============================================================================
-// SUPER ADMIN CONTROL ENDPOINTS
-// ============================================================================
-
-// ADMIN ROUTE 1: GET ALL USERS (Khusus Administrator)
 app.get(['/api/admin/users', '/admin/users'], authenticateAdminToken, async (req, res) => {
   try {
     const { usersList } = await fetchUserDataFromGitHub();
@@ -1043,7 +916,6 @@ app.get(['/api/admin/users', '/admin/users'], authenticateAdminToken, async (req
   }
 });
 
-// ADMIN ROUTE 2: DELETE USER BY ID (Khusus Administrator)
 app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken, async (req, res) => {
   try {
     const targetUserId = req.params.id;
@@ -1070,7 +942,6 @@ app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken,
   }
 });
 
-// Fallback Unmatched Route
 app.use((req, res) => {
   return res.status(404).json({
     success: false,
@@ -1078,7 +949,6 @@ app.use((req, res) => {
   });
 });
 
-// Global Express Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error('[EXPRESS GLOBAL ERROR]:', err.stack || err);
   return res.status(500).json({
