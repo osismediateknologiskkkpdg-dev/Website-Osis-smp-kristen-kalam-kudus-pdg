@@ -12,5 +12,19 @@
     "lastDisplayNameUpdate": null,
     "lastUsernameUpdate": null,
     "verified": true
+  },
+  {
+    "id": "usr_1786591230725",
+    "email": "gbnpro28@gmail.com",
+    "username": "gbnpro28",
+    "displayName": "gbnpro28",
+    "bio": "Siswa SMP Kristen Kalam Kudus Padang.",
+    "avatar": "https://via.placeholder.com/150",
+    "passwordHash": "$2a$10$sIdI8NgCeUWJI7q0vdOh/eWaEK0SoP0lTd/mGTDR6/zw1ikH03dTS",
+    "role": "USER",
+    "createdAt": "2026-08-13T03:20:30.725Z",
+    "lastDisplayNameUpdate": null,
+    "lastUsernameUpdate": null,
+    "verified": true
   }
 ]
