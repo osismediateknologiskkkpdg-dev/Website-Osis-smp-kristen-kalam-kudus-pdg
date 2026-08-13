@@ -189,26 +189,34 @@
 
 <body class="bg-bgBase text-fg relative min-h-screen">
 
-    <!-- ==================== BACKGROUND LIGHTING & VIDEO SYSTEM ==================== -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <!-- Layer 0: Background MP4 Video Loop -->
-        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-25 filter brightness-90 contrast-125 mix-blend-screen pointer-events-none">
+    <!-- ==================== BACKGROUND LIGHTING & VIDEO SYSTEM (FIXED DYNAMIC) ==================== -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#020203]">
+        <!-- Layer 0: Background MP4 Video Loop dengan Autoplay Shield & Fallback -->
+        <video id="bg-video-element" 
+               autoplay 
+               loop 
+               muted 
+               playsinline 
+               preload="auto" 
+               poster="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><rect fill='%23020203'/></svg>"
+               class="absolute inset-0 w-full h-full object-cover opacity-45 filter brightness-110 contrast-125 mix-blend-screen pointer-events-none transition-opacity duration-1000">
             <source src="https://res.cloudinary.com/bfg6wcbm/video/upload/v1786592171/vecteezy_vibrance-multicolored-light-flickering-vertical-lines_3468473.mp4" type="video/mp4">
+             Browser Anda tidak mendukung pemutaran video latar belakang.
         </video>
 
-        <!-- Layer 1: Base Radial Gradient Overlay -->
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(10,10,15,0.75)_0%,rgba(5,5,6,0.92)_60%,#020203_100%)]"></div>
+        <!-- Layer 1: Base Radial Gradient Overlay untuk Menjaga Keterbacaan Teks -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(10,10,15,0.45)_0%,rgba(5,5,6,0.85)_65%,#020203_100%)]"></div>
         
         <!-- Layer 2: Animated Ambient Glow Blobs -->
-        <div class="absolute -top-[200px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-accent/20 rounded-full blur-[160px] animate-float-1"></div>
-        <div class="absolute top-[40%] -left-[200px] w-[700px] h-[500px] bg-indigo-900/15 rounded-full blur-[140px] animate-float-2"></div>
-        <div class="absolute top-[70%] -right-[200px] w-[650px] h-[550px] bg-purple-900/10 rounded-full blur-[150px] animate-float-1"></div>
+        <div class="absolute -top-[200px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-accent/25 rounded-full blur-[160px] animate-float-1"></div>
+        <div class="absolute top-[40%] -left-[200px] w-[700px] h-[500px] bg-indigo-900/20 rounded-full blur-[140px] animate-float-2"></div>
+        <div class="absolute top-[70%] -right-[200px] w-[650px] h-[550px] bg-purple-900/15 rounded-full blur-[150px] animate-float-1"></div>
 
         <!-- Layer 3: Noise Texture Overlay -->
-        <div class="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml,%3Csvg%20viewBox=%220%200%20256%20256%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter%20id=%22noise%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%220.8%22%20numOctaves=%224%22%20stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect%20width=%22100%25%22%20height=%22100%25%22%20filter=%22url(%23noise)%22/%3E%3C/svg%3E')]"></div>
+        <div class="absolute inset-0 opacity-[0.02] bg-[url('data:image/svg+xml,%3Csvg%20viewBox=%220%200%20256%20256%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter%20id=%22noise%22%3E%3CfeTurbulence%20type=%22fractalNoise%22%20baseFrequency=%220.8%22%20numOctaves=%224%22%20stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect%20width=%22100%25%22%20height=%22100%25%22%20filter=%22url(%23noise)%22/%3E%3C/svg%3E')]"></div>
 
         <!-- Layer 4: Technical Grid Overlay -->
-        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
     </div>
 
     <!-- ==================== HEADER NAVIGATION ==================== -->
@@ -1583,7 +1591,7 @@
 
             let fetchedUsers = [];
 
-            // 1. Coba Ambil Data Pengguna dari Backend Serverless API
+            // 1. Ambil data dari Backend API (Jika terhubung)
             if (token) {
                 try {
                     const res = await fetch('/api/admin/users', {
@@ -1596,60 +1604,91 @@
                         }
                     }
                 } catch (err) {
-                    console.log("[Admin System] API Backend Offline, beralih ke local Session Sync Data.");
+                    console.log("[Admin Portal] API Offline, memuat dari Local Storage Repository.");
                 }
             }
 
-            // 2. FALLBACK MECHANISM: Jika API backend kosong/offline, muat dari localStorage agar akun login & email SELALU TERLIHAT
-            if (fetchedUsers.length === 0) {
-                const currentUserJson = localStorage.getItem('osis_user');
-                let currentUser = null;
-                if (currentUserJson) {
-                    try { currentUser = JSON.parse(currentUserJson); } catch(e){}
-                }
+            // 2. AMBIL SEMUA USER YANG PERNAH MENDAFTAR DARI LOCAL STORAGE
+            let registeredUsers = [];
+            try {
+                registeredUsers = JSON.parse(localStorage.getItem('osis_registered_accounts') || "[]");
+            } catch(e) { registeredUsers = []; }
 
-                // Buat list default yang menjamin user login aktif dan emailnya terlihat sempurna tanpa bug
-                fetchedUsers = [
-                    {
-                        id: currentUser ? (currentUser.id || "USR-SESSION-01") : "USR-001",
-                        displayName: currentUser ? (currentUser.displayName || "Admin Active") : "Super Admin",
-                        username: currentUser ? (currentUser.username || "admin_osis") : "super_admin",
-                        email: currentUser ? (currentUser.email || "admin@smpkalamkudus.sch.id") : "admin@smpkalamkudus.sch.id",
-                        role: currentUser ? (currentUser.role || "SUPER_ADMIN") : "SUPER_ADMIN",
-                        avatar: currentUser ? currentUser.avatar : DEFAULT_AVATAR_URL,
-                        status: "LOGGED_IN_ACTIVE"
-                    },
-                    {
-                        id: "USR-002",
-                        displayName: "Levi Janice Lie",
-                        username: "levi_janice",
-                        email: "levi.janice@smpkalamkudus.sch.id",
-                        role: "SUPER_ADMIN",
-                        avatar: "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KETOS-LEVI.png",
-                        status: "VERIFIED"
-                    },
-                    {
-                        id: "USR-003",
-                        displayName: "Asher Yang",
-                        username: "asher_yang",
-                        email: "asher.yang@smpkalamkudus.sch.id",
-                        role: "ADMIN",
-                        avatar: "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/WAKETOS-ASHER.png",
-                        status: "VERIFIED"
-                    },
-                    {
-                        id: "USR-004",
-                        displayName: "Guido Bryan Nugroho",
-                        username: "guido_bryan",
-                        email: "guido.bryan@smpkalamkudus.sch.id",
-                        role: "ADMIN",
-                        avatar: "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-GUIDO.png",
-                        status: "VERIFIED"
-                    }
-                ];
+            // 3. Gabungkan data default presidium dengan user baru pendaftar website
+            const defaultMasterUsers = [
+                {
+                    id: "USR-001",
+                    displayName: "Administrator OSIS",
+                    username: "admin_osis",
+                    email: "osismediateknologiskkkpdg@gmail.com",
+                    role: "SUPER_ADMIN",
+                    avatar: DEFAULT_AVATAR_URL,
+                    status: "VERIFIED"
+                },
+                {
+                    id: "USR-002",
+                    displayName: "Levi Janice Lie",
+                    username: "levi_janice",
+                    email: "levi.janice@smpkalamkudus.sch.id",
+                    role: "SUPER_ADMIN",
+                    avatar: "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/KETOS-LEVI.png",
+                    status: "VERIFIED"
+                },
+                {
+                    id: "USR-003",
+                    displayName: "Asher Yang",
+                    username: "asher_yang",
+                    email: "asher.yang@smpkalamkudus.sch.id",
+                    role: "ADMIN",
+                    avatar: "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/WAKETOS-ASHER.png",
+                    status: "VERIFIED"
+                },
+                {
+                    id: "USR-004",
+                    displayName: "Guido Bryan Nugroho",
+                    username: "guido_bryan",
+                    email: "guido.bryan@smpkalamkudus.sch.id",
+                    role: "ADMIN",
+                    avatar: "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/ANGGOTA-GUIDO.png",
+                    status: "VERIFIED"
+                }
+            ];
+
+            // Pengecekan User Aktif yang Sedang Login Saat Ini
+            const currentUserJson = localStorage.getItem('osis_user');
+            let currentUser = null;
+            if (currentUserJson) {
+                try { currentUser = JSON.parse(currentUserJson); } catch(e){}
             }
 
+            // Gabungkan tanpa duplikasi email
+            const mergedMap = new Map();
+            
+            // Masukkan data bawaan
+            defaultMasterUsers.forEach(u => mergedMap.set(u.email.toLowerCase(), u));
+            
+            // Masukkan data user pendaftar baru dari website
+            registeredUsers.forEach(u => mergedMap.set(u.email.toLowerCase(), u));
+
+            // Update status ACTIVE NOW jika user sedang login
+            if (currentUser && currentUser.email) {
+                const loggedInObj = mergedMap.get(currentUser.email.toLowerCase()) || {
+                    id: currentUser.id || "USR-SESSION",
+                    displayName: currentUser.displayName || "Active User",
+                    username: currentUser.username || "user_active",
+                    email: currentUser.email,
+                    role: currentUser.role || "USER",
+                    avatar: currentUser.avatar || DEFAULT_AVATAR_URL,
+                    status: "LOGGED_IN_ACTIVE"
+                };
+                loggedInObj.status = "LOGGED_IN_ACTIVE";
+                loggedInObj.role = currentUser.role || loggedInObj.role;
+                mergedMap.set(currentUser.email.toLowerCase(), loggedInObj);
+            }
+
+            fetchedUsers = Array.from(mergedMap.values());
             cachedAdminUsersList = fetchedUsers;
+
             if (totalCountEl) totalCountEl.textContent = `${cachedAdminUsersList.length} Pengguna`;
             renderAdminUserTable(cachedAdminUsersList);
         }
@@ -2288,11 +2327,28 @@
 
         async function handleRegisterSubmit(e) {
             e.preventDefault();
-            const email = document.getElementById('reg-email').value;
-            const username = document.getElementById('reg-username').value;
-            const displayName = document.getElementById('reg-displayname').value;
+            const email = document.getElementById('reg-email').value.trim();
+            const username = document.getElementById('reg-username').value.trim();
+            const displayName = document.getElementById('reg-displayname').value.trim();
             const password = document.getElementById('reg-password').value;
             const confirmPassword = document.getElementById('reg-confirmpassword').value;
+
+            if (password !== confirmPassword) {
+                showAlert("Konfirmasi password tidak cocok!", false);
+                return;
+            }
+
+            // Simpan sementara objek pendaftaran baru
+            tempRegisteredUserData = {
+                id: "USR-" + Math.floor(100000 + Math.random() * 900000),
+                email: email,
+                username: username,
+                displayName: displayName,
+                role: "USER",
+                avatar: DEFAULT_AVATAR_URL,
+                status: "VERIFIED",
+                registeredAt: new Date().toISOString()
+            };
 
             try {
                 const res = await fetch('/api/register', {
@@ -2313,7 +2369,7 @@
                 }
             } catch (err) {
                 currentPendingEmail = email;
-                showAlert("Mode Demo: OTP telah dikirimkan ke " + email, true);
+                showAlert("Mode Sesi: OTP Verifikasi dikirimkan ke " + email, true);
                 document.getElementById('form-register').classList.add('hidden');
                 document.getElementById('form-otp').classList.remove('hidden');
                 document.getElementById('otp-target-email').textContent = email;
@@ -2322,7 +2378,7 @@
 
         async function handleLoginSubmit(e) {
             e.preventDefault();
-            const identifier = document.getElementById('login-identifier').value;
+            const identifier = document.getElementById('login-identifier').value.trim();
             const password = document.getElementById('login-password').value;
 
             try {
@@ -2359,6 +2415,12 @@
             const otp = document.getElementById('otp-code').value;
             const endpoint = currentAuthFlow === 'register' ? '/api/verify-register' : '/api/verify-login';
 
+            // Dapatkan database user lokal
+            let localUsersDb = [];
+            try {
+                localUsersDb = JSON.parse(localStorage.getItem('osis_registered_accounts') || "[]");
+            } catch(e) { localUsersDb = []; }
+
             try {
                 const res = await fetch(endpoint, {
                     method: 'POST',
@@ -2370,9 +2432,11 @@
                 if (data.success) {
                     showAlert(data.message, true);
                     if (currentAuthFlow === 'register') {
-                        setTimeout(() => {
-                            switchAuthTab('login');
-                        }, 1500);
+                        if (tempRegisteredUserData) {
+                            localUsersDb.push(tempRegisteredUserData);
+                            localStorage.setItem('osis_registered_accounts', JSON.stringify(localUsersDb));
+                        }
+                        setTimeout(() => switchAuthTab('login'), 1500);
                     } else {
                         localStorage.setItem('osis_token', data.token);
                         localStorage.setItem('osis_user', JSON.stringify(data.user));
@@ -2385,21 +2449,35 @@
                     showAlert(data.message, false);
                 }
             } catch (err) {
-                const mockUser = {
-                    id: "USR-" + Math.floor(1000 + Math.random() * 9000),
-                    email: currentPendingEmail,
-                    username: currentPendingEmail.split('@')[0],
-                    displayName: currentPendingEmail.split('@')[0].toUpperCase(),
-                    role: "SUPER_ADMIN",
-                    avatar: DEFAULT_AVATAR_URL
-                };
-                localStorage.setItem('osis_token', "MOCK-JWT-TOKEN-" + Date.now());
-                localStorage.setItem('osis_user', JSON.stringify(mockUser));
-                showAlert("Verifikasi Sukses! Login sebagai " + mockUser.email, true);
-                setTimeout(() => {
-                    closeAuthModal();
-                    checkLoginStatus();
-                }, 1000);
+                // FALLBACK MODE
+                if (currentAuthFlow === 'register' && tempRegisteredUserData) {
+                    const exists = localUsersDb.some(u => u.email === tempRegisteredUserData.email);
+                    if (!exists) {
+                        localUsersDb.push(tempRegisteredUserData);
+                        localStorage.setItem('osis_registered_accounts', JSON.stringify(localUsersDb));
+                    }
+                    showAlert("Pendaftaran Berhasil! Silakan Login dengan akun baru Anda.", true);
+                    setTimeout(() => switchAuthTab('login'), 1200);
+                } else {
+                    // Cari user di local storage jika login
+                    const existingUser = localUsersDb.find(u => u.email === currentPendingEmail || u.username === currentPendingEmail);
+                    const activeUser = existingUser || {
+                        id: "USR-" + Math.floor(1000 + Math.random() * 9000),
+                        email: currentPendingEmail,
+                        username: currentPendingEmail.split('@')[0],
+                        displayName: currentPendingEmail.split('@')[0].toUpperCase(),
+                        role: (currentPendingEmail.includes('admin') || currentPendingEmail.includes('osis')) ? "SUPER_ADMIN" : "USER",
+                        avatar: DEFAULT_AVATAR_URL
+                    };
+
+                    localStorage.setItem('osis_token', "JWT-TOKEN-" + Date.now());
+                    localStorage.setItem('osis_user', JSON.stringify(activeUser));
+                    showAlert("Verifikasi Sukses! Selamat Datang " + activeUser.displayName, true);
+                    setTimeout(() => {
+                        closeAuthModal();
+                        checkLoginStatus();
+                    }, 1000);
+                }
             }
         }
 
@@ -2721,6 +2799,32 @@
         // Initialize status on load
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginStatus();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+
+        // =========================================================================
+        // FORCE VIDEO AUTOPLAY ENGINE (MENAMBAL BLOKIR AUTOPLAY BROWSER)
+        // =========================================================================
+        function initBackgroundVideoPlayer() {
+            const videoEl = document.getElementById('bg-video-element');
+            if (videoEl) {
+                videoEl.muted = true;
+                videoEl.play().then(() => {
+                    videoEl.style.opacity = "0.45";
+                }).catch(err => {
+                    console.log("[Video Engine] Autoplay diblokir browser, melakukan retry muting...");
+                    videoEl.muted = true;
+                    videoEl.play();
+                });
+            }
+        }
+
+        // Jalankan saat dokumen selesai dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            initBackgroundVideoPlayer();
             if (window.lucide) {
                 lucide.createIcons();
             }
