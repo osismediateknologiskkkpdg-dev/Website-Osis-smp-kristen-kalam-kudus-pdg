@@ -24,5 +24,17 @@
     "verified": true,
     "avatarUrl": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png",
     "bio": ""
+  },
+  {
+    "id": "usr_1786961032002_e45530",
+    "email": "gbnpro28@gmail.com",
+    "username": "gbnpro28",
+    "displayName": "gbnpro28",
+    "avatarUrl": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png",
+    "bio": "",
+    "passwordHash": "$2a$10$2fquSA7gSPFHKi6RrNujz.lGjp/Tsvrxik1FKN1xqwRwh1miDlLTq",
+    "role": "USER",
+    "createdAt": "2026-08-17T10:03:52.108Z",
+    "verified": true
   }
 ]
