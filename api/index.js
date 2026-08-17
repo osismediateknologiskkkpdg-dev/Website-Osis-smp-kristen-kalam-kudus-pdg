@@ -558,6 +558,118 @@ app.put(['/api/account/profile', '/account/profile'], authenticateToken, async (
   } catch (error) { return next(error); }
 });
 
+app.post(['/api/account/security/send-otp', '/account/security/send-otp'], authenticateToken, async (req, res, next) => {
+  try {
+    const purpose = String(req.body?.purpose || 'password-change').trim();
+    const allowedPurposes = ['password-change', 'delete-account'];
+    if (!allowedPurposes.includes(purpose)) fail(400, 'Tujuan verifikasi tidak valid.');
+
+    const { usersList } = await fetchUserData();
+    const user = usersList.find((entry) => entry.id === req.user.id);
+    if (!user) fail(401, 'Akun tidak ditemukan. Silakan login kembali.');
+
+    const otp = createOtp();
+    const key = `account_${purpose}_${user.id}`;
+    global.otpMemoryStore[key] = {
+      otp,
+      purpose,
+      email: user.email,
+      expiresAt: Date.now() + 5 * 60 * 1000
+    };
+
+    await dispatchOtpEmail(user.email, otp, purpose === 'delete-account' ? 'Hapus Akun' : 'Ubah Password');
+    return res.json({
+      success: true,
+      message: purpose === 'delete-account'
+        ? 'Kode OTP hapus akun berhasil dikirim ke email Anda.'
+        : 'Kode OTP verifikasi ubah password berhasil dikirim ke email Anda.'
+    });
+  } catch (error) { return next(error); }
+});
+
+app.post(['/api/account/change-password', '/account/change-password'], authenticateToken, async (req, res, next) => {
+  try {
+    const { currentPassword, otp, newPassword, confirmPassword } = req.body || {};
+    const { usersList } = await fetchUserData();
+    const user = usersList.find((entry) => entry.id === req.user.id);
+    if (!user) fail(401, 'Akun tidak ditemukan. Silakan login kembali.');
+
+    const passwordCandidate = typeof newPassword === 'string' ? newPassword : '';
+    if (passwordCandidate.length < 6) fail(400, 'Password baru minimal terdiri dari 6 karakter.');
+    if (passwordCandidate !== confirmPassword) fail(400, 'Konfirmasi password baru tidak cocok.');
+
+    const currentPasswordProvided = typeof currentPassword === 'string' && currentPassword.trim().length > 0;
+    const otpProvided = typeof otp === 'string' && otp.trim().length > 0;
+    let verifiedByCurrentPassword = false;
+    let verifiedByOtp = false;
+
+    if (currentPasswordProvided) {
+      verifiedByCurrentPassword = await bcrypt.compare(currentPassword, user.passwordHash || '');
+    }
+
+    if (otpProvided) {
+      const sessionKey = `account_password-change_${user.id}`;
+      const session = global.otpMemoryStore[sessionKey];
+      if (!session || !session.otp) fail(400, 'Sesi OTP ubah password tidak ditemukan atau sudah kedaluwarsa.');
+      if (Date.now() > session.expiresAt) {
+        delete global.otpMemoryStore[sessionKey];
+        fail(400, 'Kode OTP ubah password sudah kedaluwarsa. Silakan kirim ulang.');
+      }
+      if (session.otp !== String(otp).trim()) fail(400, 'Kode OTP ubah password yang Anda masukkan salah.');
+      verifiedByOtp = true;
+      delete global.otpMemoryStore[sessionKey];
+    }
+
+    if (!verifiedByCurrentPassword && !verifiedByOtp) {
+      fail(400, 'Verifikasi gagal. Masukkan password saat ini atau kode OTP yang dikirim ke email Anda.');
+    }
+
+    if (await bcrypt.compare(passwordCandidate, user.passwordHash || '')) {
+      fail(400, 'Password baru harus berbeda dari password saat ini.');
+    }
+
+    const newPasswordHash = await bcrypt.hash(passwordCandidate, 10);
+    await commitUserMutation((allUsers) => {
+      const targetUser = allUsers.find((entry) => entry.id === user.id);
+      if (!targetUser) fail(404, 'Akun tidak ditemukan.');
+      targetUser.passwordHash = newPasswordHash;
+      targetUser.updatedAt = new Date().toISOString();
+    }, 'feat(auth): change user password');
+
+    return res.json({ success: true, message: 'Password berhasil diperbarui. Silakan login kembali dengan password baru.' });
+  } catch (error) { return next(error); }
+});
+
+app.post(['/api/account/delete', '/account/delete'], authenticateToken, async (req, res, next) => {
+  try {
+    const { otp, password } = req.body || {};
+    if (!otp || !password) fail(400, 'Kode OTP dan password akun wajib diisi.');
+
+    const { usersList } = await fetchUserData();
+    const user = usersList.find((entry) => entry.id === req.user.id);
+    if (!user) fail(401, 'Akun tidak ditemukan. Silakan login kembali.');
+
+    const sessionKey = `account_delete-account_${user.id}`;
+    const session = global.otpMemoryStore[sessionKey];
+    if (!session || !session.otp) fail(400, 'Sesi verifikasi penghapusan akun tidak ditemukan atau sudah kedaluwarsa.');
+    if (Date.now() > session.expiresAt) {
+      delete global.otpMemoryStore[sessionKey];
+      fail(400, 'Kode OTP penghapusan akun sudah kedaluwarsa. Silakan kirim ulang.');
+    }
+    if (session.otp !== String(otp).trim()) fail(400, 'Kode OTP penghapusan akun yang Anda masukkan salah.');
+    if (!await bcrypt.compare(String(password), user.passwordHash || '')) fail(401, 'Password yang Anda masukkan salah.');
+
+    await commitUserMutation((allUsers) => {
+      const targetIndex = allUsers.findIndex((entry) => entry.id === user.id);
+      if (targetIndex === -1) fail(404, 'Akun tidak ditemukan.');
+      allUsers.splice(targetIndex, 1);
+    }, 'feat(auth): delete user account');
+
+    delete global.otpMemoryStore[sessionKey];
+    return res.json({ success: true, message: 'Akun berhasil dihapus dari sistem.' });
+  } catch (error) { return next(error); }
+});
+
 app.get(['/api/profiles/:username', '/profiles/:username'], async (req, res, next) => {
   try {
     const requestedUsername = normalizeUsername(req.params.username);

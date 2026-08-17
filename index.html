@@ -225,6 +225,7 @@
             <nav class="hidden md:flex items-center space-x-1 bg-surface p-1.5 rounded-full border border-borderDefault">
                 <a href="#about-us" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Tentang</a>
                 <a href="#vision-mission" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Visi & Misi</a>
+                <a href="#review-osis" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Review</a>
                 <a href="#structure" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Pengurus</a>
                 <a href="#gallery" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Galeri</a>
                 <a href="#events" class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Agenda</a>
@@ -273,6 +274,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-bgElevated/95 backdrop-blur-2xl border-b border-borderDefault px-6 py-6 space-y-4">
             <a href="#about-us" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Tentang OSIS</a>
             <a href="#vision-mission" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Visi & Misi</a>
+            <a href="#review-osis" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Review</a>
             <a href="#structure" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Struktur Pengurus</a>
             <a href="#gallery" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Galeri Foto</a>
             <a href="#events" class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Agenda & Berita</a>
@@ -1311,6 +1313,54 @@
                 <p id="profile-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2"></p>
                 <button id="profile-save-button" type="submit" class="w-full py-3.5 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">SIMPAN PERUBAHAN</button>
             </form>
+
+            <div class="mt-6 border-t border-white/10 pt-5 space-y-4">
+                <div>
+                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest uppercase">SECURITY</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button type="button" onclick="togglePasswordChangePanel()" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">CHANGE PASSWORD</button>
+                    <button type="button" onclick="toggleDeleteAccountPanel()" class="w-full py-3 rounded-xl text-xs font-bold text-rose-200 bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/30 transition-colors">DELETE ACCOUNT</button>
+                </div>
+
+                <form id="password-change-form" class="hidden space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                    <div>
+                        <label for="change-current-password" class="block text-[11px] font-mono text-fgMuted mb-1.5">CURRENT PASSWORD</label>
+                        <input id="change-current-password" type="password" placeholder="Masukkan password saat ini" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="change-otp-code" class="block text-[11px] font-mono text-fgMuted">OTP CODE</label>
+                            <button type="button" onclick="sendSecurityOtp('password-change')" class="text-[10px] font-mono font-bold text-accent hover:text-white transition-colors">KIRIM OTP</button>
+                        </div>
+                        <input id="change-otp-code" type="text" maxlength="6" placeholder="123456" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs tracking-[6px] text-center focus:border-accent focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="change-new-password" class="block text-[11px] font-mono text-fgMuted mb-1.5">CREATE NEW PASSWORD</label>
+                        <input id="change-new-password" type="password" minlength="6" placeholder="Minimal 6 karakter" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="change-confirm-password" class="block text-[11px] font-mono text-fgMuted mb-1.5">CONFIRM YOUR PASSWORD</label>
+                        <input id="change-confirm-password" type="password" minlength="6" placeholder="Ulangi password baru" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    </div>
+                    <button type="submit" onclick="handlePasswordChangeSubmit(event)" class="w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">UPDATE PASSWORD</button>
+                </form>
+
+                <form id="delete-account-form" class="hidden space-y-3 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="delete-otp-code" class="block text-[11px] font-mono text-fgMuted">OTP VERIFICATION</label>
+                            <button type="button" onclick="sendSecurityOtp('delete-account')" class="text-[10px] font-mono font-bold text-rose-200 hover:text-white transition-colors">KIRIM OTP</button>
+                        </div>
+                        <input id="delete-otp-code" type="text" maxlength="6" placeholder="123456" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-rose-500/30 text-white text-xs tracking-[6px] text-center focus:border-rose-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="delete-account-password" class="block text-[11px] font-mono text-fgMuted mb-1.5">PASSWORD CONFIRMATION</label>
+                        <input id="delete-account-password" type="password" placeholder="Masukkan password akun Anda" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-rose-500 focus:outline-none">
+                    </div>
+                    <button type="submit" onclick="handleDeleteAccountSubmit(event)" class="w-full py-3 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 border border-rose-400/50 transition-colors font-mono">CONFIRM DELETE ACCOUNT</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -2344,6 +2394,131 @@ async function deleteUserByAdmin(userId) {
 
         function closeProfileModal() {
             setModalVisibility('profile-modal', false);
+        }
+
+        function togglePasswordChangePanel() {
+            const passwordForm = document.getElementById('password-change-form');
+            const deleteForm = document.getElementById('delete-account-form');
+            if (!passwordForm || !deleteForm) return;
+            passwordForm.classList.toggle('hidden');
+            deleteForm.classList.add('hidden');
+        }
+
+        function toggleDeleteAccountPanel() {
+            const passwordForm = document.getElementById('password-change-form');
+            const deleteForm = document.getElementById('delete-account-form');
+            if (!passwordForm || !deleteForm) return;
+            deleteForm.classList.toggle('hidden');
+            passwordForm.classList.add('hidden');
+        }
+
+        async function sendSecurityOtp(target) {
+            const token = localStorage.getItem('osis_token');
+            if (!token) return openAuthModal();
+
+            const payload = { purpose: target === 'delete-account' ? 'delete-account' : 'password-change' };
+            if (target === 'password-change') {
+                const currentPassword = document.getElementById('change-current-password').value.trim();
+                if (currentPassword) payload.currentPassword = currentPassword;
+            }
+
+            try {
+                const response = await fetch('/api/account/security/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || 'Gagal mengirim kode OTP.');
+                    return;
+                }
+                alert(data.message || 'Kode OTP berhasil dikirim ke email Anda.');
+            } catch (error) {
+                alert('Gagal mengirim kode OTP. Silakan coba lagi.');
+            }
+        }
+
+        async function handlePasswordChangeSubmit(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('osis_token');
+            if (!token) return openAuthModal();
+
+            const currentPassword = document.getElementById('change-current-password').value;
+            const otp = document.getElementById('change-otp-code').value.trim();
+            const newPassword = document.getElementById('change-new-password').value;
+            const confirmPassword = document.getElementById('change-confirm-password').value;
+
+            if (!newPassword || newPassword.length < 6) {
+                alert('Password baru minimal 6 karakter.');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                alert('Konfirmasi password baru tidak cocok.');
+                return;
+            }
+            if (!currentPassword && !otp) {
+                alert('Silakan verifikasi akun Anda dengan password saat ini atau kode OTP yang dikirim ke email.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/account/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ currentPassword, otp, newPassword, confirmPassword })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || 'Gagal memperbarui password.');
+                    return;
+                }
+                alert(data.message || 'Password berhasil diperbarui.');
+                document.getElementById('password-change-form').reset();
+                togglePasswordChangePanel();
+            } catch (error) {
+                alert('Gagal memperbarui password. Silakan coba lagi.');
+            }
+        }
+
+        async function handleDeleteAccountSubmit(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('osis_token');
+            if (!token) return openAuthModal();
+
+            const otp = document.getElementById('delete-otp-code').value.trim();
+            const password = document.getElementById('delete-account-password').value;
+
+            if (!otp) {
+                alert('Silakan masukkan kode OTP yang dikirim ke email Anda.');
+                return;
+            }
+            if (!password) {
+                alert('Silakan masukkan password akun Anda untuk konfirmasi akhir.');
+                return;
+            }
+            if (!confirm('Apakah Anda yakin ingin menghapus akun ini secara permanen? Tindakan ini tidak dapat dibatalkan.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/account/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ otp, password })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    alert(data.message || 'Gagal menghapus akun.');
+                    return;
+                }
+                alert(data.message || 'Akun berhasil dihapus.');
+                localStorage.removeItem('osis_token');
+                localStorage.removeItem('osis_user');
+                window.location.reload();
+            } catch (error) {
+                alert('Gagal menghapus akun. Silakan coba lagi.');
+            }
         }
 
         function resetProfileAvatar() {
