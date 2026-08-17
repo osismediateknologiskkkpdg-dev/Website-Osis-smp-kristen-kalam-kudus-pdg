@@ -1,1 +1,22 @@
-[ ]
+[
+  {
+    "id": "usr_master_admin_001",
+    "email": "osismediateknologiskkkpdg@gmail.com",
+    "username": "admin osis",
+    "displayName": "Administrator OSIS",
+    "passwordHash": "$2a$10$ESFwZcRXIi9kzdrw2UHHmeb0CemTGlaOaeFzfripDhiGlns6bDV.S",
+    "role": "SUPER_ADMIN",
+    "createdAt": "2026-08-13T11:56:40.713Z",
+    "verified": true
+  },
+  {
+    "id": "usr_1786665239637",
+    "email": "271417-guidobryan.martinus@kalamkuduspadangdigital.sch.id",
+    "username": "guido_bryan28",
+    "displayName": "Guido Bryan",
+    "passwordHash": "$2a$10$IsXYF4w56UVxdVsxCw2vxeQEOtc3OcRnb3VYEaVL.YzuIIipyYQxS",
+    "role": "USER",
+    "createdAt": "2026-08-13T23:53:59.637Z",
+    "verified": true
+  }
+]
