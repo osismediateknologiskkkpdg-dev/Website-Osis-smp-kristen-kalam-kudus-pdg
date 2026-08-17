@@ -246,11 +246,14 @@
                     </button>
 
                     <!-- Status 2: Sudah Login (Menggantikan tombol saat user berhasil login) -->
-                    <div id="user-logged-badge" class="hidden flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-surface border border-accent/40 shadow-lg">
-                        <div class="w-6 h-6 rounded-lg bg-accent/20 border border-accent flex items-center justify-center text-accent">
-                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-                        </div>
+                    <div id="user-logged-badge" class="hidden flex items-center space-x-2 px-2 py-1.5 rounded-xl bg-surface border border-accent/40 shadow-lg">
+                        <button type="button" onclick="openProfileModal()" aria-label="Buka pengaturan profil" class="w-7 h-7 rounded-lg overflow-hidden border border-accent/60 hover:border-white transition-colors">
+                            <img id="header-user-avatar" src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png" alt="Avatar akun" class="w-full h-full object-cover">
+                        </button>
                         <span id="user-display-username" class="text-xs font-mono font-bold text-white"></span>
+                        <button type="button" onclick="openProfileModal()" title="Edit profil" class="text-fgMuted hover:text-accent transition-colors p-1">
+                            <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                        </button>
                         <button onclick="handleLogout()" title="Keluar / Logout" class="ml-1 text-fgMuted hover:text-rose-400 transition-colors p-1">
                             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                         </button>
@@ -794,6 +797,18 @@
                 <p class="text-sm text-fgMuted mt-2">Momen-momen kebersamaan dan kegiatan sekolah yang terekam.</p>
             </div>
 
+            <!-- MODULE: GALERI OSIS LINK -->
+            <div class="card-linear rounded-3xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5" data-aos="fade-up">
+                <div>
+                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest">GALERI OSIS // DRIVE</span>
+                    <h3 class="text-xl font-bold text-white mt-1">Jelajahi galeri lengkap OSIS</h3>
+                    <p class="text-sm text-fgMuted mt-1">Buka arsip foto dan dokumentasi kegiatan lainnya di Google Drive resmi.</p>
+                </div>
+                <a href="https://drive.google.com/drive/folders/1BaqQA_8En6hS7d0Y0zLg5ylLPqBcdtWq?usp=sharing" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center px-5 py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">
+                    BUKA GALERI OSIS <i data-lucide="external-link" class="w-4 h-4 ml-2"></i>
+                </a>
+            </div>
+
             <!-- 3-Column Grid for Documentation Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
@@ -1024,11 +1039,83 @@
             </div>
         </section>
 
+        <!-- ==================== MODULE: REVIEW KINERJA OSIS ==================== -->
+        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-5xl mx-auto border-t border-white/5">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07 // OSIS PERFORMANCE REVIEW ]</span>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Review Kinerja OSIS</h2>
+                <p class="text-sm text-fgMuted mt-3 max-w-2xl mx-auto">Bagikan penilaian dan masukan untuk membantu kami bertumbuh. Klik nama pengirim untuk melihat profil lengkapnya.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" data-aos="fade-up">
+                <div class="card-linear rounded-2xl p-5 flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-amber-400/10 border border-amber-300/30 flex items-center justify-center text-amber-300"><i data-lucide="star" class="w-5 h-5 fill-current"></i></div>
+                    <div><p id="review-average" class="text-2xl font-extrabold text-white">—</p><p class="text-xs text-fgMuted">Rata-rata penilaian</p></div>
+                </div>
+                <div class="card-linear rounded-2xl p-5 flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent"><i data-lucide="messages-square" class="w-5 h-5"></i></div>
+                    <div><p id="review-total" class="text-2xl font-extrabold text-white">—</p><p class="text-xs text-fgMuted">Masukan dari siswa</p></div>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div id="review-content" class="transition-all duration-300">
+                    <div class="card-linear rounded-3xl p-6 sm:p-8 mb-8" data-aos="fade-up">
+                        <div class="flex items-start justify-between gap-4 mb-6">
+                            <div>
+                                <span id="review-form-eyebrow" class="font-mono text-[10px] text-accent font-bold tracking-widest">KIRIM PENILAIAN</span>
+                                <h3 id="review-form-heading" class="text-xl font-bold text-white mt-1">Bagaimana kinerja OSIS?</h3>
+                            </div>
+                            <button id="review-cancel-edit" type="button" onclick="cancelReviewEdit()" class="hidden text-xs font-semibold text-fgMuted hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-all">BATAL EDIT</button>
+                        </div>
+                        <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-5">
+                            <input id="review-editing-id" type="hidden">
+                            <div>
+                                <label class="block text-xs font-mono text-fgMuted mb-2">BINTANG PENILAIAN</label>
+                                <div id="review-stars" class="flex items-center gap-1" aria-label="Pilih rating 1 sampai 5">
+                                    <button type="button" onclick="setReviewRating(1)" data-rating="1" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="1 bintang">★</button>
+                                    <button type="button" onclick="setReviewRating(2)" data-rating="2" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="2 bintang">★</button>
+                                    <button type="button" onclick="setReviewRating(3)" data-rating="3" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="3 bintang">★</button>
+                                    <button type="button" onclick="setReviewRating(4)" data-rating="4" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="4 bintang">★</button>
+                                    <button type="button" onclick="setReviewRating(5)" data-rating="5" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="5 bintang">★</button>
+                                    <span id="review-rating-label" class="ml-2 text-xs font-mono text-fgMuted">Pilih 1–5 bintang</span>
+                                </div>
+                            </div>
+                            <div id="review-message-wrap">
+                                <label for="review-message" class="block text-xs font-mono text-fgMuted mb-2">PESAN UNTUK OSIS <span class="text-rose-300">*</span></label>
+                                <textarea id="review-message" required minlength="5" maxlength="1000" rows="4" placeholder="Tuliskan masukan yang membangun untuk OSIS..." class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm leading-relaxed resize-y focus:border-accent focus:outline-none"></textarea>
+                                <p class="mt-1 text-[10px] font-mono text-fgMuted">Minimal 5 karakter. Review Anda dapat diedit atau dihapus kapan saja.</p>
+                            </div>
+                            <p id="review-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2"></p>
+                            <button id="review-submit-button" type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">KIRIM REVIEW</button>
+                        </form>
+                    </div>
+
+                    <div class="flex items-end justify-between gap-4 mb-5">
+                        <div><span class="font-mono text-[10px] text-accent font-bold tracking-widest">MASUKAN TERBARU</span><h3 class="text-xl font-bold text-white mt-1">Suara dari komunitas</h3></div>
+                        <button type="button" onclick="loadReviews()" class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors" title="Muat ulang review"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                    </div>
+                    <div id="review-list" class="grid grid-cols-1 gap-4">
+                        <div class="card-linear rounded-2xl p-6 text-sm text-fgMuted text-center">Memuat review...</div>
+                    </div>
+                </div>
+
+                <div id="review-lock-overlay" class="hidden absolute inset-0 z-10 rounded-3xl bg-bgDeep/45 backdrop-blur-[3px] items-center justify-center p-4">
+                    <div class="max-w-sm w-full rounded-3xl p-7 text-center bg-bgElevated/90 border border-accent/40 shadow-2xl">
+                        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/15 border border-accent/40 flex items-center justify-center text-accent"><i data-lucide="lock-keyhole" class="w-6 h-6"></i></div>
+                        <h3 class="text-lg font-bold text-white">Login untuk memberi review</h3>
+                        <p class="text-sm text-fgMuted mt-2">Masuk ke akun Anda agar dapat memberi bintang dan pesan untuk OSIS.</p>
+                        <button type="button" onclick="openAuthModal()" class="mt-5 w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">LOGIN / REGISTER</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ==================== CONTACT SECTION ==================== -->
         <section id="contact-us" class="py-24 px-4 sm:px-8 max-w-4xl mx-auto border-t border-white/5 text-center">
             
             <div data-aos="fade-up">
-                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07 // CONTACT ]</span>
+                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 08 // CONTACT ]</span>
                 <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2 mb-4">Hubungi Kami</h2>
                 <p class="text-sm text-fgMuted max-w-md mx-auto mb-10">
                     Tertarik untuk berkolaborasi atau ingin tahu lebih banyak? Silakan terhubung melalui media sosial resmi OSIS.
@@ -1149,7 +1236,8 @@
                 </div>
                 <div>
                     <label class="block text-[11px] font-mono text-fgMuted mb-1">USERNAME</label>
-                    <input type="text" id="reg-username" required placeholder="username_siswa" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    <input type="text" id="reg-username" required pattern="[A-Za-z0-9_]{3,24}" minlength="3" maxlength="24" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="username_siswa" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    <p id="reg-username-feedback" class="min-h-4 mt-1 text-[10px] font-mono text-fgMuted">3–24 karakter: huruf, angka, atau _ (tanpa spasi).</p>
                 </div>
                 <div>
                     <label class="block text-[11px] font-mono text-fgMuted mb-1">DISPLAY NAME</label>
@@ -1207,6 +1295,38 @@
         </div>
     </div>
 
+    <!-- ==================== MODULE: ACCOUNT CUSTOMIZATION MODAL ==================== -->
+    <div id="profile-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300" aria-hidden="true">
+        <div class="relative w-full max-w-lg max-h-[90vh] overflow-y-auto card-linear border-accent/40 bg-bgElevated p-6 sm:p-8 rounded-3xl shadow-2xl">
+            <button type="button" onclick="closeProfileModal()" aria-label="Tutup pengaturan profil" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="pr-8 mb-6"><span class="font-mono text-[10px] text-accent font-bold tracking-widest">ACCOUNT // CUSTOMIZATION</span><h2 class="text-2xl font-extrabold text-white mt-1">Atur profil akun</h2><p class="text-xs text-fgMuted mt-1">Avatar, deskripsi, dan identitas akun Anda.</p></div>
+            <form id="profile-form" onsubmit="handleProfileSave(event)" class="space-y-5">
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+                    <img id="profile-avatar-preview" src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png" alt="Pratinjau avatar" class="w-16 h-16 rounded-2xl object-cover border border-accent/50 bg-bgDeep">
+                    <div class="min-w-0 flex-1"><label for="profile-avatar-file" class="inline-flex cursor-pointer px-3 py-2 rounded-lg text-[11px] font-bold text-white bg-white/10 hover:bg-white/15 border border-white/10 transition-colors">PILIH FOTO</label><input id="profile-avatar-file" type="file" accept="image/png,image/jpeg,image/webp" class="hidden"><button type="button" onclick="resetProfileAvatar()" class="ml-2 text-[11px] font-semibold text-fgMuted hover:text-white">Gunakan default</button><p id="profile-avatar-help" class="text-[10px] text-fgMuted mt-1.5">PNG, JPG, atau WEBP. Foto dikompres otomatis.</p></div>
+                </div>
+                <div><label for="profile-display-name" class="block text-xs font-mono text-fgMuted mb-1.5">DISPLAY NAME</label><input id="profile-display-name" required minlength="2" maxlength="60" type="text" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-accent focus:outline-none"><p id="profile-display-cooldown" class="mt-1 text-[10px] font-mono text-fgMuted">Dapat diubah 1 kali setiap 24 jam.</p></div>
+                <div><label for="profile-username" class="block text-xs font-mono text-fgMuted mb-1.5">USERNAME</label><input id="profile-username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" autocomplete="username" autocapitalize="none" spellcheck="false" type="text" class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm focus:border-accent focus:outline-none"><p id="profile-username-feedback" class="mt-1 text-[10px] font-mono text-fgMuted">Dapat diubah 1 kali setiap 7 hari. Hanya huruf, angka, dan _.</p></div>
+                <div><label for="profile-bio" class="block text-xs font-mono text-fgMuted mb-1.5">DESKRIPSI AKUN</label><textarea id="profile-bio" maxlength="500" rows="4" placeholder="Ceritakan sedikit tentang diri Anda..." class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm leading-relaxed resize-y focus:border-accent focus:outline-none"></textarea><p class="mt-1 text-[10px] font-mono text-fgMuted">Maksimal 500 karakter.</p></div>
+                <p id="profile-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2"></p>
+                <button id="profile-save-button" type="submit" class="w-full py-3.5 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">SIMPAN PERUBAHAN</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODULE: PUBLIC PROFILE MODAL ==================== -->
+    <div id="public-profile-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300" aria-hidden="true">
+        <div class="relative w-full max-w-md card-linear border-accent/40 bg-bgElevated p-7 rounded-3xl shadow-2xl text-center">
+            <button type="button" onclick="closePublicProfileModal()" aria-label="Tutup profil" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <img id="public-profile-avatar" src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png" alt="Avatar pengguna" class="w-24 h-24 rounded-3xl object-cover border-2 border-accent/50 bg-bgDeep mx-auto mb-4">
+            <span id="public-profile-role" class="font-mono text-[10px] text-accent font-bold tracking-widest">PROFIL PENGGUNA</span>
+            <h2 id="public-profile-name" class="text-2xl font-extrabold text-white mt-1">—</h2>
+            <p id="public-profile-username" class="font-mono text-xs text-fgMuted mt-1">@—</p>
+            <div class="mt-5 p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-left"><p class="font-mono text-[10px] text-accent font-bold tracking-widest mb-2">DESKRIPSI</p><p id="public-profile-bio" class="text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap">Belum ada deskripsi.</p></div>
+            <p id="public-profile-date" class="mt-4 text-[10px] font-mono text-fgMuted"></p>
+        </div>
+    </div>
+
     <!-- ==================== FOOTER ==================== -->
     <footer class="py-12 border-t border-white/5 bg-bgDeep text-fgMuted font-mono text-xs relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -1261,91 +1381,7 @@
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
 
-        // Memeriksa Status Login dan Membuka Control Panel Jika Memiliki Role SUPER_ADMIN
-function checkLoginStatus() {
-    const userJson = localStorage.getItem('osis_user');
-    const token = localStorage.getItem('osis_token');
-    const btnOpenAuth = document.getElementById('btn-open-auth');
-    const userLoggedBadge = document.getElementById('user-logged-badge');
-    const userDisplayUsername = document.getElementById('user-display-username');
-    const userRoleIcon = document.getElementById('user-role-icon');
-    const adminDashboardSection = document.getElementById('admin-dashboard-section');
-
-    if (token && userJson) {
-        try {
-            const user = JSON.parse(userJson);
-            if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
-            if (userLoggedBadge) {
-                userLoggedBadge.classList.remove('hidden');
-                userLoggedBadge.classList.add('flex');
-            }
-            if (userDisplayUsername) {
-                userDisplayUsername.textContent = '@' + (user.username || user.displayName);
-            }
-
-            // Memeriksa Hak Akses Administrator
-            if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
-                if (userRoleIcon) {
-                    userRoleIcon.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i>`;
-                }
-                if (adminDashboardSection) {
-                    adminDashboardSection.classList.remove('hidden');
-                    fetchAdminUsersList();
-                }
-            } else {
-                if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
-            }
-        } catch (e) {
-            handleLogout();
-        }
-    } else {
-        if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
-        if (userLoggedBadge) {
-            userLoggedBadge.classList.add('hidden');
-            userLoggedBadge.classList.remove('flex');
-        }
-        if (adminDashboardSection) adminDashboardSection.classList.add('hidden');
-    }
-    if (window.lucide) lucide.createIcons();
-}
-
-// Mengambil Data Seluruh Pengguna dari API Serverless Vercel
-async function fetchAdminUsersList() {
-    const token = localStorage.getItem('osis_token');
-    const tbody = document.getElementById('admin-users-table-body');
-    if (!tbody || !token) return;
-
-    try {
-        const res = await fetch('/api/admin/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-
-        if (data.success && data.users) {
-            tbody.innerHTML = '';
-            data.users.forEach(u => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-white/5 transition-colors";
-                tr.innerHTML = `
-                    <td class="p-3 font-bold text-white">${u.displayName}</td>
-                    <td class="p-3 font-mono text-fgMuted">@${u.username}</td>
-                    <td class="p-3 font-mono text-fgMuted">${u.email}</td>
-                    <td class="p-3 font-mono"><span class="px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent font-bold">${u.role}</span></td>
-                    <td class="p-3 text-right">
-                        ${u.role === 'SUPER_ADMIN' ? '<span class="text-xs text-fgMuted italic">Protected</span>' : `
-                            <button onclick="deleteUserByAdmin('${u.id}')" class="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold transition-all">
-                                DELETE
-                            </button>
-                        `}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } catch (err) {
-        // Silent catch
-    }
-}
+        // MODULE: IMAGE PREVIEW AND ADMIN ACTIONS
 
 // Menghapus Pengguna Spesifik dari Repositori GitHub
 async function deleteUserByAdmin(userId) {
@@ -1850,43 +1886,6 @@ async function deleteUserByAdmin(userId) {
         let currentAuthFlow = 'login'; 
         let currentPendingEmail = '';
 
-        function checkLoginStatus() {
-            const userJson = localStorage.getItem('osis_user');
-            const token = localStorage.getItem('osis_token');
-            const btnOpenAuth = document.getElementById('btn-open-auth');
-            const userLoggedBadge = document.getElementById('user-logged-badge');
-            const userDisplayUsername = document.getElementById('user-display-username');
-
-            if (token && userJson) {
-                try {
-                    const user = JSON.parse(userJson);
-                    if (btnOpenAuth) btnOpenAuth.classList.add('hidden');
-                    if (userLoggedBadge) {
-                        userLoggedBadge.classList.remove('hidden');
-                        userLoggedBadge.classList.add('flex');
-                    }
-                    if (userDisplayUsername) {
-                        userDisplayUsername.textContent = '@' + (user.username || user.displayName);
-                    }
-                } catch (e) {
-                    handleLogout();
-                }
-            } else {
-                if (btnOpenAuth) btnOpenAuth.classList.remove('hidden');
-                if (userLoggedBadge) {
-                    userLoggedBadge.classList.add('hidden');
-                    userLoggedBadge.classList.remove('flex');
-                }
-            }
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('osis_token');
-            localStorage.removeItem('osis_user');
-            checkLoginStatus();
-        }
-
         function openAuthModal() {
             const modal = document.getElementById('auth-modal');
             if (modal) {
@@ -1932,64 +1931,6 @@ async function deleteUserByAdmin(userId) {
                 document.getElementById('tab-login-btn').className = "flex-1 py-3 text-center border-b-2 border-transparent text-fgMuted hover:text-white transition-all";
             }
         }
-
-        async function handleRegisterSubmit(e) {
-            e.preventDefault();
-            const email = document.getElementById('reg-email').value;
-            const username = document.getElementById('reg-username').value;
-            const displayName = document.getElementById('reg-displayname').value;
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirmpassword').value;
-
-            try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, username, displayName, password, confirmPassword })
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    currentPendingEmail = email;
-                    showAlert(data.message, true);
-                    document.getElementById('form-register').classList.add('hidden');
-                    document.getElementById('form-otp').classList.remove('hidden');
-                    document.getElementById('otp-target-email').textContent = email;
-                } else {
-                    showAlert(data.message, false);
-                }
-            } catch (err) {
-                showAlert("Gagal menghubungi server: " + err.message, false);
-            }
-        }
-
-        async function handleLoginSubmit(e) {
-    e.preventDefault();
-    const identifier = document.getElementById('login-identifier').value;
-    const password = document.getElementById('login-password').value;
-
-    try {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier, password })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            // Seluruh Akun (Termasuk Admin) Mengikuti Alur Verifikasi OTP
-            currentPendingEmail = data.email;
-            showAlert(data.message, true);
-            document.getElementById('form-login').classList.add('hidden');
-            document.getElementById('form-otp').classList.remove('hidden');
-            document.getElementById('otp-target-email').textContent = data.email;
-        } else {
-            showAlert(data.message, false);
-        }
-    } catch (err) {
-        showAlert("Gagal menghubungi server backend.", false);
-    }
-}
 
         async function handleLoginSubmit(e) {
             e.preventDefault();
@@ -2065,58 +2006,6 @@ async function deleteUserByAdmin(userId) {
             }
         });
 
-        // =========================================================================
-// CLIENT-SIDE ANTI-INSPECT & ANTI-DEVTOOLS HIGH-SECURITY PROTECTION SHIELD
-// =========================================================================
-(function enforceMaximumSecurity() {
-    'use strict';
-
-    // 1. Lock Context Menu (Mematikan Klik Kanan)
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-    }, false);
-
-    // 2. Lock Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S)
-    document.addEventListener('keydown', function(e) {
-        if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
-            (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
-        ) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        }
-    }, false);
-
-    // 3. Debugger Anti-Tamper Trap Loop (Jebakan Otomatis Jika DevTools Dipaksa Terbuka)
-    setInterval(function() {
-        const startTime = performance.now();
-        (function() { return false; })["constructor"]("debugger")();
-        const endTime = performance.now();
-        if (endTime - startTime > 100) {
-            document.body.innerHTML = `
-                <div style="background:#050506; color:#f43f5e; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:monospace; text-align:center; padding:20px;">
-                    <h1 style="font-size:24px; font-weight:bold; margin-bottom:10px;">[SECURITY BREACH SHIELD TRIGGERED]</h1>
-                    <p style="color:#8A8F98; font-size:14px; max-width:400px;">Akses Developer Tools / Inspeksi Kode Dilarang Demi Keamanan Portal OSIS.</p>
-                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#5E6AD2; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">MUAT ULANG HALAMAN</button>
-                </div>
-            `;
-        }
-    }, 500);
-
-    // 4. Console Silent Override (Membersihkan Jejak Log)
-    if (typeof window.console === 'object') {
-        const noop = function() {};
-        window.console.log = noop;
-        window.console.warn = noop;
-        window.console.error = noop;
-        window.console.info = noop;
-    }
-})();
-
-// =========================================================================
         // LOGIKA INTERAKTIF RESEND OTP & COOLDOWN TIMER (SINKRON DENGAN AUTH SYSTEM)
         // Lokasi: Di dalam tag <script> di bagian bawah file index.html
         // =========================================================================
@@ -2231,6 +2120,628 @@ async function deleteUserByAdmin(userId) {
                 if (resendText) resendText.innerText = 'KIRIM ULANG KODE OTP';
             }
         }
+
+        // =========================================================================
+        // MODULE: ACCOUNT PROFILE, USERNAME AVAILABILITY, AND OSIS REVIEWS
+        // =========================================================================
+        const DEFAULT_AVATAR_URL = 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png';
+        const USERNAME_CLIENT_PATTERN = /^[A-Za-z0-9_]{3,24}$/;
+        const DISPLAY_NAME_COOLDOWN = 24 * 60 * 60 * 1000;
+        const USERNAME_COOLDOWN = 7 * 24 * 60 * 60 * 1000;
+        let pendingAvatarDataUrl = null;
+        let reviewSelectedRating = 0;
+        let reviewEditingAsAdmin = false;
+        let usernameCheckTimer = null;
+        const reviewCache = new Map();
+
+        function getCurrentUser() {
+            try {
+                const user = JSON.parse(localStorage.getItem('osis_user') || 'null');
+                return user && localStorage.getItem('osis_token') ? user : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function isCurrentUserAdmin() {
+            return ['SUPER_ADMIN', 'ADMIN'].includes(getCurrentUser()?.role);
+        }
+
+        function isUserLoggedIn() {
+            return Boolean(getCurrentUser());
+        }
+
+        function setCurrentUser(user, token) {
+            if (token) localStorage.setItem('osis_token', token);
+            localStorage.setItem('osis_user', JSON.stringify(user));
+        }
+
+        function setModalVisibility(modalId, visible) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.classList.toggle('opacity-0', !visible);
+            modal.classList.toggle('pointer-events-none', !visible);
+            modal.classList.toggle('opacity-100', visible);
+            modal.classList.toggle('pointer-events-auto', visible);
+            modal.setAttribute('aria-hidden', String(!visible));
+            if (visible && window.lucide) lucide.createIcons();
+        }
+
+        function formatRemaining(lastChangedAt, cooldown) {
+            if (!lastChangedAt) return '';
+            const remaining = new Date(lastChangedAt).getTime() + cooldown - Date.now();
+            if (!Number.isFinite(remaining) || remaining <= 0) return '';
+            const hours = Math.ceil(remaining / 3600000);
+            return hours >= 24 ? `${Math.ceil(hours / 24)} hari lagi` : `${hours} jam lagi`;
+        }
+
+        function updateReviewAccess() {
+            const content = document.getElementById('review-content');
+            const lock = document.getElementById('review-lock-overlay');
+            if (!content || !lock) return;
+            const locked = !isUserLoggedIn();
+            content.classList.toggle('blur-sm', locked);
+            content.classList.toggle('pointer-events-none', locked);
+            content.classList.toggle('select-none', locked);
+            lock.classList.toggle('hidden', !locked);
+            lock.classList.toggle('flex', locked);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Replaces the duplicated legacy login-state function with one source of truth.
+        function checkLoginStatus() {
+            const user = getCurrentUser();
+            const btnOpenAuth = document.getElementById('btn-open-auth');
+            const userLoggedBadge = document.getElementById('user-logged-badge');
+            const userDisplayUsername = document.getElementById('user-display-username');
+            const headerAvatar = document.getElementById('header-user-avatar');
+            const adminDashboardSection = document.getElementById('admin-dashboard-section');
+
+            if (user) {
+                btnOpenAuth?.classList.add('hidden');
+                userLoggedBadge?.classList.remove('hidden');
+                userLoggedBadge?.classList.add('flex');
+                if (userDisplayUsername) userDisplayUsername.textContent = `@${user.username || user.displayName}`;
+                if (headerAvatar) headerAvatar.src = user.avatarUrl || DEFAULT_AVATAR_URL;
+                if (isCurrentUserAdmin()) {
+                    adminDashboardSection?.classList.remove('hidden');
+                    fetchAdminUsersList();
+                } else {
+                    adminDashboardSection?.classList.add('hidden');
+                }
+            } else {
+                btnOpenAuth?.classList.remove('hidden');
+                userLoggedBadge?.classList.add('hidden');
+                userLoggedBadge?.classList.remove('flex');
+                adminDashboardSection?.classList.add('hidden');
+            }
+            updateReviewAccess();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('osis_token');
+            localStorage.removeItem('osis_user');
+            cancelReviewEdit();
+            checkLoginStatus();
+            loadReviews();
+        }
+
+        async function refreshCurrentUser() {
+            const token = localStorage.getItem('osis_token');
+            if (!token) return;
+            try {
+                const response = await fetch('/api/account/me', { headers: { Authorization: `Bearer ${token}` } });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    if (response.status === 401 || response.status === 403) handleLogout();
+                    return;
+                }
+                setCurrentUser(data.user, data.token);
+                checkLoginStatus();
+                loadReviews();
+            } catch {
+                // The locally cached session remains available while a transient network error is resolved.
+            }
+        }
+
+        function setFeedback(elementId, message, state = 'neutral') {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            element.textContent = message;
+            element.className = `min-h-4 mt-1 text-[10px] font-mono ${state === 'success' ? 'text-emerald-300' : state === 'error' ? 'text-rose-300' : 'text-fgMuted'}`;
+        }
+
+        async function checkUsernameAvailability(value, feedbackId, currentUsername = '') {
+            const username = String(value || '').trim();
+            if (!USERNAME_CLIENT_PATTERN.test(username)) {
+                setFeedback(feedbackId, 'Gunakan 3–24 karakter: huruf, angka, atau _ tanpa spasi.', 'error');
+                return false;
+            }
+            if (username.toLowerCase() === String(currentUsername || '').toLowerCase()) {
+                setFeedback(feedbackId, 'Username saat ini tetap dapat digunakan.', 'success');
+                return true;
+            }
+            setFeedback(feedbackId, 'Memeriksa ketersediaan username...');
+            try {
+                const response = await fetch(`/api/usernames/${encodeURIComponent(username)}/availability`);
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    setFeedback(feedbackId, data.message || 'Username tidak dapat diperiksa.', 'error');
+                    return false;
+                }
+                setFeedback(feedbackId, data.message, data.available ? 'success' : 'error');
+                return data.available;
+            } catch {
+                setFeedback(feedbackId, 'Koneksi bermasalah. Validasi ulang akan dilakukan saat disimpan.', 'error');
+                return false;
+            }
+        }
+
+        function scheduleUsernameCheck(inputId, feedbackId, currentUsername = '') {
+            clearTimeout(usernameCheckTimer);
+            usernameCheckTimer = setTimeout(() => {
+                checkUsernameAvailability(document.getElementById(inputId)?.value, feedbackId, currentUsername);
+            }, 350);
+        }
+
+        // Keeps client-side messaging in sync with the server's strict username validation.
+        async function handleRegisterSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('reg-email').value;
+            const username = document.getElementById('reg-username').value.trim();
+            const displayName = document.getElementById('reg-displayname').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirmpassword').value;
+            if (!USERNAME_CLIENT_PATTERN.test(username)) {
+                setFeedback('reg-username-feedback', 'Username belum sesuai aturan.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, username, displayName, password, confirmPassword })
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    showAlert(data.message || 'Pendaftaran gagal.', false);
+                    return;
+                }
+                currentPendingEmail = data.email;
+                showAlert(data.message, true);
+                document.getElementById('form-register').classList.add('hidden');
+                document.getElementById('form-otp').classList.remove('hidden');
+                document.getElementById('otp-target-email').textContent = data.email;
+            } catch (error) {
+                showAlert(`Gagal menghubungi server: ${error.message}`, false);
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // MODULE: PROFILE CUSTOMIZATION
+        // -------------------------------------------------------------------------
+        function openProfileModal() {
+            const user = getCurrentUser();
+            if (!user) return openAuthModal();
+            pendingAvatarDataUrl = user.avatarUrl || DEFAULT_AVATAR_URL;
+            document.getElementById('profile-avatar-preview').src = pendingAvatarDataUrl;
+            document.getElementById('profile-display-name').value = user.displayName || '';
+            document.getElementById('profile-username').value = user.username || '';
+            document.getElementById('profile-bio').value = user.bio || '';
+            document.getElementById('profile-avatar-file').value = '';
+            document.getElementById('profile-avatar-help').textContent = 'PNG, JPG, atau WEBP. Foto dikompres otomatis.';
+            setFeedback('profile-username-feedback', 'Dapat diubah 1 kali setiap 7 hari. Hanya huruf, angka, dan _.');
+            document.getElementById('profile-display-cooldown').textContent = formatRemaining(user.lastDisplayNameChangedAt, DISPLAY_NAME_COOLDOWN)
+                ? `Display name dapat diubah lagi ${formatRemaining(user.lastDisplayNameChangedAt, DISPLAY_NAME_COOLDOWN)}.`
+                : 'Dapat diubah 1 kali setiap 24 jam.';
+            const usernameRemaining = formatRemaining(user.lastUsernameChangedAt, USERNAME_COOLDOWN);
+            if (usernameRemaining) setFeedback('profile-username-feedback', `Username dapat diubah lagi ${usernameRemaining}.`, 'neutral');
+            setProfileStatus('');
+            setModalVisibility('profile-modal', true);
+        }
+
+        function closeProfileModal() {
+            setModalVisibility('profile-modal', false);
+        }
+
+        function resetProfileAvatar() {
+            pendingAvatarDataUrl = DEFAULT_AVATAR_URL;
+            document.getElementById('profile-avatar-preview').src = DEFAULT_AVATAR_URL;
+            document.getElementById('profile-avatar-file').value = '';
+            document.getElementById('profile-avatar-help').textContent = 'Avatar default akan digunakan saat disimpan.';
+        }
+
+        function setProfileStatus(message, isError = false) {
+            const element = document.getElementById('profile-form-status');
+            if (!element) return;
+            if (!message) {
+                element.classList.add('hidden');
+                return;
+            }
+            element.className = `text-xs font-mono rounded-xl border px-3 py-2 ${isError ? 'bg-rose-500/10 border-rose-500/40 text-rose-200' : 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200'}`;
+            element.textContent = message;
+        }
+
+        function resizeAvatarFile(file) {
+            return new Promise((resolve, reject) => {
+                if (!file || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) return reject(new Error('Pilih gambar PNG, JPG, atau WEBP.'));
+                if (file.size > 8 * 1024 * 1024) return reject(new Error('Ukuran file asli maksimal 8 MB.'));
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error('Gagal membaca file gambar.'));
+                reader.onload = () => {
+                    const image = new Image();
+                    image.onerror = () => reject(new Error('File gambar tidak dapat diproses.'));
+                    image.onload = () => {
+                        const maxSide = 512;
+                        const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.max(1, Math.round(image.width * scale));
+                        canvas.height = Math.max(1, Math.round(image.height * scale));
+                        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+                        let output = canvas.toDataURL('image/webp', 0.82);
+                        if (Math.ceil((output.split(',')[1].length * 3) / 4) > 1024 * 1024) output = canvas.toDataURL('image/webp', 0.6);
+                        if (Math.ceil((output.split(',')[1].length * 3) / 4) > 1024 * 1024) return reject(new Error('Foto masih terlalu besar setelah dikompres. Pilih foto lain.'));
+                        resolve(output);
+                    };
+                    image.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleProfileSave(event) {
+            event.preventDefault();
+            const user = getCurrentUser();
+            const token = localStorage.getItem('osis_token');
+            if (!user || !token) return openAuthModal();
+            const username = document.getElementById('profile-username').value.trim();
+            if (!USERNAME_CLIENT_PATTERN.test(username)) {
+                setFeedback('profile-username-feedback', 'Username belum sesuai aturan.', 'error');
+                return;
+            }
+
+            const button = document.getElementById('profile-save-button');
+            button.disabled = true;
+            button.textContent = 'MENYIMPAN...';
+            try {
+                const response = await fetch('/api/account/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({
+                        displayName: document.getElementById('profile-display-name').value,
+                        username,
+                        bio: document.getElementById('profile-bio').value,
+                        avatarUrl: pendingAvatarDataUrl
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    setProfileStatus(data.message || 'Profil gagal diperbarui.', true);
+                    return;
+                }
+                setCurrentUser(data.user, data.token);
+                setProfileStatus(data.message);
+                checkLoginStatus();
+                loadReviews();
+                setTimeout(closeProfileModal, 700);
+            } catch (error) {
+                setProfileStatus(`Gagal menghubungi server: ${error.message}`, true);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'SIMPAN PERUBAHAN';
+            }
+        }
+
+        async function openPublicProfile(username) {
+            try {
+                const response = await fetch(`/api/profiles/${encodeURIComponent(username)}`);
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.message || 'Profil tidak ditemukan.');
+                const profile = data.profile;
+                document.getElementById('public-profile-avatar').src = profile.avatarUrl || DEFAULT_AVATAR_URL;
+                document.getElementById('public-profile-name').textContent = profile.displayName;
+                document.getElementById('public-profile-username').textContent = `@${profile.username}`;
+                document.getElementById('public-profile-role').textContent = profile.role === 'USER' ? 'PROFIL PENGGUNA' : profile.role.replace('_', ' ');
+                document.getElementById('public-profile-bio').textContent = profile.bio || 'Pengguna ini belum menambahkan deskripsi akun.';
+                document.getElementById('public-profile-date').textContent = profile.createdAt ? `Bergabung ${new Date(profile.createdAt).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}` : '';
+                setModalVisibility('public-profile-modal', true);
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function closePublicProfileModal() {
+            setModalVisibility('public-profile-modal', false);
+        }
+
+        // -------------------------------------------------------------------------
+        // MODULE: REVIEW KINERJA OSIS
+        // -------------------------------------------------------------------------
+        function setReviewRating(rating) {
+            reviewSelectedRating = Number(rating);
+            document.querySelectorAll('.review-star').forEach((star) => {
+                const active = Number(star.dataset.rating) <= reviewSelectedRating;
+                star.classList.toggle('text-amber-300', active);
+                star.classList.toggle('text-fgMuted', !active);
+                star.classList.toggle('scale-110', active);
+            });
+            const label = document.getElementById('review-rating-label');
+            if (label) label.textContent = reviewSelectedRating ? `${reviewSelectedRating} dari 5 bintang` : 'Pilih 1–5 bintang';
+        }
+
+        function setReviewFormStatus(message, isError = false) {
+            const element = document.getElementById('review-form-status');
+            if (!element) return;
+            if (!message) {
+                element.classList.add('hidden');
+                return;
+            }
+            element.className = `text-xs font-mono rounded-xl border px-3 py-2 ${isError ? 'bg-rose-500/10 border-rose-500/40 text-rose-200' : 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200'}`;
+            element.textContent = message;
+        }
+
+        function cancelReviewEdit() {
+            reviewEditingAsAdmin = false;
+            reviewSelectedRating = 0;
+            document.getElementById('review-editing-id')?.setAttribute('value', '');
+            document.getElementById('review-editing-id').value = '';
+            document.getElementById('review-message').value = '';
+            document.getElementById('review-message').disabled = false;
+            document.getElementById('review-message').required = true;
+            document.getElementById('review-message-wrap').classList.remove('hidden');
+            document.getElementById('review-form-eyebrow').textContent = 'KIRIM PENILAIAN';
+            document.getElementById('review-form-heading').textContent = 'Bagaimana kinerja OSIS?';
+            document.getElementById('review-submit-button').textContent = 'KIRIM REVIEW';
+            document.getElementById('review-cancel-edit').classList.add('hidden');
+            setReviewRating(0);
+            setReviewFormStatus('');
+        }
+
+        async function handleReviewSubmit(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('osis_token');
+            if (!token) return openAuthModal();
+            if (!reviewSelectedRating) return setReviewFormStatus('Pilih rating bintang terlebih dahulu.', true);
+            const editId = document.getElementById('review-editing-id').value;
+            const body = reviewEditingAsAdmin
+                ? { rating: reviewSelectedRating }
+                : { rating: reviewSelectedRating, message: document.getElementById('review-message').value };
+            const button = document.getElementById('review-submit-button');
+            button.disabled = true;
+            button.textContent = 'MENYIMPAN...';
+            try {
+                const response = await fetch(editId ? `/api/reviews/${encodeURIComponent(editId)}` : '/api/reviews', {
+                    method: editId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    setReviewFormStatus(data.message || 'Review gagal disimpan.', true);
+                    return;
+                }
+                cancelReviewEdit();
+                await loadReviews();
+            } catch (error) {
+                setReviewFormStatus(`Gagal menghubungi server: ${error.message}`, true);
+            } finally {
+                button.disabled = false;
+                if (!document.getElementById('review-editing-id').value) button.textContent = 'KIRIM REVIEW';
+            }
+        }
+
+        function startReviewEdit(reviewId) {
+            const review = reviewCache.get(reviewId);
+            const user = getCurrentUser();
+            if (!review || !user) return openAuthModal();
+            const isOwner = review.authorId === user.id;
+            if (!isOwner && !isCurrentUserAdmin()) return;
+            reviewEditingAsAdmin = !isOwner;
+            document.getElementById('review-editing-id').value = review.id;
+            document.getElementById('review-message').value = review.message;
+            document.getElementById('review-message').disabled = reviewEditingAsAdmin;
+            document.getElementById('review-message').required = !reviewEditingAsAdmin;
+            document.getElementById('review-message-wrap').classList.toggle('hidden', reviewEditingAsAdmin);
+            document.getElementById('review-form-eyebrow').textContent = reviewEditingAsAdmin ? 'ADMIN // UBAH RATING' : 'EDIT REVIEW ANDA';
+            document.getElementById('review-form-heading').textContent = reviewEditingAsAdmin ? `Ubah rating dari @${review.author.username}` : 'Perbarui penilaian Anda';
+            document.getElementById('review-submit-button').textContent = reviewEditingAsAdmin ? 'SIMPAN RATING' : 'SIMPAN PERUBAHAN';
+            document.getElementById('review-cancel-edit').classList.remove('hidden');
+            setReviewRating(review.rating);
+            setReviewFormStatus('');
+            document.getElementById('review-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        async function deleteReview(reviewId) {
+            if (!confirm('Hapus review ini? Tindakan ini tidak dapat dibatalkan.')) return;
+            const token = localStorage.getItem('osis_token');
+            try {
+                const response = await fetch(`/api/reviews/${encodeURIComponent(reviewId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+                const data = await response.json();
+                if (!response.ok || !data.success) return alert(data.message || 'Review gagal dihapus.');
+                cancelReviewEdit();
+                loadReviews();
+            } catch (error) {
+                alert(`Gagal menghubungi server: ${error.message}`);
+            }
+        }
+
+        function createReviewAction(label, className, handler) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = label;
+            button.className = `px-3 py-1.5 rounded-lg border text-[10px] font-mono font-bold transition-colors ${className}`;
+            button.addEventListener('click', handler);
+            return button;
+        }
+
+        function renderReviewList(reviews) {
+            const list = document.getElementById('review-list');
+            if (!list) return;
+            reviewCache.clear();
+            list.replaceChildren();
+            if (!reviews.length) {
+                const empty = document.createElement('div');
+                empty.className = 'card-linear rounded-2xl p-8 text-center';
+                empty.innerHTML = '<p class="text-sm font-semibold text-white">Belum ada review.</p><p class="text-xs text-fgMuted mt-1">Jadilah yang pertama memberi masukan untuk OSIS.</p>';
+                list.appendChild(empty);
+                return;
+            }
+            const currentUser = getCurrentUser();
+            reviews.forEach((review) => {
+                reviewCache.set(review.id, review);
+                const card = document.createElement('article');
+                card.className = 'card-linear rounded-2xl p-5 sm:p-6';
+
+                const top = document.createElement('div');
+                top.className = 'flex items-start justify-between gap-4';
+                const authorButton = document.createElement('button');
+                authorButton.type = 'button';
+                authorButton.className = 'flex items-center gap-3 min-w-0 text-left group';
+                authorButton.title = 'Buka profil lengkap';
+                authorButton.addEventListener('click', () => openPublicProfile(review.author.username));
+                const avatar = document.createElement('img');
+                avatar.src = review.author.avatarUrl || DEFAULT_AVATAR_URL;
+                avatar.alt = `Avatar ${review.author.displayName}`;
+                avatar.className = 'w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-accent/70 transition-colors bg-bgDeep';
+                const authorCopy = document.createElement('div');
+                authorCopy.className = 'min-w-0';
+                const authorName = document.createElement('p');
+                authorName.className = 'text-sm font-bold text-white truncate group-hover:text-accentBright transition-colors';
+                authorName.textContent = review.author.displayName;
+                const authorUsername = document.createElement('p');
+                authorUsername.className = 'text-[10px] font-mono text-fgMuted';
+                authorUsername.textContent = `@${review.author.username} · buka profil`;
+                authorCopy.append(authorName, authorUsername);
+                authorButton.append(avatar, authorCopy);
+
+                const stars = document.createElement('div');
+                stars.className = 'text-amber-300 text-base tracking-[1px] whitespace-nowrap';
+                stars.setAttribute('aria-label', `${review.rating} dari 5 bintang`);
+                stars.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
+                top.append(authorButton, stars);
+
+                const message = document.createElement('p');
+                message.className = 'mt-4 text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap';
+                message.textContent = review.message;
+                const footer = document.createElement('div');
+                footer.className = 'mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3';
+                const timestamp = document.createElement('p');
+                timestamp.className = 'text-[10px] font-mono text-fgMuted';
+                timestamp.textContent = `${review.updatedAt !== review.createdAt ? 'Diperbarui ' : ''}${new Date(review.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+                footer.appendChild(timestamp);
+
+                const ownsReview = currentUser?.id === review.authorId;
+                const canAdminister = isCurrentUserAdmin() && !ownsReview;
+                if (ownsReview || canAdminister) {
+                    const actions = document.createElement('div');
+                    actions.className = 'flex items-center gap-2';
+                    actions.appendChild(createReviewAction(ownsReview ? 'EDIT' : 'UBAH RATING', 'border-accent/40 text-accent hover:bg-accent/10', () => startReviewEdit(review.id)));
+                    actions.appendChild(createReviewAction('HAPUS', 'border-rose-500/35 text-rose-300 hover:bg-rose-500/10', () => deleteReview(review.id)));
+                    footer.appendChild(actions);
+                }
+                card.append(top, message, footer);
+                list.appendChild(card);
+            });
+        }
+
+        async function loadReviews() {
+            const list = document.getElementById('review-list');
+            try {
+                const response = await fetch('/api/reviews');
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.message || 'Review tidak dapat dimuat.');
+                document.getElementById('review-average').textContent = data.summary.total ? `${data.summary.averageRating}/5` : '—';
+                document.getElementById('review-total').textContent = `${data.summary.total} review`;
+                renderReviewList(data.reviews);
+            } catch (error) {
+                if (list) {
+                    const unavailable = document.createElement('div');
+                    unavailable.className = 'card-linear rounded-2xl p-6 text-sm text-rose-200 text-center';
+                    unavailable.textContent = error.message;
+                    list.replaceChildren(unavailable);
+                }
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------------
+        // MODULE: SAFE ADMIN USER TABLE RENDERER
+        // -------------------------------------------------------------------------
+        async function fetchAdminUsersList() {
+            const token = localStorage.getItem('osis_token');
+            const tbody = document.getElementById('admin-users-table-body');
+            if (!tbody || !token || !isCurrentUserAdmin()) return;
+            try {
+                const response = await fetch('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
+                const data = await response.json();
+                if (!response.ok || !data.success) return;
+                tbody.replaceChildren();
+                data.users.forEach((user) => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-white/5 transition-colors';
+                    const cells = [user.displayName, `@${user.username}`, user.email];
+                    cells.forEach((value, index) => {
+                        const cell = document.createElement('td');
+                        cell.className = index === 0 ? 'p-3 font-bold text-white' : 'p-3 font-mono text-fgMuted';
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+                    const roleCell = document.createElement('td');
+                    roleCell.className = 'p-3 font-mono';
+                    const role = document.createElement('span');
+                    role.className = 'px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent font-bold';
+                    role.textContent = user.role;
+                    roleCell.appendChild(role);
+                    row.appendChild(roleCell);
+                    const actionCell = document.createElement('td');
+                    actionCell.className = 'p-3 text-right';
+                    if (user.role === 'SUPER_ADMIN') {
+                        actionCell.textContent = 'Protected';
+                        actionCell.classList.add('text-xs', 'text-fgMuted', 'italic');
+                    } else {
+                        const deleteButton = document.createElement('button');
+                        deleteButton.type = 'button';
+                        deleteButton.textContent = 'DELETE';
+                        deleteButton.className = 'px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-[10px] font-bold transition-all';
+                        deleteButton.addEventListener('click', () => deleteUserByAdmin(user.id));
+                        actionCell.appendChild(deleteButton);
+                    }
+                    row.appendChild(actionCell);
+                    tbody.appendChild(row);
+                });
+            } catch {
+                // Keep the previous administrator table visible if the network fails.
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('reg-username')?.addEventListener('input', (event) => scheduleUsernameCheck('reg-username', 'reg-username-feedback'));
+            document.getElementById('profile-username')?.addEventListener('input', (event) => scheduleUsernameCheck('profile-username', 'profile-username-feedback', getCurrentUser()?.username));
+            document.getElementById('profile-avatar-file')?.addEventListener('change', async (event) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                const help = document.getElementById('profile-avatar-help');
+                help.textContent = 'Mengompres foto...';
+                try {
+                    pendingAvatarDataUrl = await resizeAvatarFile(file);
+                    document.getElementById('profile-avatar-preview').src = pendingAvatarDataUrl;
+                    help.textContent = 'Foto siap diunggah. Simpan perubahan untuk menerapkannya.';
+                } catch (error) {
+                    event.target.value = '';
+                    help.textContent = error.message;
+                }
+            });
+            ['profile-modal', 'public-profile-modal'].forEach((modalId) => {
+                document.getElementById(modalId)?.addEventListener('click', (event) => {
+                    if (event.target.id === modalId) setModalVisibility(modalId, false);
+                });
+            });
+            checkLoginStatus();
+            loadReviews();
+            refreshCurrentUser();
+        });
         
     </script>
  </body>
