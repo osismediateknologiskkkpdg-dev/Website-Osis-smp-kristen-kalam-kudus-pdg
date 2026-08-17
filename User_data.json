@@ -2,14 +2,16 @@
   {
     "id": "usr_master_admin_001",
     "email": "osismediateknologiskkkpdg@gmail.com",
-    "username": "admin osis",
+    "username": "admin_osis",
     "displayName": "Administrator OSIS",
     "passwordHash": "$2a$10$ESFwZcRXIi9kzdrw2UHHmeb0CemTGlaOaeFzfripDhiGlns6bDV.S",
     "role": "SUPER_ADMIN",
     "createdAt": "2026-08-13T11:56:40.713Z",
     "verified": true,
     "avatarUrl": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png",
-    "bio": ""
+    "bio": "",
+    "lastUsernameChangedAt": "2026-08-17T07:02:21.487Z",
+    "updatedAt": "2026-08-17T07:02:21.487Z"
   },
   {
     "id": "usr_1786665239637",
