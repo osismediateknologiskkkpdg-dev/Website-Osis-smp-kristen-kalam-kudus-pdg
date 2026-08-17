@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "review_1786961548478_b8adeac0",
+    "userId": "usr_1786961032002_e45530",
+    "rating": 5,
+    "message": "Gokil",
+    "createdAt": "2026-08-17T10:12:28.478Z",
+    "updatedAt": "2026-08-17T10:12:28.478Z"
+  }
+]
