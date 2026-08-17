@@ -6,13 +6,5 @@
     "message": "Gokil Man",
     "createdAt": "2026-08-17T07:00:08.029Z",
     "updatedAt": "2026-08-17T07:00:08.029Z"
-  },
-  {
-    "id": "review_1786950103985_4d6cca0e",
-    "userId": "usr_1786665239637",
-    "rating": 5,
-    "message": "Gokil",
-    "createdAt": "2026-08-17T07:01:43.985Z",
-    "updatedAt": "2026-08-17T07:01:43.985Z"
   }
 ]
