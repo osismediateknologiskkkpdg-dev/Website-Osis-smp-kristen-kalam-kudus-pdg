@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "review_1787051912514_e8e07df2",
+    "userId": "usr_master_admin_001",
+    "rating": 5,
+    "message": "Boy tuff",
+    "createdAt": "2026-08-18T11:18:32.514Z",
+    "updatedAt": "2026-08-18T11:18:32.514Z"
+  }
+]
