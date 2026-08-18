@@ -225,6 +225,55 @@
             box-shadow: 0 0 0 4px rgba(94, 106, 210, 0.12);
         }
 
+        .review-slider-track {
+            display: flex;
+            gap: 1rem;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .review-slider-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .review-slide-card {
+            flex: 0 0 calc(50% - 0.5rem);
+            min-width: calc(50% - 0.5rem);
+        }
+
+        @media (max-width: 767px) {
+            .review-slide-card {
+                flex-basis: 100%;
+                min-width: 100%;
+            }
+        }
+
+        .review-slider-btn {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: #dfe3f5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 180ms ease;
+        }
+
+        .review-slider-btn:hover:not(:disabled) {
+            border-color: rgba(94, 106, 210, 0.6);
+            background: rgba(94, 106, 210, 0.12);
+            color: white;
+        }
+
+        .review-slider-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
         .review-message {
             position: relative;
             z-index: 1;
@@ -1291,10 +1340,16 @@
                                     <span class="font-mono text-[10px] text-accent font-bold tracking-widest">MASUKAN TERBARU</span>
                                     <h3 class="text-xl font-bold text-white mt-1">Suara dari komunitas</h3>
                                 </div>
-                                <button type="button" onclick="loadReviews()" class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors" title="Muat ulang review"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                                <div class="flex items-center gap-2">
+                                    <button id="review-slider-prev" type="button" class="review-slider-btn" aria-label="Review sebelumnya"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                                    <button id="review-slider-next" type="button" class="review-slider-btn" aria-label="Review berikutnya"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                                    <button type="button" onclick="loadReviews()" class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors" title="Muat ulang review"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                                </div>
                             </div>
-                            <div id="review-list" class="grid grid-cols-1 gap-4">
-                                <div class="card-linear rounded-2xl p-6 text-sm text-fgMuted text-center">Memuat review...</div>
+                            <div id="review-list-wrapper" class="overflow-hidden rounded-2xl">
+                                <div id="review-list" class="review-slider-track">
+                                    <div class="card-linear rounded-2xl p-6 text-sm text-fgMuted text-center">Memuat review...</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2380,6 +2435,7 @@ async function deleteUserByAdmin(userId) {
         let reviewSelectedRating = 0;
         let reviewEditingAsAdmin = false;
         let usernameCheckTimer = null;
+        let currentUserReviewId = '';
         const reviewCache = new Map();
 
         function getCurrentUser() {
@@ -2434,6 +2490,35 @@ async function deleteUserByAdmin(userId) {
             lock.classList.toggle('hidden', !locked);
             lock.classList.toggle('flex', locked);
             if (window.lucide) lucide.createIcons();
+        }
+
+        function getReviewSliderStep() {
+            const list = document.getElementById('review-list');
+            if (!list) return 0;
+            const firstCard = list.querySelector('.review-slide-card');
+            if (!firstCard) return 0;
+            const styles = window.getComputedStyle(list);
+            const gap = parseFloat(styles.gap || styles.columnGap || '16');
+            return firstCard.getBoundingClientRect().width + gap;
+        }
+
+        function updateReviewSliderButtons() {
+            const list = document.getElementById('review-list');
+            const prevButton = document.getElementById('review-slider-prev');
+            const nextButton = document.getElementById('review-slider-next');
+            if (!list || !prevButton || !nextButton) return;
+            const maxScroll = Math.max(0, list.scrollWidth - list.clientWidth);
+            prevButton.disabled = list.scrollLeft <= 4;
+            nextButton.disabled = list.scrollLeft >= maxScroll - 4;
+        }
+
+        function moveReviewSlider(direction) {
+            const list = document.getElementById('review-list');
+            if (!list) return;
+            const step = getReviewSliderStep();
+            if (!step) return;
+            list.scrollBy({ left: direction * step, behavior: 'smooth' });
+            setTimeout(updateReviewSliderButtons, 220);
         }
 
         // Replaces the duplicated legacy login-state function with one source of truth.
@@ -2858,11 +2943,31 @@ async function deleteUserByAdmin(userId) {
         function cancelReviewEdit() {
             reviewEditingAsAdmin = false;
             reviewSelectedRating = 0;
-            document.getElementById('review-editing-id')?.setAttribute('value', '');
-            document.getElementById('review-editing-id').value = '';
-            document.getElementById('review-message').value = '';
-            document.getElementById('review-message').disabled = false;
-            document.getElementById('review-message').required = true;
+            const currentUser = getCurrentUser();
+            const editIdInput = document.getElementById('review-editing-id');
+            const messageInput = document.getElementById('review-message');
+            if (currentUser && currentUserReviewId) {
+                const review = reviewCache.get(currentUserReviewId);
+                if (review) {
+                    editIdInput.value = review.id;
+                    messageInput.value = review.message;
+                    messageInput.disabled = false;
+                    messageInput.required = true;
+                    document.getElementById('review-message-wrap').classList.remove('hidden');
+                    document.getElementById('review-form-eyebrow').textContent = 'REVIEW ANDA';
+                    document.getElementById('review-form-heading').textContent = 'Perbarui review yang Anda kirim';
+                    document.getElementById('review-submit-button').textContent = 'PERBARUI REVIEW';
+                    document.getElementById('review-cancel-edit').classList.remove('hidden');
+                    setReviewRating(review.rating);
+                    setReviewFormStatus('Anda sudah mengirim 1 review. Silakan edit review Anda di sini.', false);
+                    return;
+                }
+            }
+            editIdInput?.setAttribute('value', '');
+            editIdInput.value = '';
+            messageInput.value = '';
+            messageInput.disabled = false;
+            messageInput.required = true;
             document.getElementById('review-message-wrap').classList.remove('hidden');
             document.getElementById('review-form-eyebrow').textContent = 'KIRIM PENILAIAN';
             document.getElementById('review-form-heading').textContent = 'Bagaimana kinerja OSIS?';
@@ -2878,6 +2983,10 @@ async function deleteUserByAdmin(userId) {
             if (!token) return openAuthModal();
             if (!reviewSelectedRating) return setReviewFormStatus('Pilih rating bintang terlebih dahulu.', true);
             const editId = document.getElementById('review-editing-id').value;
+            if (!editId && currentUserReviewId) {
+                setReviewFormStatus('Anda sudah mengirim 1 review. Silakan edit review yang sudah ada.', true);
+                return;
+            }
             const body = reviewEditingAsAdmin
                 ? { rating: reviewSelectedRating }
                 : { rating: reviewSelectedRating, message: document.getElementById('review-message').value };
@@ -2953,19 +3062,23 @@ async function deleteUserByAdmin(userId) {
             const list = document.getElementById('review-list');
             if (!list) return;
             reviewCache.clear();
+            currentUserReviewId = '';
             list.replaceChildren();
             if (!reviews.length) {
                 const empty = document.createElement('div');
-                empty.className = 'card-linear rounded-2xl p-8 text-center';
+                empty.className = 'review-slide-card card-linear rounded-2xl p-8 text-center';
                 empty.innerHTML = '<p class="text-sm font-semibold text-white">Belum ada review.</p><p class="text-xs text-fgMuted mt-1">Jadilah yang pertama memberi masukan untuk OSIS.</p>';
                 list.appendChild(empty);
+                updateReviewSliderButtons();
                 return;
             }
             const currentUser = getCurrentUser();
+            const ownedReview = currentUser ? reviews.find((review) => review.authorId === currentUser.id) : null;
+            if (ownedReview) currentUserReviewId = ownedReview.id;
             reviews.forEach((review) => {
                 reviewCache.set(review.id, review);
                 const card = document.createElement('article');
-                card.className = 'review-list-card card-linear rounded-2xl p-5 sm:p-6';
+                card.className = 'review-slide-card review-list-card card-linear rounded-2xl p-5 sm:p-6';
 
                 const top = document.createElement('div');
                 top.className = 'flex items-start justify-between gap-4';
@@ -3017,6 +3130,32 @@ async function deleteUserByAdmin(userId) {
                 card.append(top, message, footer);
                 list.appendChild(card);
             });
+            if (currentUser && ownedReview) {
+                const editIdInput = document.getElementById('review-editing-id');
+                const messageInput = document.getElementById('review-message');
+                editIdInput.value = ownedReview.id;
+                messageInput.value = ownedReview.message;
+                messageInput.disabled = false;
+                messageInput.required = true;
+                document.getElementById('review-form-eyebrow').textContent = 'REVIEW ANDA';
+                document.getElementById('review-form-heading').textContent = 'Perbarui review yang Anda kirim';
+                document.getElementById('review-submit-button').textContent = 'PERBARUI REVIEW';
+                document.getElementById('review-cancel-edit').classList.remove('hidden');
+                setReviewRating(ownedReview.rating);
+                setReviewFormStatus('Anda sudah mengirim 1 review. Silakan edit review Anda di sini.', false);
+            } else {
+                document.getElementById('review-editing-id').value = '';
+                document.getElementById('review-message').value = '';
+                document.getElementById('review-message').disabled = false;
+                document.getElementById('review-message').required = true;
+                document.getElementById('review-form-eyebrow').textContent = 'KIRIM PENILAIAN';
+                document.getElementById('review-form-heading').textContent = 'Bagaimana kinerja OSIS?';
+                document.getElementById('review-submit-button').textContent = 'KIRIM REVIEW';
+                document.getElementById('review-cancel-edit').classList.add('hidden');
+                setReviewRating(0);
+                setReviewFormStatus('');
+            }
+            updateReviewSliderButtons();
         }
 
         async function loadReviews() {
@@ -3031,9 +3170,10 @@ async function deleteUserByAdmin(userId) {
             } catch (error) {
                 if (list) {
                     const unavailable = document.createElement('div');
-                    unavailable.className = 'card-linear rounded-2xl p-6 text-sm text-rose-200 text-center';
+                    unavailable.className = 'review-slide-card card-linear rounded-2xl p-6 text-sm text-rose-200 text-center';
                     unavailable.textContent = error.message;
                     list.replaceChildren(unavailable);
+                    updateReviewSliderButtons();
                 }
             }
             if (window.lucide) lucide.createIcons();
@@ -3111,6 +3251,10 @@ async function deleteUserByAdmin(userId) {
                     if (event.target.id === modalId) setModalVisibility(modalId, false);
                 });
             });
+            document.getElementById('review-slider-prev')?.addEventListener('click', () => moveReviewSlider(-1));
+            document.getElementById('review-slider-next')?.addEventListener('click', () => moveReviewSlider(1));
+            document.getElementById('review-list')?.addEventListener('scroll', updateReviewSliderButtons);
+            window.addEventListener('resize', updateReviewSliderButtons);
             checkLoginStatus();
             loadReviews();
             refreshCurrentUser();
