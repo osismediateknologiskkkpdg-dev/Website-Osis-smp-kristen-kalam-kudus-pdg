@@ -277,6 +277,43 @@
         .review-message {
             position: relative;
             z-index: 1;
+            word-break: break-word;
+            white-space: pre-wrap;
+            display: block;
+        }
+
+        .review-message-collapsed {
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 8.5rem;
+        }
+
+        .review-view-more {
+            position: relative;
+            z-index: 1;
+            margin-top: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(94, 106, 210, 0.45);
+            background: rgba(94, 106, 210, 0.1);
+            color: #dfe3f5;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.62rem;
+            line-height: 1;
+            letter-spacing: 0.12em;
+            font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+            font-weight: 700;
+            transition: all 180ms ease;
+        }
+
+        .review-view-more:hover {
+            background: rgba(94, 106, 210, 0.18);
+            color: white;
+            border-color: rgba(94, 106, 210, 0.7);
         }
 
         .review-footer {
@@ -1631,6 +1668,34 @@
         </div>
     </div>
 
+    <!-- ==================== MODULE: REVIEW DETAIL MODAL ==================== -->
+    <div id="review-detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300" aria-hidden="true">
+        <div class="relative w-full max-w-2xl card-linear border-accent/40 bg-bgElevated p-6 sm:p-7 rounded-3xl shadow-2xl">
+            <button type="button" onclick="closeReviewDetailModal()" aria-label="Tutup review lengkap" class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="flex items-center gap-4 mb-5 text-left">
+                <img id="review-detail-avatar" src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png" alt="Avatar review" class="w-16 h-16 rounded-2xl object-cover border border-accent/50 bg-bgDeep">
+                <div class="min-w-0">
+                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest">FULL REVIEW</span>
+                    <h2 id="review-detail-name" class="text-xl sm:text-2xl font-extrabold text-white mt-1 truncate">—</h2>
+                    <p id="review-detail-username" class="font-mono text-[11px] text-fgMuted mt-1">@—</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center p-4 rounded-2xl bg-white/[0.03] border border-white/5 mb-4">
+                <div>
+                    <p class="font-mono text-[10px] text-accent font-bold tracking-widest">RATING</p>
+                    <p id="review-detail-date" class="mt-1 text-[10px] font-mono text-fgMuted"></p>
+                </div>
+                <div id="review-detail-rating" class="text-amber-300 text-lg tracking-[2px] justify-self-start sm:justify-self-end" aria-label="Rating review">★☆☆☆☆</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-left">
+                <p class="font-mono text-[10px] text-accent font-bold tracking-widest mb-2">ISI REVIEW LENGKAP</p>
+                <div id="review-detail-text" class="text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap max-h-[55vh] overflow-y-auto pr-1">—</div>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== FOOTER ==================== -->
     <footer class="py-12 border-t border-white/5 bg-bgDeep text-fgMuted font-mono text-xs relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -1750,6 +1815,8 @@ async function deleteUserByAdmin(userId) {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
+                closePublicProfileModal();
+                closeReviewDetailModal();
             }
         });
 
@@ -2918,6 +2985,34 @@ async function deleteUserByAdmin(userId) {
             setModalVisibility('public-profile-modal', false);
         }
 
+        function openReviewDetail(reviewId) {
+            const review = reviewCache.get(reviewId);
+            if (!review) return;
+
+            const avatar = document.getElementById('review-detail-avatar');
+            const name = document.getElementById('review-detail-name');
+            const username = document.getElementById('review-detail-username');
+            const date = document.getElementById('review-detail-date');
+            const rating = document.getElementById('review-detail-rating');
+            const text = document.getElementById('review-detail-text');
+
+            if (avatar) avatar.src = review.author.avatarUrl || DEFAULT_AVATAR_URL;
+            if (name) name.textContent = review.author.displayName;
+            if (username) username.textContent = `@${review.author.username}`;
+            if (date) date.textContent = `Dibuat ${new Date(review.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+            if (rating) rating.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
+            if (text) text.textContent = review.message || 'Pengguna belum menulis review dalam bentuk kata-kata.';
+
+            setModalVisibility('review-detail-modal', true);
+            document.body.style.overflow = 'hidden';
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeReviewDetailModal() {
+            setModalVisibility('review-detail-modal', false);
+            document.body.style.overflow = '';
+        }
+
         // -------------------------------------------------------------------------
         // MODULE: REVIEW KINERJA OSIS
         // -------------------------------------------------------------------------
@@ -3112,9 +3207,24 @@ async function deleteUserByAdmin(userId) {
                 stars.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
                 top.append(authorButton, stars);
 
+                const messageWrap = document.createElement('div');
+                messageWrap.className = 'mt-4';
                 const message = document.createElement('p');
-                message.className = 'review-message mt-4 text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap';
-                message.textContent = review.message;
+                const reviewText = (review.message || '').trim();
+                const truncatedText = reviewText.length > 220 ? `${reviewText.slice(0, 220).trim().replace(/\s+\S*$/, '')}...` : reviewText;
+                message.className = `review-message text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap ${reviewText.length > 220 ? 'review-message-collapsed' : ''}`;
+                message.textContent = truncatedText || 'Pengguna belum menulis review.';
+                messageWrap.appendChild(message);
+
+                if (reviewText.length > 220) {
+                    const viewMore = document.createElement('button');
+                    viewMore.type = 'button';
+                    viewMore.className = 'review-view-more';
+                    viewMore.textContent = 'VIEW MORE';
+                    viewMore.addEventListener('click', () => openReviewDetail(review.id));
+                    messageWrap.appendChild(viewMore);
+                }
+
                 const footer = document.createElement('div');
                 footer.className = 'review-footer mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3';
                 const timestamp = document.createElement('p');
@@ -3131,7 +3241,7 @@ async function deleteUserByAdmin(userId) {
                     actions.appendChild(createReviewAction('HAPUS', 'border-rose-500/35 text-rose-300 hover:bg-rose-500/10', () => deleteReview(review.id)));
                     footer.appendChild(actions);
                 }
-                card.append(top, message, footer);
+                card.append(top, messageWrap, footer);
                 list.appendChild(card);
             });
             if (currentUser && ownedReview) {
@@ -3250,9 +3360,12 @@ async function deleteUserByAdmin(userId) {
                     help.textContent = error.message;
                 }
             });
-            ['profile-modal', 'public-profile-modal'].forEach((modalId) => {
+            ['profile-modal', 'public-profile-modal', 'review-detail-modal'].forEach((modalId) => {
                 document.getElementById(modalId)?.addEventListener('click', (event) => {
-                    if (event.target.id === modalId) setModalVisibility(modalId, false);
+                    if (event.target.id === modalId) {
+                        setModalVisibility(modalId, false);
+                        if (modalId === 'review-detail-modal') document.body.style.overflow = '';
+                    }
                 });
             });
             document.getElementById('review-slider-prev')?.addEventListener('click', () => moveReviewSlider(-1));
