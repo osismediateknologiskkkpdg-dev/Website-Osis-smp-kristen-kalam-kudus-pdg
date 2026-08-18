@@ -128,6 +128,113 @@
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
         }
 
+        .review-shell {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(13, 15, 23, 0.96), rgba(9, 10, 18, 0.92));
+            box-shadow:
+                0 0 0 1px rgba(144, 160, 255, 0.12),
+                0 24px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .review-shell::before {
+            content: '';
+            position: absolute;
+            inset: -30% -20% auto auto;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(94, 106, 210, 0.26), transparent 68%);
+            pointer-events: none;
+            filter: blur(18px);
+        }
+
+        .review-shell::after {
+            content: '';
+            position: absolute;
+            inset: auto auto -18% -8%;
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle, rgba(138, 92, 246, 0.18), transparent 68%);
+            pointer-events: none;
+            filter: blur(20px);
+        }
+
+        .review-metric-card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(15, 17, 25, 0.92), rgba(10, 10, 14, 0.7));
+        }
+
+        .review-composer {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .review-stars-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.5rem;
+            border-radius: 9999px;
+            background: rgba(17, 20, 28, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .review-star {
+            font-size: 1.7rem;
+            line-height: 1;
+            transition: transform 180ms ease, color 180ms ease, filter 180ms ease;
+        }
+
+        .review-star:hover {
+            transform: translateY(-1px) scale(1.06);
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.35));
+        }
+
+        .review-star.scale-110 {
+            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.48));
+        }
+
+        .review-list-card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.018));
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            overflow: hidden;
+        }
+
+        .review-list-card::before {
+            content: '';
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(94,106,210,0.45), transparent 60%);
+            opacity: 0.85;
+        }
+
+        .review-author-button {
+            position: relative;
+            z-index: 1;
+        }
+
+        .review-author-button:hover .review-author-avatar {
+            border-color: rgba(110, 123, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(94, 106, 210, 0.12);
+        }
+
+        .review-message {
+            position: relative;
+            z-index: 1;
+        }
+
+        .review-footer {
+            position: relative;
+            z-index: 1;
+        }
+
         .btn-primary-glow {
             background-color: #5E6AD2;
             box-shadow: 
@@ -1126,72 +1233,79 @@
         </section>
 
         <!-- ==================== MODULE: REVIEW KINERJA OSIS ==================== -->
-        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-5xl mx-auto border-t border-white/5">
-            <div class="text-center mb-12" data-aos="fade-up">
-                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07 // OSIS PERFORMANCE REVIEW ]</span>
-                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Review Kinerja OSIS</h2>
-                <p class="text-sm text-fgMuted mt-3 max-w-2xl mx-auto">Bagikan penilaian dan masukan untuk membantu kami bertumbuh. Klik nama pengirim untuk melihat profil lengkapnya.</p>
-            </div>
+        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5">
+            <div class="review-shell card-linear rounded-[32px] p-4 sm:p-6 lg:p-8" data-aos="fade-up">
+                <div class="relative">
+                    <div class="text-center mb-10">
+                        <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07 // OSIS PERFORMANCE REVIEW ]</span>
+                        <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Review Kinerja OSIS</h2>
+                        <p class="text-sm text-fgMuted mt-3 max-w-2xl mx-auto">Bagikan penilaian dan masukan untuk membantu kami bertumbuh. Klik nama pengirim untuk melihat profil lengkapnya.</p>
+                    </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" data-aos="fade-up">
-                <div class="card-linear rounded-2xl p-5 flex items-center gap-4">
-                    <div class="w-11 h-11 rounded-xl bg-amber-400/10 border border-amber-300/30 flex items-center justify-center text-amber-300"><i data-lucide="star" class="w-5 h-5 fill-current"></i></div>
-                    <div><p id="review-average" class="text-2xl font-extrabold text-white">—</p><p class="text-xs text-fgMuted">Rata-rata penilaian</p></div>
-                </div>
-                <div class="card-linear rounded-2xl p-5 flex items-center gap-4">
-                    <div class="w-11 h-11 rounded-xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent"><i data-lucide="messages-square" class="w-5 h-5"></i></div>
-                    <div><p id="review-total" class="text-2xl font-extrabold text-white">—</p><p class="text-xs text-fgMuted">Masukan dari siswa</p></div>
-                </div>
-            </div>
-
-            <div class="relative">
-                <div id="review-content" class="transition-all duration-300">
-                    <div class="card-linear rounded-3xl p-6 sm:p-8 mb-8" data-aos="fade-up">
-                        <div class="flex items-start justify-between gap-4 mb-6">
-                            <div>
-                                <span id="review-form-eyebrow" class="font-mono text-[10px] text-accent font-bold tracking-widest">KIRIM PENILAIAN</span>
-                                <h3 id="review-form-heading" class="text-xl font-bold text-white mt-1">Bagaimana kinerja OSIS?</h3>
-                            </div>
-                            <button id="review-cancel-edit" type="button" onclick="cancelReviewEdit()" class="hidden text-xs font-semibold text-fgMuted hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-all">BATAL EDIT</button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" data-aos="fade-up">
+                        <div class="review-metric-card card-linear rounded-2xl p-5 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-300/30 flex items-center justify-center text-amber-300"><i data-lucide="star" class="w-5 h-5 fill-current"></i></div>
+                            <div><p id="review-average" class="text-2xl font-extrabold text-white">—</p><p class="text-xs text-fgMuted">Rata-rata penilaian</p></div>
                         </div>
-                        <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-5">
-                            <input id="review-editing-id" type="hidden">
-                            <div>
-                                <label class="block text-xs font-mono text-fgMuted mb-2">BINTANG PENILAIAN</label>
-                                <div id="review-stars" class="flex items-center gap-1" aria-label="Pilih rating 1 sampai 5">
-                                    <button type="button" onclick="setReviewRating(1)" data-rating="1" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="1 bintang">★</button>
-                                    <button type="button" onclick="setReviewRating(2)" data-rating="2" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="2 bintang">★</button>
-                                    <button type="button" onclick="setReviewRating(3)" data-rating="3" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="3 bintang">★</button>
-                                    <button type="button" onclick="setReviewRating(4)" data-rating="4" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="4 bintang">★</button>
-                                    <button type="button" onclick="setReviewRating(5)" data-rating="5" class="review-star p-1.5 text-fgMuted hover:text-amber-300 transition-colors" aria-label="5 bintang">★</button>
-                                    <span id="review-rating-label" class="ml-2 text-xs font-mono text-fgMuted">Pilih 1–5 bintang</span>
+                        <div class="review-metric-card card-linear rounded-2xl p-5 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent"><i data-lucide="messages-square" class="w-5 h-5"></i></div>
+                            <div><p id="review-total" class="text-2xl font-extrabold text-white">—</p><p class="text-xs text-fgMuted">Masukan dari siswa</p></div>
+                        </div>
+                    </div>
+
+                    <div id="review-content" class="grid grid-cols-1 xl:grid-cols-[0.95fr_1.35fr] gap-6 transition-all duration-300">
+                        <div class="review-composer card-linear rounded-[28px] p-5 sm:p-6" data-aos="fade-right">
+                            <div class="flex items-start justify-between gap-4 mb-6">
+                                <div>
+                                    <span id="review-form-eyebrow" class="font-mono text-[10px] text-accent font-bold tracking-widest">KIRIM PENILAIAN</span>
+                                    <h3 id="review-form-heading" class="text-xl font-bold text-white mt-1">Bagaimana kinerja OSIS?</h3>
                                 </div>
+                                <button id="review-cancel-edit" type="button" onclick="cancelReviewEdit()" class="hidden text-xs font-semibold text-fgMuted hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-all">BATAL EDIT</button>
                             </div>
-                            <div id="review-message-wrap">
-                                <label for="review-message" class="block text-xs font-mono text-fgMuted mb-2">PESAN UNTUK OSIS <span class="text-rose-300">*</span></label>
-                                <textarea id="review-message" required minlength="5" maxlength="1000" rows="4" placeholder="Tuliskan masukan yang membangun untuk OSIS..." class="w-full px-4 py-3 rounded-xl bg-surface border border-white/10 text-white text-sm leading-relaxed resize-y focus:border-accent focus:outline-none"></textarea>
-                                <p class="mt-1 text-[10px] font-mono text-fgMuted">Minimal 5 karakter. Review Anda dapat diedit atau dihapus kapan saja.</p>
+                            <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-5">
+                                <input id="review-editing-id" type="hidden">
+                                <div>
+                                    <label class="block text-xs font-mono text-fgMuted mb-2.5">BINTANG PENILAIAN</label>
+                                    <div id="review-stars" class="review-stars-wrap" aria-label="Pilih rating 1 sampai 5">
+                                        <button type="button" onclick="setReviewRating(1)" data-rating="1" class="review-star text-fgMuted" aria-label="1 bintang">★</button>
+                                        <button type="button" onclick="setReviewRating(2)" data-rating="2" class="review-star text-fgMuted" aria-label="2 bintang">★</button>
+                                        <button type="button" onclick="setReviewRating(3)" data-rating="3" class="review-star text-fgMuted" aria-label="3 bintang">★</button>
+                                        <button type="button" onclick="setReviewRating(4)" data-rating="4" class="review-star text-fgMuted" aria-label="4 bintang">★</button>
+                                        <button type="button" onclick="setReviewRating(5)" data-rating="5" class="review-star text-fgMuted" aria-label="5 bintang">★</button>
+                                        <span id="review-rating-label" class="ml-2 text-[11px] font-mono text-fgMuted">Pilih 1–5 bintang</span>
+                                    </div>
+                                </div>
+                                <div id="review-message-wrap">
+                                    <label for="review-message" class="block text-xs font-mono text-fgMuted mb-2.5">PESAN UNTUK OSIS <span class="text-rose-300">*</span></label>
+                                    <textarea id="review-message" required minlength="5" maxlength="1000" rows="4" placeholder="Tuliskan masukan yang membangun untuk OSIS..." class="w-full px-4 py-3 rounded-2xl bg-[#0b0d12] border border-white/10 text-white text-sm leading-relaxed resize-y focus:border-accent focus:outline-none shadow-inner shadow-black/20"></textarea>
+                                    <p class="mt-1.5 text-[10px] font-mono text-fgMuted">Minimal 5 karakter. Review Anda dapat diedit atau dihapus kapan saja.</p>
+                                </div>
+                                <p id="review-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2"></p>
+                                <button id="review-submit-button" type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">KIRIM REVIEW</button>
+                            </form>
+                        </div>
+
+                        <div class="space-y-4" data-aos="fade-left">
+                            <div class="flex items-end justify-between gap-4">
+                                <div>
+                                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest">MASUKAN TERBARU</span>
+                                    <h3 class="text-xl font-bold text-white mt-1">Suara dari komunitas</h3>
+                                </div>
+                                <button type="button" onclick="loadReviews()" class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors" title="Muat ulang review"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
                             </div>
-                            <p id="review-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2"></p>
-                            <button id="review-submit-button" type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">KIRIM REVIEW</button>
-                        </form>
+                            <div id="review-list" class="grid grid-cols-1 gap-4">
+                                <div class="card-linear rounded-2xl p-6 text-sm text-fgMuted text-center">Memuat review...</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex items-end justify-between gap-4 mb-5">
-                        <div><span class="font-mono text-[10px] text-accent font-bold tracking-widest">MASUKAN TERBARU</span><h3 class="text-xl font-bold text-white mt-1">Suara dari komunitas</h3></div>
-                        <button type="button" onclick="loadReviews()" class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors" title="Muat ulang review"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
-                    </div>
-                    <div id="review-list" class="grid grid-cols-1 gap-4">
-                        <div class="card-linear rounded-2xl p-6 text-sm text-fgMuted text-center">Memuat review...</div>
-                    </div>
-                </div>
-
-                <div id="review-lock-overlay" class="hidden absolute inset-0 z-10 rounded-3xl bg-bgDeep/45 backdrop-blur-[3px] items-center justify-center p-4">
-                    <div class="max-w-sm w-full rounded-3xl p-7 text-center bg-bgElevated/90 border border-accent/40 shadow-2xl">
-                        <div class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/15 border border-accent/40 flex items-center justify-center text-accent"><i data-lucide="lock-keyhole" class="w-6 h-6"></i></div>
-                        <h3 class="text-lg font-bold text-white">Login untuk memberi review</h3>
-                        <p class="text-sm text-fgMuted mt-2">Masuk ke akun Anda agar dapat memberi bintang dan pesan untuk OSIS.</p>
-                        <button type="button" onclick="openAuthModal()" class="mt-5 w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">LOGIN / REGISTER</button>
+                    <div id="review-lock-overlay" class="hidden absolute inset-0 z-10 rounded-[32px] bg-bgDeep/45 backdrop-blur-[3px] items-center justify-center p-4">
+                        <div class="max-w-sm w-full rounded-3xl p-7 text-center bg-bgElevated/90 border border-accent/40 shadow-2xl">
+                            <div class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/15 border border-accent/40 flex items-center justify-center text-accent"><i data-lucide="lock-keyhole" class="w-6 h-6"></i></div>
+                            <h3 class="text-lg font-bold text-white">Login untuk memberi review</h3>
+                            <p class="text-sm text-fgMuted mt-2">Masuk ke akun Anda agar dapat memberi bintang dan pesan untuk OSIS.</p>
+                            <button type="button" onclick="openAuthModal()" class="mt-5 w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">LOGIN / REGISTER</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2851,19 +2965,19 @@ async function deleteUserByAdmin(userId) {
             reviews.forEach((review) => {
                 reviewCache.set(review.id, review);
                 const card = document.createElement('article');
-                card.className = 'card-linear rounded-2xl p-5 sm:p-6';
+                card.className = 'review-list-card card-linear rounded-2xl p-5 sm:p-6';
 
                 const top = document.createElement('div');
                 top.className = 'flex items-start justify-between gap-4';
                 const authorButton = document.createElement('button');
                 authorButton.type = 'button';
-                authorButton.className = 'flex items-center gap-3 min-w-0 text-left group';
+                authorButton.className = 'review-author-button flex items-center gap-3 min-w-0 text-left group';
                 authorButton.title = 'Buka profil lengkap';
                 authorButton.addEventListener('click', () => openPublicProfile(review.author.username));
                 const avatar = document.createElement('img');
                 avatar.src = review.author.avatarUrl || DEFAULT_AVATAR_URL;
                 avatar.alt = `Avatar ${review.author.displayName}`;
-                avatar.className = 'w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-accent/70 transition-colors bg-bgDeep';
+                avatar.className = 'review-author-avatar w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-accent/70 transition-colors bg-bgDeep';
                 const authorCopy = document.createElement('div');
                 authorCopy.className = 'min-w-0';
                 const authorName = document.createElement('p');
@@ -2882,10 +2996,10 @@ async function deleteUserByAdmin(userId) {
                 top.append(authorButton, stars);
 
                 const message = document.createElement('p');
-                message.className = 'mt-4 text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap';
+                message.className = 'review-message mt-4 text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap';
                 message.textContent = review.message;
                 const footer = document.createElement('div');
-                footer.className = 'mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3';
+                footer.className = 'review-footer mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3';
                 const timestamp = document.createElement('p');
                 timestamp.className = 'text-[10px] font-mono text-fgMuted';
                 timestamp.textContent = `${review.updatedAt !== review.createdAt ? 'Diperbarui ' : ''}${new Date(review.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
