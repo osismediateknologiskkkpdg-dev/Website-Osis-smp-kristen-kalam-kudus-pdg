@@ -1303,7 +1303,7 @@
                     </div>
 
                     <div id="review-content" class="grid grid-cols-1 xl:grid-cols-[0.95fr_1.35fr] gap-6 transition-all duration-300">
-                        <div class="review-composer card-linear rounded-[28px] p-5 sm:p-6" data-aos="fade-right">
+                        <div class="review-composer card-linear rounded-[28px] p-5 sm:p-6 relative" data-aos="fade-right">
                             <div class="flex items-start justify-between gap-4 mb-6">
                                 <div>
                                     <span id="review-form-eyebrow" class="font-mono text-[10px] text-accent font-bold tracking-widest">KIRIM PENILAIAN</span>
@@ -1332,6 +1332,15 @@
                                 <p id="review-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2"></p>
                                 <button id="review-submit-button" type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">KIRIM REVIEW</button>
                             </form>
+
+                            <div id="review-lock-overlay" class="hidden absolute inset-0 z-20 rounded-[28px] bg-bgDeep/60 backdrop-blur-[3px] items-center justify-center p-4">
+                                <div class="max-w-sm w-full rounded-3xl p-6 text-center bg-bgElevated/90 border border-accent/40 shadow-2xl">
+                                    <div class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/15 border border-accent/40 flex items-center justify-center text-accent"><i data-lucide="lock-keyhole" class="w-6 h-6"></i></div>
+                                    <h3 class="text-lg font-bold text-white">Harap login terlebih dahulu</h3>
+                                    <p class="text-sm text-fgMuted mt-2">Masuk ke akun Anda agar bisa memberi bintang dan pesan untuk OSIS.</p>
+                                    <button type="button" onclick="openAuthModal()" class="mt-5 w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">LOGIN / REGISTER</button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="space-y-4" data-aos="fade-left">
@@ -1354,14 +1363,6 @@
                         </div>
                     </div>
 
-                    <div id="review-lock-overlay" class="hidden absolute inset-0 z-10 rounded-[32px] bg-bgDeep/45 backdrop-blur-[3px] items-center justify-center p-4">
-                        <div class="max-w-sm w-full rounded-3xl p-7 text-center bg-bgElevated/90 border border-accent/40 shadow-2xl">
-                            <div class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/15 border border-accent/40 flex items-center justify-center text-accent"><i data-lucide="lock-keyhole" class="w-6 h-6"></i></div>
-                            <h3 class="text-lg font-bold text-white">Login untuk memberi review</h3>
-                            <p class="text-sm text-fgMuted mt-2">Masuk ke akun Anda agar dapat memberi bintang dan pesan untuk OSIS.</p>
-                            <button type="button" onclick="openAuthModal()" class="mt-5 w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">LOGIN / REGISTER</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -2482,13 +2483,16 @@ async function deleteUserByAdmin(userId) {
         function updateReviewAccess() {
             const content = document.getElementById('review-content');
             const lock = document.getElementById('review-lock-overlay');
-            if (!content || !lock) return;
+            const form = document.getElementById('review-form');
+            if (!content || !lock || !form) return;
             const locked = !isUserLoggedIn();
-            content.classList.toggle('blur-sm', locked);
-            content.classList.toggle('pointer-events-none', locked);
-            content.classList.toggle('select-none', locked);
+            content.classList.remove('blur-sm', 'pointer-events-none', 'select-none');
             lock.classList.toggle('hidden', !locked);
             lock.classList.toggle('flex', locked);
+            form.querySelectorAll('input, textarea, button').forEach((field) => {
+                if (field.id === 'review-cancel-edit') return;
+                field.disabled = locked;
+            });
             if (window.lucide) lucide.createIcons();
         }
 
