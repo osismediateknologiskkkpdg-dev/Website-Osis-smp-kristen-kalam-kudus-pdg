@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "review_1787052592020_b0c64cfe",
+    "userId": "usr_master_admin_001",
+    "rating": 5,
+    "message": "Tuff Man kamu tuff",
+    "createdAt": "2026-08-18T11:29:52.020Z",
+    "updatedAt": "2026-08-18T11:29:52.020Z"
+  }
+]
