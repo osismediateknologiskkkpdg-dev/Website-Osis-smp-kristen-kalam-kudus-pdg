@@ -200,9 +200,10 @@
 
         .review-list-card {
             position: relative;
-            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.018));
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: linear-gradient(180deg, rgba(17, 19, 29, 0.96), rgba(9, 10, 18, 0.88));
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 40px rgba(0,0,0,0.28);
         }
 
         .review-list-card::before {
@@ -210,14 +211,29 @@
             position: absolute;
             inset: 0 auto auto 0;
             width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(94,106,210,0.45), transparent 60%);
-            opacity: 0.85;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(94,106,210,1), rgba(94,106,210,0.1), transparent);
+            opacity: 0.95;
+        }
+
+        .review-list-card::after {
+            content: '';
+            position: absolute;
+            right: -14%;
+            top: -28%;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(94,106,210,0.22), transparent 70%);
+            pointer-events: none;
         }
 
         .review-author-button {
             position: relative;
             z-index: 1;
+        }
+
+        .review-author-avatar {
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
         }
 
         .review-author-button:hover .review-author-avatar {
@@ -228,21 +244,18 @@
         .review-slider-track {
             display: flex;
             gap: 1rem;
-            overflow-x: auto; /* allow horizontal scrolling so each slide can be shown separately */
+            overflow-x: auto;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;
             scrollbar-width: none;
-            scroll-snap-type: x mandatory; /* snap to full-slide cells */
+            scroll-snap-type: x mandatory;
         }
 
         .review-slider-track::-webkit-scrollbar {
             display: none;
         }
 
-        /* Each 'slide' will contain up to 2 review cards laid out in columns.
-           This ensures a maximum of 2 columns per visible slide; additional cards
-           will be moved to the next slide. */
         .review-slide {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -250,15 +263,46 @@
             width: 100%;
             box-sizing: border-box;
             padding: 0.25rem 0.5rem;
-            flex: 0 0 100%; /* make each slide occupy full track width so only one slide shows */
-            scroll-snap-align: start; /* align snapping to slide start */
+            flex: 0 0 100%;
+            scroll-snap-align: start;
         }
 
         .review-slide-card {
-            /* cards inside a slide simply expand to their grid cell */
             flex: none;
             width: 100%;
             min-width: 0;
+            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+
+        .review-slide-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(94, 106, 210, 0.45);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.38), 0 0 0 1px rgba(94,106,210,0.12), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .review-dots {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+            margin-top: 0.9rem;
+        }
+
+        .review-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .review-dot.active {
+            background: linear-gradient(135deg, #6f7ef8, #8fa0ff);
+            transform: scale(1.18);
+            box-shadow: 0 0 0 4px rgba(94,106,210,0.18);
         }
 
         @media (max-width: 767px) {
@@ -2603,6 +2647,15 @@ async function deleteUserByAdmin(userId) {
             const maxScroll = Math.max(0, list.scrollWidth - list.clientWidth);
             prevButton.disabled = list.scrollLeft <= 4;
             nextButton.disabled = list.scrollLeft >= maxScroll - 4;
+
+            // Update active dot
+            const slides = Array.from(list.children || []);
+            if (slides.length) {
+                const slideWidth = slides[0].getBoundingClientRect().width || list.clientWidth || 1;
+                const activeIndex = Math.round(list.scrollLeft / slideWidth);
+                const dots = document.querySelectorAll('#review-dots .review-dot');
+                dots.forEach((d, idx) => d.classList.toggle('active', idx === activeIndex));
+            }
         }
 
         function moveReviewSlider(direction) {
@@ -3181,10 +3234,15 @@ async function deleteUserByAdmin(userId) {
 
         function renderReviewList(reviews) {
             const list = document.getElementById('review-list');
-            if (!list) return;
+            const wrapper = document.getElementById('review-list-wrapper');
+            if (!list || !wrapper) return;
             reviewCache.clear();
             currentUserReviewId = '';
             list.replaceChildren();
+            // remove existing dots (if any)
+            const existingDots = document.getElementById('review-dots');
+            if (existingDots) existingDots.remove();
+
             if (!reviews.length) {
                 const emptySlide = document.createElement('div');
                 emptySlide.className = 'review-slide';
@@ -3210,56 +3268,61 @@ async function deleteUserByAdmin(userId) {
                 group.forEach((review) => {
                     reviewCache.set(review.id, review);
                     const card = document.createElement('article');
-                    card.className = 'review-slide-card review-list-card card-linear rounded-2xl p-5 sm:p-6';
+                    card.className = 'review-slide-card review-list-card card-linear rounded-2xl p-6 sm:p-6';
 
+                    // Card header
                     const top = document.createElement('div');
                     top.className = 'flex items-start justify-between gap-4';
-                    const authorButton = document.createElement('button');
-                    authorButton.type = 'button';
-                    authorButton.className = 'review-author-button flex items-center gap-3 min-w-0 text-left group';
-                    authorButton.title = 'Buka profil lengkap';
-                    authorButton.addEventListener('click', () => openPublicProfile(review.author.username));
+
+                    const authorWrap = document.createElement('div');
+                    authorWrap.className = 'flex items-center gap-3 min-w-0';
+
                     const avatar = document.createElement('img');
                     avatar.src = review.author.avatarUrl || DEFAULT_AVATAR_URL;
                     avatar.alt = `Avatar ${review.author.displayName}`;
-                    avatar.className = 'review-author-avatar w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-accent/70 transition-colors bg-bgDeep';
-                    const authorCopy = document.createElement('div');
-                    authorCopy.className = 'min-w-0';
+                    avatar.className = 'review-author-avatar w-12 h-12 rounded-xl object-cover border border-white/8 transition-colors bg-bgDeep flex-shrink-0';
+
+                    const authorInfo = document.createElement('div');
+                    authorInfo.className = 'min-w-0';
                     const authorName = document.createElement('p');
-                    authorName.className = 'text-sm font-bold text-white truncate group-hover:text-accentBright transition-colors';
+                    authorName.className = 'text-sm font-bold text-white truncate';
                     authorName.textContent = review.author.displayName;
                     const authorUsername = document.createElement('p');
                     authorUsername.className = 'text-[10px] font-mono text-fgMuted';
-                    authorUsername.textContent = `@${review.author.username} · buka profil`;
-                    authorCopy.append(authorName, authorUsername);
-                    authorButton.append(avatar, authorCopy);
+                    authorUsername.textContent = `@${review.author.username}`;
+                    authorInfo.append(authorName, authorUsername);
 
-                    const stars = document.createElement('div');
-                    stars.className = 'text-amber-300 text-base tracking-[1px] whitespace-nowrap';
-                    stars.setAttribute('aria-label', `${review.rating} dari 5 bintang`);
-                    stars.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
-                    top.append(authorButton, stars);
+                    authorWrap.append(avatar, authorInfo);
 
+                    const ratingWrap = document.createElement('div');
+                    ratingWrap.className = 'text-amber-300 text-base tracking-[1px]';
+                    ratingWrap.setAttribute('aria-label', `${review.rating} dari 5 bintang`);
+                    ratingWrap.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
+
+                    top.append(authorWrap, ratingWrap);
+
+                    // Message body
                     const messageWrap = document.createElement('div');
                     messageWrap.className = 'mt-4';
                     const message = document.createElement('p');
                     const reviewText = (review.message || '').trim();
-                    const truncatedText = reviewText.length > 220 ? `${reviewText.slice(0, 220).trim().replace(/\s+\S*$/, '')}...` : reviewText;
-                    message.className = `review-message text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap ${reviewText.length > 220 ? 'review-message-collapsed' : ''}`;
+                    const truncatedText = reviewText.length > 320 ? `${reviewText.slice(0, 320).trim().replace(/\s+\S*$/, '')}...` : reviewText;
+                    message.className = `review-message text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap ${reviewText.length > 320 ? 'review-message-collapsed' : ''}`;
                     message.textContent = truncatedText || 'Pengguna belum menulis review.';
                     messageWrap.appendChild(message);
 
-                    if (reviewText.length > 220) {
+                    if (reviewText.length > 320) {
                         const viewMore = document.createElement('button');
                         viewMore.type = 'button';
-                        viewMore.className = 'review-view-more';
+                        viewMore.className = 'review-view-more mt-3';
                         viewMore.textContent = 'VIEW MORE';
                         viewMore.addEventListener('click', () => openReviewDetail(review.id));
                         messageWrap.appendChild(viewMore);
                     }
 
+                    // Footer actions
                     const footer = document.createElement('div');
-                    footer.className = 'review-footer mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3';
+                    footer.className = 'review-footer mt-5 pt-4 border-t border-white/5 flex items-center justify-between gap-3';
                     const timestamp = document.createElement('p');
                     timestamp.className = 'text-[10px] font-mono text-fgMuted';
                     timestamp.textContent = `${review.updatedAt !== review.createdAt ? 'Diperbarui ' : ''}${new Date(review.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
@@ -3282,6 +3345,28 @@ async function deleteUserByAdmin(userId) {
                 list.appendChild(slide);
             }
 
+            // Create navigation dots
+            const slidesCount = list.children.length;
+            if (slidesCount > 1) {
+                const dotsDiv = document.createElement('div');
+                dotsDiv.id = 'review-dots';
+                dotsDiv.className = 'review-dots';
+                for (let j = 0; j < slidesCount; j++) {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'review-dot' + (j === 0 ? ' active' : '');
+                    dot.dataset.index = String(j);
+                    dot.addEventListener('click', () => {
+                        const slideEl = list.children[j];
+                        if (slideEl) list.scrollTo({ left: slideEl.offsetLeft, behavior: 'smooth' });
+                        setTimeout(updateReviewSliderButtons, 260);
+                    });
+                    dotsDiv.appendChild(dot);
+                }
+                wrapper.appendChild(dotsDiv);
+            }
+
+            // Prepare form state for current user's review if present
             if (currentUser && ownedReview) {
                 const editIdInput = document.getElementById('review-editing-id');
                 const messageInput = document.getElementById('review-message');
@@ -3308,7 +3393,9 @@ async function deleteUserByAdmin(userId) {
                 setReviewFormStatus('');
             }
 
-            updateReviewSliderButtons();
+            // Ensure slider resets to start and buttons/dots updated
+            list.scrollLeft = 0;
+            setTimeout(updateReviewSliderButtons, 120);
         }
 
         async function loadReviews() {
