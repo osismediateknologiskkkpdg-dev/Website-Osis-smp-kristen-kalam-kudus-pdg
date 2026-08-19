@@ -31,6 +31,7 @@ const app = express();
 const DEFAULT_AVATAR_URL = 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png';
 const USER_FILE = 'User_data.json';
 const REVIEW_FILE = 'Review_osis.json';
+const MESSAGES_FILE = 'Messages_osis.json';
 const MASTER_ADMIN_EMAIL = 'osismediateknologiskkkpdg@gmail.com';
 const MASTER_ADMIN_USERNAME = 'admin osis'; // Legacy account; new usernames use the strict rule below.
 const MASTER_ADMIN_DISPLAY = 'Administrator OSIS';
@@ -40,6 +41,13 @@ const DISPLAY_NAME_MAX_LENGTH = 60;
 const BIO_MAX_LENGTH = 500;
 const REVIEW_MIN_LENGTH = 5;
 const REVIEW_MAX_LENGTH = 1000;
+const MESSAGE_SUBJECT_MIN_LENGTH = 3;
+const MESSAGE_SUBJECT_MAX_LENGTH = 120;
+const MESSAGE_TEXT_MIN_LENGTH = 3;
+const MESSAGE_TEXT_MAX_LENGTH = 2000;
+const MAX_ATTACHMENTS = 3;
+const MAX_ATTACHMENT_BYTES = 2 * 1024 * 1024; // 2 MB per attachment
+const ALLOWED_ATTACHMENT_TYPES = ['png','jpeg','jpg','webp'];
 const DISPLAY_NAME_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const USERNAME_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 const MAX_AVATAR_BYTES = 1024 * 1024;
@@ -765,6 +773,153 @@ app.delete(['/api/reviews/:id', '/reviews/:id'], authenticateToken, async (req, 
       reviews.splice(index, 1);
     }, 'feat(reviews): delete OSIS performance review');
     return res.json({ success: true, message: 'Review berhasil dihapus.' });
+  } catch (error) { return next(error); }
+});
+
+// =============================================================================
+// MODULE 07b — OSIS MESSAGE / TICKET ROUTES
+// =============================================================================
+
+function validateMessageSubject(value) {
+  const subject = String(value || '').trim();
+  if (subject.length < MESSAGE_SUBJECT_MIN_LENGTH || subject.length > MESSAGE_SUBJECT_MAX_LENGTH) fail(400, `Judul pesan harus terdiri dari ${MESSAGE_SUBJECT_MIN_LENGTH}–${MESSAGE_SUBJECT_MAX_LENGTH} karakter.`);
+  return subject;
+}
+
+function validateMessageText(value) {
+  const text = String(value || '').trim();
+  if (text.length < MESSAGE_TEXT_MIN_LENGTH || text.length > MESSAGE_TEXT_MAX_LENGTH) fail(400, `Isi pesan harus terdiri dari ${MESSAGE_TEXT_MIN_LENGTH}–${MESSAGE_TEXT_MAX_LENGTH} karakter.`);
+  return text;
+}
+
+function validateAttachmentsArray(arr) {
+  if (!arr) return [];
+  if (!Array.isArray(arr)) fail(400, 'Attachments harus berupa array.');
+  if (arr.length > MAX_ATTACHMENTS) fail(400, `Maksimum ${MAX_ATTACHMENTS} lampiran diperbolehkan.`);
+  const cleaned = [];
+  for (const item of arr) {
+    if (!item || typeof item !== 'string') fail(400, 'Format lampiran tidak valid.');
+    const match = item.match(/^data:image\/(png|jpeg|jpg|webp);base64,([A-Za-z0-9+/=]+)$/i);
+    if (!match) fail(400, 'Lampiran harus berupa gambar PNG/JPG/WEBP dalam format data URL.');
+    const type = match[1].toLowerCase();
+    if (!ALLOWED_ATTACHMENT_TYPES.includes(type)) fail(400, 'Tipe lampiran tidak diperbolehkan.');
+    const b64 = match[2];
+    if (Buffer.byteLength(b64, 'base64') > MAX_ATTACHMENT_BYTES) fail(400, `Ukuran setiap lampiran maksimal ${MAX_ATTACHMENT_BYTES} bytes setelah decoding.`);
+    cleaned.push(item);
+  }
+  return cleaned;
+}
+
+async function fetchMessageData() {
+  const { value, sha } = await readJsonFile(MESSAGES_FILE, []);
+  return { messages: Array.isArray(value) ? value : [], fileSha: sha };
+}
+
+async function commitMessageMutation(mutate, commitMessage) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const { messages, fileSha } = await fetchMessageData();
+    const result = await mutate(messages);
+    try {
+      await writeJsonFile(MESSAGES_FILE, messages, fileSha, commitMessage);
+      return { messages, result };
+    } catch (error) {
+      lastError = error;
+      if (!isWriteConflict(error) || attempt === 1) throw error;
+    }
+  }
+  throw lastError;
+}
+
+function decorateMessageThread(thread, usersList) {
+  const author = usersList.find((u) => u.id === thread.userId) || { username: 'akun_tidak_tersedia', displayName: 'Akun tidak tersedia', avatarUrl: DEFAULT_AVATAR_URL };
+  const lastMsg = Array.isArray(thread.messages) && thread.messages.length ? thread.messages[thread.messages.length - 1] : null;
+  return {
+    id: thread.id,
+    subject: thread.subject,
+    status: thread.status || 'open',
+    createdAt: thread.createdAt,
+    updatedAt: thread.updatedAt || thread.createdAt,
+    author: { username: author.username, displayName: author.displayName, avatarUrl: author.avatarUrl },
+    lastMessagePreview: lastMsg ? (String(lastMsg.text || '').slice(0, 220)) : '',
+    messagesCount: Array.isArray(thread.messages) ? thread.messages.length : 0,
+    ownerId: thread.userId
+  };
+}
+
+// List threads: admin sees all, regular user sees own only
+app.get(['/api/messages', '/messages'], authenticateToken, async (req, res, next) => {
+  try {
+    const [{ messages }, { usersList }] = await Promise.all([fetchMessageData(), fetchUserData()]);
+    const ordered = messages.slice().sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+    const result = isAdminRole(req.user.role) ? ordered : ordered.filter((t) => t.userId === req.user.id);
+    return res.json({ success: true, threads: result.map((t) => decorateMessageThread(t, usersList)) });
+  } catch (error) { return next(error); }
+});
+
+// Create a new message/ticket
+app.post(['/api/messages', '/messages'], authenticateToken, async (req, res, next) => {
+  try {
+    const subject = validateMessageSubject(req.body?.subject);
+    const text = validateMessageText(req.body?.text);
+    const attachments = validateAttachmentsArray(req.body?.attachments || []);
+    let createdThread;
+    await commitMessageMutation((threads) => {
+      const now = new Date().toISOString();
+      const id = `msg_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+      createdThread = { id, userId: req.user.id, subject, status: 'open', createdAt: now, updatedAt: now, messages: [{ id: `msg_item_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`, senderId: req.user.id, text, attachments, createdAt: now }] };
+      threads.push(createdThread);
+    }, 'feat(messages): create new message thread');
+    return res.status(201).json({ success: true, message: 'Ticket berhasil dibuat.', thread: createdThread });
+  } catch (error) { return next(error); }
+});
+
+// Get a single message thread (owner or admin)
+app.get(['/api/messages/:id', '/messages/:id'], authenticateToken, async (req, res, next) => {
+  try {
+    const { messages } = await fetchMessageData();
+    const thread = messages.find((t) => t.id === req.params.id);
+    if (!thread) fail(404, 'Ticket tidak ditemukan.');
+    if (thread.userId !== req.user.id && !isAdminRole(req.user.role)) fail(403, 'Anda tidak memiliki akses ke ticket ini.');
+    const { usersList } = await fetchUserData();
+    return res.json({ success: true, thread });
+  } catch (error) { return next(error); }
+});
+
+// Reply to a thread (owner or admin)
+app.post(['/api/messages/:id/reply', '/messages/:id/reply'], authenticateToken, async (req, res, next) => {
+  try {
+    const text = validateMessageText(req.body?.text);
+    const attachments = validateAttachmentsArray(req.body?.attachments || []);
+    let updatedThread;
+    await commitMessageMutation((threads) => {
+      const thread = threads.find((t) => t.id === req.params.id);
+      if (!thread) fail(404, 'Ticket tidak ditemukan.');
+      if (thread.userId !== req.user.id && !isAdminRole(req.user.role)) fail(403, 'Anda tidak memiliki akses untuk membalas ticket ini.');
+      const now = new Date().toISOString();
+      const messageItem = { id: `msg_item_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`, senderId: req.user.id, text, attachments, createdAt: now };
+      thread.messages = thread.messages || [];
+      thread.messages.push(messageItem);
+      thread.updatedAt = now;
+      updatedThread = thread;
+    }, 'feat(messages): reply to message thread');
+    return res.json({ success: true, message: 'Balasan berhasil dikirim.', thread: updatedThread });
+  } catch (error) { return next(error); }
+});
+
+// Close or reopen a thread (owner or admin)
+app.put(['/api/messages/:id/close', '/messages/:id/close'], authenticateToken, async (req, res, next) => {
+  try {
+    let newStatus;
+    await commitMessageMutation((threads) => {
+      const thread = threads.find((t) => t.id === req.params.id);
+      if (!thread) fail(404, 'Ticket tidak ditemukan.');
+      if (thread.userId !== req.user.id && !isAdminRole(req.user.role)) fail(403, 'Anda tidak memiliki akses untuk menutup/membuka ticket ini.');
+      thread.status = (thread.status === 'closed') ? 'open' : 'closed';
+      thread.updatedAt = new Date().toISOString();
+      newStatus = thread.status;
+    }, 'feat(messages): toggle message thread status');
+    return res.json({ success: true, message: `Ticket sekarang berstatus: ${newStatus}.`, status: newStatus });
   } catch (error) { return next(error); }
 });
 
