@@ -228,10 +228,12 @@
         .review-slider-track {
             display: flex;
             gap: 1rem;
-            overflow-x: hidden;
+            overflow-x: auto; /* allow horizontal scrolling so each slide can be shown separately */
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
             -ms-overflow-style: none;
             scrollbar-width: none;
+            scroll-snap-type: x mandatory; /* snap to full-slide cells */
         }
 
         .review-slider-track::-webkit-scrollbar {
@@ -248,6 +250,8 @@
             width: 100%;
             box-sizing: border-box;
             padding: 0.25rem 0.5rem;
+            flex: 0 0 100%; /* make each slide occupy full track width so only one slide shows */
+            scroll-snap-align: start; /* align snapping to slide start */
         }
 
         .review-slide-card {
