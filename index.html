@@ -3278,9 +3278,28 @@ async function deleteUserByAdmin(userId) {
                 const response = await fetch('/api/reviews');
                 const data = await response.json();
                 if (!response.ok || !data.success) throw new Error(data.message || 'Review tidak dapat dimuat.');
-                document.getElementById('review-average').textContent = data.summary.total ? `${data.summary.averageRating}/5` : '—';
-                document.getElementById('review-total').textContent = `${data.summary.total} review`;
-                renderReviewList(data.reviews);
+
+                // Batasi jumlah review yang dirender di sisi klien untuk mencegah masalah performa
+                const MAX_RENDER = 50;
+                const allReviews = Array.isArray(data.reviews) ? data.reviews : [];
+                const total = Number(data.summary?.total ?? allReviews.length);
+                let reviewsToRender = allReviews.slice(0, MAX_RENDER);
+
+                // Jika user sedang login dan review milik user tidak termasuk di slice pertama,
+                // sertakan review milik user agar mereka dapat melihat/mengedit review mereka.
+                const currentUser = getCurrentUser();
+                if (currentUser) {
+                    const owned = allReviews.find(r => r.authorId === currentUser.id);
+                    if (owned && !reviewsToRender.some(r => r.id === owned.id)) {
+                        if (reviewsToRender.length >= MAX_RENDER) reviewsToRender.pop();
+                        reviewsToRender.unshift(owned);
+                    }
+                }
+
+                document.getElementById('review-average').textContent = total && data.summary?.averageRating ? `${data.summary.averageRating}/5` : '—';
+                document.getElementById('review-total').textContent = total > MAX_RENDER ? `${reviewsToRender.length} dari ${total} review (menampilkan terbaru)` : `${reviewsToRender.length} review`;
+
+                renderReviewList(reviewsToRender);
             } catch (error) {
                 if (list) {
                     const unavailable = document.createElement('div');
