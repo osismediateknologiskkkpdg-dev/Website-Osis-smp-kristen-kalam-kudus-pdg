@@ -1466,18 +1466,6 @@
             </div>
         </section>
 
-        <!-- ==================== MODULE: DYNAMIC USERS LIST ==================== -->
-        <section id="users-section" class="py-24 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5">
-            <div class="mb-12 text-center" data-aos="fade-up">
-                <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07B // COMMUNITY MEMBERS ]</span>
-                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Anggota Komunitas</h2>
-                <p class="text-sm text-fgMuted mt-3 max-w-2xl mx-auto">Daftar pengguna yang telah bergabung di portal resmi OSIS.</p>
-            </div>
-            <div id="users-list-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-aos="fade-up">
-                <!-- Data pengguna dimuat dinamis melalui JavaScript -->
-            </div>
-        </section>
-
         <!-- ==================== CONTACT SECTION ==================== -->
         <section id="contact-us" class="py-24 px-4 sm:px-8 max-w-4xl mx-auto border-t border-white/5 text-center">
             
@@ -1824,147 +1812,6 @@
         const yearEl = document.getElementById('current-year');
         if(yearEl) yearEl.textContent = new Date().getFullYear();
 
-        // =========================================================================
-        // MODULE: SAFE FETCH API (MASTER REQUEST WRAPPER)
-        // =========================================================================
-
-        /**
-         * Konfigurasi default untuk semua request API.
-         * @type {Object}
-         */
-        const API_CONFIG = {
-            baseUrl: (typeof window !== 'undefined' && window.API_BASE_URL) || '/api',
-            timeoutMs: 15000,
-        };
-
-        /**
-         * Membuat elemen spinner loading.
-         * @returns {HTMLElement} Elemen spinner.
-         */
-        function createSpinner() {
-            const spinner = document.createElement('div');
-            spinner.className = 'inline-block w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin';
-            spinner.setAttribute('role', 'status');
-            spinner.setAttribute('aria-label', 'Memuat data...');
-            return spinner;
-        }
-
-        /**
-         * Menampilkan notifikasi toast di pojok kanan bawah.
-         * @param {string} message - Pesan yang ditampilkan.
-         * @param {'success'|'error'|'info'} [type='info'] - Jenis notifikasi.
-         */
-        function showToast(message, type = 'info') {
-            let toastContainer = document.getElementById('toast-container');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.id = 'toast-container';
-                toastContainer.className = 'fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm';
-                document.body.appendChild(toastContainer);
-            }
-
-            const toast = document.createElement('div');
-            const colors = {
-                success: 'bg-emerald-500/15 border-emerald-500/40 text-emerald-200',
-                error: 'bg-rose-500/15 border-rose-500/40 text-rose-200',
-                info: 'bg-accent/15 border-accent/40 text-indigo-200',
-            };
-            toast.className = `px-4 py-3 rounded-xl border text-xs font-mono shadow-2xl backdrop-blur-xl animate-[fadeIn_0.3s_ease] ${colors[type] || colors.info}`;
-            toast.textContent = message;
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        /**
-         * Fungsi master untuk melakukan request API dengan aman.
-         * Menangani: header default, timeout, parsing JSON aman, dan error HTML/500.
-         *
-         * @param {string} url - URL endpoint (relatif atau absolut).
-         * @param {Object} [options={}] - Opsi fetch (method, headers, body, dll).
-         * @returns {Promise<Object>} Objek { ok, status, data } hasil parsing.
-         * @throws {Error} Jika request gagal atau respon tidak valid.
-         */
-        async function safeFetchAPI(url, options = {}) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeoutMs);
-
-            // Normalisasi URL: jika relatif dan dimulai dengan /api, gunakan baseUrl
-            let fullUrl = url;
-            if (url.startsWith('/api')) {
-                fullUrl = `${API_CONFIG.baseUrl}${url.replace(/^\/api/, '')}`;
-            }
-
-            const defaultHeaders = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            };
-
-            const fetchOptions = {
-                ...options,
-                headers: {
-                    ...defaultHeaders,
-                    ...(options.headers || {}),
-                },
-                signal: controller.signal,
-            };
-
-            try {
-                const response = await fetch(fullUrl, fetchOptions);
-
-                // Baca sebagai text terlebih dahulu (aman dari error parsing)
-                const text = await response.text();
-
-                // Cek ketersediaan data
-                if (!text || text.trim().length === 0) {
-                    throw new Error('Server mengembalikan respon kosong.');
-                }
-
-                // Coba parse JSON di dalam try-catch
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (parseError) {
-                    // Jika bukan JSON, kemungkinan server mengembalikan HTML/error page
-                    const isHtml = /<html|<!DOCTYPE/i.test(text);
-                    if (isHtml) {
-                        throw new Error('Server mengembalikan halaman HTML, bukan data JSON. Periksa konfigurasi API.');
-                    }
-                    throw new Error(`Respon server tidak valid: ${text.slice(0, 200)}`);
-                }
-
-                return { ok: response.ok, status: response.status, data };
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    throw new Error('Permintaan timeout. Server tidak merespons dalam batas waktu.');
-                }
-                throw error;
-            } finally {
-                clearTimeout(timeoutId);
-            }
-        }
-
-        /**
-         * Menampilkan spinner di dalam elemen target.
-         * @param {string} elementId - ID elemen target.
-         * @param {boolean} show - True untuk menampilkan, false untuk menyembunyikan.
-         */
-        function toggleLoading(elementId, show) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            if (show) {
-                element.innerHTML = '';
-                element.appendChild(createSpinner());
-                element.classList.add('flex', 'items-center', 'justify-center', 'py-8');
-            } else {
-                element.classList.remove('flex', 'items-center', 'justify-center', 'py-8');
-            }
-        }
-
         // MODULE: IMAGE PREVIEW AND ADMIN ACTIONS
 
 // Menghapus Pengguna Spesifik dari Repositori GitHub
@@ -1972,14 +1819,15 @@ async function deleteUserByAdmin(userId) {
     if (!confirm("Apakah Anda yakin ingin menghapus akun ini secara permanen dari sistem?")) return;
     const token = localStorage.getItem('osis_token');
     try {
-        const { data } = await safeFetchAPI(`/api/admin/users/${userId}`, {
+        const res = await fetch(`/api/admin/users/${userId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        alert(data.message || 'User berhasil dihapus.');
+        const data = await res.json();
+        alert(data.message);
         fetchAdminUsersList();
     } catch (err) {
-        showToast(err.message || 'Gagal menghapus user.', 'error');
+        alert("Gagal menghapus user.");
     }
 }
 
@@ -2523,10 +2371,12 @@ async function deleteUserByAdmin(userId) {
             const password = document.getElementById('login-password').value;
 
             try {
-                const { data } = await safeFetchAPI('/api/login', {
+                const res = await fetch('/api/login', {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ identifier, password })
                 });
+                const data = await res.json();
 
                 if (data.success) {
                     currentPendingEmail = data.email;
@@ -2551,10 +2401,12 @@ async function deleteUserByAdmin(userId) {
             const endpoint = currentAuthFlow === 'register' ? '/api/verify-register' : '/api/verify-login';
 
             try {
-                const { data } = await safeFetchAPI(endpoint, {
+                const res = await fetch(endpoint, {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: currentPendingEmail, otp })
                 });
+                const data = await res.json();
 
                 if (data.success) {
                     showAlert(data.message, true);
@@ -2617,15 +2469,21 @@ async function deleteUserByAdmin(userId) {
 
             try {
                 // Request API ke backend Express / Vercel
-                const { ok, data: result } = await safeFetchAPI('/api/resend-otp', {
+                const response = await fetch('/api/resend-otp', {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({
                         email: currentPendingEmail,
                         requestTimestamp: new Date().toISOString()
                     })
                 });
 
-                if (ok && result.success) {
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     // Kosongkan input OTP dan fokuskan kembali
                     if (otpInputField) {
                         otpInputField.value = '';
@@ -2852,9 +2710,10 @@ async function deleteUserByAdmin(userId) {
             const token = localStorage.getItem('osis_token');
             if (!token) return;
             try {
-                const { ok, status, data } = await safeFetchAPI('/api/account/me', { headers: { Authorization: `Bearer ${token}` } });
-                if (!ok || !data.success) {
-                    if (status === 401 || status === 403) handleLogout();
+                const response = await fetch('/api/account/me', { headers: { Authorization: `Bearer ${token}` } });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    if (response.status === 401 || response.status === 403) handleLogout();
                     return;
                 }
                 setCurrentUser(data.user, data.token);
@@ -2884,8 +2743,9 @@ async function deleteUserByAdmin(userId) {
             }
             setFeedback(feedbackId, 'Memeriksa ketersediaan username...');
             try {
-                const { ok, data } = await safeFetchAPI(`/api/usernames/${encodeURIComponent(username)}/availability`);
-                if (!ok || !data.success) {
+                const response = await fetch(`/api/usernames/${encodeURIComponent(username)}/availability`);
+                const data = await response.json();
+                if (!response.ok || !data.success) {
                     setFeedback(feedbackId, data.message || 'Username tidak dapat diperiksa.', 'error');
                     return false;
                 }
@@ -2918,11 +2778,13 @@ async function deleteUserByAdmin(userId) {
             }
 
             try {
-                const { ok, data } = await safeFetchAPI('/api/register', {
+                const response = await fetch('/api/register', {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, username, displayName, password, confirmPassword })
                 });
-                if (!ok || !data.success) {
+                const data = await response.json();
+                if (!response.ok || !data.success) {
                     showAlert(data.message || 'Pendaftaran gagal.', false);
                     return;
                 }
@@ -2990,12 +2852,13 @@ async function deleteUserByAdmin(userId) {
             }
 
             try {
-                const { ok, data } = await safeFetchAPI('/api/account/security/send-otp', {
+                const response = await fetch('/api/account/security/send-otp', {
                     method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify(payload)
                 });
-                if (!ok) {
+                const data = await response.json();
+                if (!response.ok) {
                     alert(data.message || 'Gagal mengirim kode OTP.');
                     return;
                 }
@@ -3029,12 +2892,13 @@ async function deleteUserByAdmin(userId) {
             }
 
             try {
-                const { ok, data } = await safeFetchAPI('/api/account/change-password', {
+                const response = await fetch('/api/account/change-password', {
                     method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({ currentPassword, otp, newPassword, confirmPassword })
                 });
-                if (!ok) {
+                const data = await response.json();
+                if (!response.ok) {
                     alert(data.message || 'Gagal memperbarui password.');
                     return;
                 }
@@ -3067,12 +2931,13 @@ async function deleteUserByAdmin(userId) {
             }
 
             try {
-                const { ok, data } = await safeFetchAPI('/api/account/delete', {
+                const response = await fetch('/api/account/delete', {
                     method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({ otp, password })
                 });
-                if (!ok) {
+                const data = await response.json();
+                if (!response.ok) {
                     alert(data.message || 'Gagal menghapus akun.');
                     return;
                 }
@@ -3145,9 +3010,9 @@ async function deleteUserByAdmin(userId) {
             button.disabled = true;
             button.textContent = 'MENYIMPAN...';
             try {
-                const { ok, data } = await safeFetchAPI('/api/account/profile', {
+                const response = await fetch('/api/account/profile', {
                     method: 'PUT',
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({
                         displayName: document.getElementById('profile-display-name').value,
                         username,
@@ -3155,7 +3020,8 @@ async function deleteUserByAdmin(userId) {
                         avatarUrl: pendingAvatarDataUrl
                     })
                 });
-                if (!ok || !data.success) {
+                const data = await response.json();
+                if (!response.ok || !data.success) {
                     setProfileStatus(data.message || 'Profil gagal diperbarui.', true);
                     return;
                 }
@@ -3174,8 +3040,9 @@ async function deleteUserByAdmin(userId) {
 
         async function openPublicProfile(username) {
             try {
-                const { ok, data } = await safeFetchAPI(`/api/profiles/${encodeURIComponent(username)}`);
-                if (!ok || !data.success) throw new Error(data.message || 'Profil tidak ditemukan.');
+                const response = await fetch(`/api/profiles/${encodeURIComponent(username)}`);
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.message || 'Profil tidak ditemukan.');
                 const profile = data.profile;
                 document.getElementById('public-profile-avatar').src = profile.avatarUrl || DEFAULT_AVATAR_URL;
                 document.getElementById('public-profile-name').textContent = profile.displayName;
@@ -3301,12 +3168,13 @@ async function deleteUserByAdmin(userId) {
             button.disabled = true;
             button.textContent = 'MENYIMPAN...';
             try {
-                const { ok, data } = await safeFetchAPI(editId ? `/api/reviews/${encodeURIComponent(editId)}` : '/api/reviews', {
+                const response = await fetch(editId ? `/api/reviews/${encodeURIComponent(editId)}` : '/api/reviews', {
                     method: editId ? 'PUT' : 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify(body)
                 });
-                if (!ok || !data.success) {
+                const data = await response.json();
+                if (!response.ok || !data.success) {
                     setReviewFormStatus(data.message || 'Review gagal disimpan.', true);
                     return;
                 }
@@ -3345,8 +3213,9 @@ async function deleteUserByAdmin(userId) {
             if (!confirm('Hapus review ini? Tindakan ini tidak dapat dibatalkan.')) return;
             const token = localStorage.getItem('osis_token');
             try {
-                const { ok, data } = await safeFetchAPI(`/api/reviews/${encodeURIComponent(reviewId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-                if (!ok || !data.success) return alert(data.message || 'Review gagal dihapus.');
+                const response = await fetch(`/api/reviews/${encodeURIComponent(reviewId)}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+                const data = await response.json();
+                if (!response.ok || !data.success) return alert(data.message || 'Review gagal dihapus.');
                 cancelReviewEdit();
                 loadReviews();
             } catch (error) {
@@ -3531,10 +3400,10 @@ async function deleteUserByAdmin(userId) {
 
         async function loadReviews() {
             const list = document.getElementById('review-list');
-            toggleLoading('review-list', true);
             try {
-                const { ok, data } = await safeFetchAPI('/api/reviews');
-                if (!ok || !data.success) throw new Error(data.message || 'Review tidak dapat dimuat.');
+                const response = await fetch('/api/reviews');
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.message || 'Review tidak dapat dimuat.');
 
                 // Batasi jumlah review yang dirender di sisi klien untuk mencegah masalah performa
                 const MAX_RENDER = 50;
@@ -3565,68 +3434,8 @@ async function deleteUserByAdmin(userId) {
                     list.replaceChildren(unavailable);
                     updateReviewSliderButtons();
                 }
-                showToast(error.message || 'Gagal memuat review.', 'error');
-            } finally {
-                toggleLoading('review-list', false);
             }
             if (window.lucide) lucide.createIcons();
-        }
-
-        // -------------------------------------------------------------------------
-        // MODULE: DYNAMIC USERS LIST (GET /api/users)
-        // -------------------------------------------------------------------------
-
-        /**
-         * Memuat daftar pengguna dari endpoint /api/users dan menampilkannya
-         * ke dalam container dinamis di halaman.
-         */
-        async function loadUsers() {
-            const container = document.getElementById('users-list-container');
-            if (!container) return;
-            toggleLoading('users-list-container', true);
-            try {
-                const { ok, data } = await safeFetchAPI('/api/users');
-                if (!ok || !data.success) throw new Error(data.message || 'Daftar pengguna tidak dapat dimuat.');
-                const users = Array.isArray(data.users) ? data.users : [];
-                container.replaceChildren();
-
-                if (!users.length) {
-                    const empty = document.createElement('p');
-                    empty.className = 'text-sm text-fgMuted text-center py-6';
-                    empty.textContent = 'Belum ada pengguna terdaftar.';
-                    container.appendChild(empty);
-                    return;
-                }
-
-                users.slice(0, 12).forEach((user) => {
-                    const card = document.createElement('div');
-                    card.className = 'card-linear rounded-2xl p-4 flex items-center gap-3';
-                    const avatar = document.createElement('img');
-                    avatar.src = user.avatarUrl || DEFAULT_AVATAR_URL;
-                    avatar.alt = `Avatar ${user.displayName}`;
-                    avatar.className = 'w-10 h-10 rounded-xl object-cover border border-white/10 bg-bgDeep flex-shrink-0';
-                    const info = document.createElement('div');
-                    info.className = 'min-w-0';
-                    const name = document.createElement('p');
-                    name.className = 'text-sm font-bold text-white truncate';
-                    name.textContent = user.displayName;
-                    const username = document.createElement('p');
-                    username.className = 'text-[10px] font-mono text-fgMuted truncate';
-                    username.textContent = `@${user.username}`;
-                    info.append(name, username);
-                    card.append(avatar, info);
-                    container.appendChild(card);
-                });
-            } catch (error) {
-                container.replaceChildren();
-                const errorMsg = document.createElement('p');
-                errorMsg.className = 'text-sm text-rose-200 text-center py-6';
-                errorMsg.textContent = error.message;
-                container.appendChild(errorMsg);
-                showToast(error.message || 'Gagal memuat daftar pengguna.', 'error');
-            } finally {
-                toggleLoading('users-list-container', false);
-            }
         }
 
         // -------------------------------------------------------------------------
@@ -3637,8 +3446,9 @@ async function deleteUserByAdmin(userId) {
             const tbody = document.getElementById('admin-users-table-body');
             if (!tbody || !token || !isCurrentUserAdmin()) return;
             try {
-                const { ok, data } = await safeFetchAPI('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
-                if (!ok || !data.success) return;
+                const response = await fetch('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
+                const data = await response.json();
+                if (!response.ok || !data.success) return;
                 tbody.replaceChildren();
                 data.users.forEach((user) => {
                     const row = document.createElement('tr');
@@ -3709,7 +3519,6 @@ async function deleteUserByAdmin(userId) {
             window.addEventListener('resize', updateReviewSliderButtons);
             checkLoginStatus();
             loadReviews();
-            loadUsers();
             refreshCurrentUser();
         });
         
