@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
 <head>
@@ -157,82 +157,121 @@
                 inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
         }
 
+        /* =========================================================================
+           REVIEW KINERJA OSIS — MODERN LUXE GLASSMORPHIC STYLES
+           ========================================================================= */
         .review-shell {
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, rgba(13, 15, 23, 0.96), rgba(9, 10, 18, 0.92));
+            background: linear-gradient(145deg, rgba(12, 15, 25, 0.97), rgba(7, 9, 16, 0.94));
+            border: 1px solid rgba(94, 106, 210, 0.22);
             box-shadow:
-                0 0 0 1px rgba(144, 160, 255, 0.12),
-                0 24px 60px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                0 0 0 1px rgba(94, 106, 210, 0.12),
+                0 30px 80px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
         }
 
         .review-shell::before {
             content: '';
             position: absolute;
-            inset: -30% -20% auto auto;
-            width: 420px;
-            height: 420px;
-            background: radial-gradient(circle, rgba(94, 106, 210, 0.26), transparent 68%);
+            top: -150px;
+            right: -100px;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(94, 106, 210, 0.25), transparent 70%);
             pointer-events: none;
-            filter: blur(18px);
+            filter: blur(40px);
         }
 
         .review-shell::after {
             content: '';
             position: absolute;
-            inset: auto auto -18% -8%;
-            width: 360px;
-            height: 360px;
-            background: radial-gradient(circle, rgba(138, 92, 246, 0.18), transparent 68%);
+            bottom: -120px;
+            left: -80px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.14), transparent 70%);
             pointer-events: none;
-            filter: blur(20px);
+            filter: blur(40px);
         }
 
-        .review-metric-card {
-            position: relative;
-            background: linear-gradient(180deg, rgba(15, 17, 25, 0.92), rgba(10, 10, 14, 0.7));
+        .review-hero-stat {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.35);
+            transition: all 250ms ease;
+        }
+
+        .review-hero-stat:hover {
+            border-color: rgba(94, 106, 210, 0.4);
+            transform: translateY(-2px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 40px rgba(0, 0, 0, 0.45);
         }
 
         .review-composer {
             position: relative;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(94, 106, 210, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.4);
         }
 
         .review-stars-wrap {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.4rem 0.5rem;
+            gap: 0.4rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 9999px;
-            background: rgba(17, 20, 28, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            background: rgba(14, 17, 26, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 14px rgba(0, 0, 0, 0.3);
         }
 
         .review-star {
-            font-size: 1.7rem;
+            font-size: 1.85rem;
             line-height: 1;
-            transition: transform 180ms ease, color 180ms ease, filter 180ms ease;
+            cursor: pointer;
+            transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), color 180ms ease, filter 180ms ease;
         }
 
         .review-star:hover {
-            transform: translateY(-1px) scale(1.06);
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.35));
+            transform: translateY(-2px) scale(1.15);
+            filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.65));
         }
 
         .review-star.scale-110 {
-            filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.48));
+            filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8));
+        }
+
+        .review-tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            transition: all 180ms ease;
+            white-space: nowrap;
+        }
+
+        .review-tag-chip:hover {
+            background: rgba(94, 106, 210, 0.15);
+            border-color: rgba(94, 106, 210, 0.5);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
 
         .review-list-card {
             position: relative;
-            background: linear-gradient(180deg, rgba(17, 19, 29, 0.96), rgba(9, 10, 18, 0.88));
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(17, 21, 34, 0.95), rgba(10, 12, 22, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.09);
             overflow: hidden;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 40px rgba(0, 0, 0, 0.28);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 18px 45px rgba(0, 0, 0, 0.35);
+            transition: all 260ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .review-list-card::before {
@@ -241,33 +280,25 @@
             inset: 0 auto auto 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, rgba(94, 106, 210, 1), rgba(94, 106, 210, 0.1), transparent);
+            background: linear-gradient(90deg, #5E6AD2, #a78bfa 40%, rgba(94, 106, 210, 0.1) 80%, transparent);
             opacity: 0.95;
         }
 
-        .review-list-card::after {
-            content: '';
-            position: absolute;
-            right: -14%;
-            top: -28%;
-            width: 160px;
-            height: 160px;
-            background: radial-gradient(circle, rgba(94, 106, 210, 0.22), transparent 70%);
-            pointer-events: none;
-        }
-
-        .review-author-button {
-            position: relative;
-            z-index: 1;
+        .review-list-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(94, 106, 210, 0.45);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 22px 55px rgba(0, 0, 0, 0.5), 0 0 30px rgba(94, 106, 210, 0.12);
         }
 
         .review-author-avatar {
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+            transition: all 200ms ease;
         }
 
         .review-author-button:hover .review-author-avatar {
             border-color: rgba(110, 123, 255, 0.9);
-            box-shadow: 0 0 0 4px rgba(94, 106, 210, 0.12);
+            box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.3), 0 0 15px rgba(94, 106, 210, 0.4);
+            transform: scale(1.05);
         }
 
         .review-slider-track {
@@ -291,7 +322,7 @@
             gap: 1rem;
             width: 100%;
             box-sizing: border-box;
-            padding: 0.25rem 0.5rem;
+            padding: 0.25rem 0.25rem;
             flex: 0 0 100%;
             scroll-snap-align: start;
         }
@@ -300,13 +331,12 @@
             flex: none;
             width: 100%;
             min-width: 0;
-            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
         }
 
-        .review-slide-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(94, 106, 210, 0.45);
-            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(94, 106, 210, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        @media (max-width: 767px) {
+            .review-slide {
+                grid-template-columns: 1fr;
+            }
         }
 
         .review-dots {
@@ -314,37 +344,30 @@
             gap: 0.5rem;
             justify-content: center;
             align-items: center;
-            margin-top: 0.9rem;
+            margin-top: 1.25rem;
         }
 
         .review-dot {
-            width: 10px;
-            height: 10px;
+            height: 8px;
+            width: 8px;
             border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.15);
             border: none;
             padding: 0;
             cursor: pointer;
-            transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+            transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .review-dot.active {
-            background: linear-gradient(135deg, #6f7ef8, #8fa0ff);
-            transform: scale(1.18);
-            box-shadow: 0 0 0 4px rgba(94, 106, 210, 0.18);
-        }
-
-        @media (max-width: 767px) {
-            .review-slide {
-                grid-template-columns: 1fr;
-                padding: 0.125rem 0.25rem;
-            }
+            width: 28px;
+            background: linear-gradient(90deg, #5E6AD2, #818cf8);
+            box-shadow: 0 0 12px rgba(94, 106, 210, 0.5);
         }
 
         .review-slider-btn {
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 0.8rem;
+            width: 2.35rem;
+            height: 2.35rem;
+            border-radius: 0.85rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(255, 255, 255, 0.04);
             color: #dfe3f5;
@@ -355,13 +378,14 @@
         }
 
         .review-slider-btn:hover:not(:disabled) {
-            border-color: rgba(94, 106, 210, 0.6);
-            background: rgba(94, 106, 210, 0.12);
+            border-color: rgba(94, 106, 210, 0.7);
+            background: rgba(94, 106, 210, 0.15);
             color: white;
+            box-shadow: 0 0 15px rgba(94, 106, 210, 0.3);
         }
 
         .review-slider-btn:disabled {
-            opacity: 0.35;
+            opacity: 0.25;
             cursor: not-allowed;
         }
 
@@ -375,36 +399,36 @@
 
         .review-message-collapsed {
             display: -webkit-box;
-            -webkit-line-clamp: 5;
+            -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            max-height: 8.5rem;
+            max-height: 7.5rem;
         }
 
         .review-view-more {
             position: relative;
             z-index: 1;
-            margin-top: 0.75rem;
+            margin-top: 0.6rem;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            border-radius: 0.75rem;
+            gap: 0.4rem;
+            border-radius: 0.65rem;
             border: 1px solid rgba(94, 106, 210, 0.45);
-            background: rgba(94, 106, 210, 0.1);
-            color: #dfe3f5;
-            padding: 0.5rem 0.8rem;
-            font-size: 0.62rem;
-            line-height: 1;
-            letter-spacing: 0.12em;
-            font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+            background: rgba(94, 106, 210, 0.12);
+            color: #c7d2fe;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
+            letter-spacing: 0.08em;
             transition: all 180ms ease;
         }
 
         .review-view-more:hover {
-            background: rgba(94, 106, 210, 0.18);
-            color: white;
-            border-color: rgba(94, 106, 210, 0.7);
+            background: rgba(94, 106, 210, 0.24);
+            color: #ffffff;
+            border-color: rgba(94, 106, 210, 0.8);
+            box-shadow: 0 0 12px rgba(94, 106, 210, 0.3);
         }
 
         .review-footer {
@@ -1656,138 +1680,282 @@
         </section>
 
         <!-- ==================== MODULE: REVIEW KINERJA OSIS ==================== -->
-        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5">
-            <div class="review-shell card-linear rounded-[32px] p-4 sm:p-6 lg:p-8" data-aos="fade-up">
-                <div class="relative">
+        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5 relative">
+            <!-- Ambient Glow Backdrop -->
+            <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+            <div class="review-shell rounded-[36px] p-5 sm:p-8 lg:p-10" data-aos="fade-up">
+                <div class="relative z-10">
+                    <!-- Header Section -->
                     <div class="text-center mb-10">
-                        <span class="font-mono text-xs font-semibold uppercase text-accent tracking-widest">[ 07 // OSIS
-                            PERFORMANCE REVIEW ]</span>
-                        <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mt-2">Review Kinerja OSIS
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-mono font-semibold tracking-wider uppercase mb-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            [ 07 // COMMUNITY FEEDBACK & REVIEW ]
+                        </div>
+                        <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mt-1">
+                            Review & Evaluasi Kinerja OSIS
                         </h2>
-                        <p class="text-sm text-fgMuted mt-3 max-w-2xl mx-auto">Bagikan penilaian dan masukan untuk
-                            membantu kami bertumbuh. Klik nama pengirim untuk melihat profil lengkapnya.</p>
+                        <p class="text-sm text-fgMuted mt-3 max-w-2xl mx-auto leading-relaxed">
+                            Suara dan apresiasi dari seluruh warga sekolah untuk membantu kami terus bertumbuh. Ulasan bersifat terbuka, transparan, dan dapat diperbarui kapan saja.
+                        </p>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" data-aos="fade-up">
-                        <div class="review-metric-card card-linear rounded-2xl p-5 flex items-center gap-4">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-300/30 flex items-center justify-center text-amber-300">
-                                <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            </div>
+                    <!-- Hero Rating & Performance Breakdown Dashboard -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-10" data-aos="fade-up">
+                        <!-- Hero Score Card -->
+                        <div class="review-hero-stat rounded-3xl p-6 flex flex-col justify-between items-center text-center relative overflow-hidden group">
+                            <div class="absolute -right-8 -top-8 w-28 h-28 bg-amber-400/10 rounded-full blur-xl pointer-events-none group-hover:bg-amber-400/20 transition-all"></div>
                             <div>
-                                <p id="review-average" class="text-2xl font-extrabold text-white">—</p>
-                                <p class="text-xs text-fgMuted">Rata-rata penilaian</p>
-                            </div>
-                        </div>
-                        <div class="review-metric-card card-linear rounded-2xl p-5 flex items-center gap-4">
-                            <div
-                                class="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
-                                <i data-lucide="messages-square" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <p id="review-total" class="text-2xl font-extrabold text-white">—</p>
-                                <p class="text-xs text-fgMuted">Masukan dari siswa</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="review-content"
-                        class="grid grid-cols-1 xl:grid-cols-[0.95fr_1.35fr] gap-6 transition-all duration-300">
-                        <div class="review-composer card-linear rounded-[28px] p-5 sm:p-6 relative"
-                            data-aos="fade-right">
-                            <div class="flex items-start justify-between gap-4 mb-6">
-                                <div>
-                                    <span id="review-form-eyebrow"
-                                        class="font-mono text-[10px] text-accent font-bold tracking-widest">KIRIM
-                                        PENILAIAN</span>
-                                    <h3 id="review-form-heading" class="text-xl font-bold text-white mt-1">Bagaimana
-                                        kinerja OSIS?</h3>
-                                </div>
-                                <button id="review-cancel-edit" type="button" onclick="cancelReviewEdit()"
-                                    class="hidden text-xs font-semibold text-fgMuted hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/25 transition-all">BATAL
-                                    EDIT</button>
-                            </div>
-                            <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-5">
-                                <input id="review-editing-id" type="hidden">
-                                <div>
-                                    <label class="block text-xs font-mono text-fgMuted mb-2.5">BINTANG PENILAIAN</label>
-                                    <div id="review-stars" class="review-stars-wrap"
-                                        aria-label="Pilih rating 1 sampai 5">
-                                        <button type="button" onclick="setReviewRating(1)" data-rating="1"
-                                            class="review-star text-fgMuted" aria-label="1 bintang">★</button>
-                                        <button type="button" onclick="setReviewRating(2)" data-rating="2"
-                                            class="review-star text-fgMuted" aria-label="2 bintang">★</button>
-                                        <button type="button" onclick="setReviewRating(3)" data-rating="3"
-                                            class="review-star text-fgMuted" aria-label="3 bintang">★</button>
-                                        <button type="button" onclick="setReviewRating(4)" data-rating="4"
-                                            class="review-star text-fgMuted" aria-label="4 bintang">★</button>
-                                        <button type="button" onclick="setReviewRating(5)" data-rating="5"
-                                            class="review-star text-fgMuted" aria-label="5 bintang">★</button>
-                                        <span id="review-rating-label"
-                                            class="ml-2 text-[11px] font-mono text-fgMuted">Pilih 1–5 bintang</span>
+                                <span class="text-[11px] font-mono text-fgMuted uppercase tracking-widest block mb-2">SKOR KEPUASAN SISWA</span>
+                                <div class="flex items-center justify-center gap-2 my-1">
+                                    <span id="review-average-large" class="text-5xl sm:text-6xl font-black text-white tracking-tight">5.0</span>
+                                    <div class="text-left">
+                                        <div class="flex text-amber-300 text-base">
+                                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                        </div>
+                                        <span class="text-[11px] font-mono text-fgMuted">skala 5.0</span>
                                     </div>
                                 </div>
-                                <div id="review-message-wrap">
-                                    <label for="review-message"
-                                        class="block text-xs font-mono text-fgMuted mb-2.5">PESAN UNTUK OSIS <span
-                                            class="text-rose-300">*</span></label>
-                                    <textarea id="review-message" required minlength="5" maxlength="1000" rows="4"
-                                        placeholder="Tuliskan masukan yang membangun untuk OSIS..."
-                                        class="w-full px-4 py-3 rounded-2xl bg-[#0b0d12] border border-white/10 text-white text-sm leading-relaxed resize-y focus:border-accent focus:outline-none shadow-inner shadow-black/20"></textarea>
-                                    <p class="mt-1.5 text-[10px] font-mono text-fgMuted">Minimal 5 karakter. Review Anda
-                                        dapat diedit atau dihapus kapan saja.</p>
+                            </div>
+                            <div class="mt-4 w-full">
+                                <div id="review-sentiment-badge" class="text-xs font-semibold text-amber-300 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 inline-block max-w-full truncate">
+                                    ⭐ Sangat Memuaskan (Luar Biasa)
                                 </div>
-                                <p id="review-form-status" class="hidden text-xs font-mono rounded-xl border px-3 py-2">
-                                </p>
-                                <button id="review-submit-button" type="submit"
-                                    class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">KIRIM
-                                    REVIEW</button>
-                            </form>
+                                <p id="review-total-hero" class="text-[11px] font-mono text-fgMuted mt-2">— ulasan terverifikasi</p>
+                            </div>
+                        </div>
 
-                            <div id="review-lock-overlay"
-                                class="hidden absolute inset-0 z-20 rounded-[28px] bg-bgDeep/60 backdrop-blur-[3px] items-center justify-center p-4">
-                                <div
-                                    class="max-w-sm w-full rounded-3xl p-6 text-center bg-bgElevated/90 border border-accent/40 shadow-2xl">
-                                    <div
-                                        class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/15 border border-accent/40 flex items-center justify-center text-accent">
+                        <!-- Rating Distribution Bars -->
+                        <div class="review-hero-stat rounded-3xl p-6 flex flex-col justify-center space-y-2.5">
+                            <div class="flex items-center justify-between text-xs font-mono text-fgMuted mb-1">
+                                <span class="font-bold text-white uppercase tracking-wider">Distribusi Bintang</span>
+                                <span id="review-total" class="text-accent font-bold">— masukan</span>
+                            </div>
+                            <!-- 5 Stars -->
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="font-mono text-fgMuted w-7 flex items-center gap-0.5 text-[11px]">5 <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i></span>
+                                <div class="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                                    <div id="review-bar-5" class="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-300 transition-all duration-500" style="width: 100%;"></div>
+                                </div>
+                                <span id="review-count-5" class="font-mono text-[11px] text-fgMuted w-14 text-right">0 (0%)</span>
+                            </div>
+                            <!-- 4 Stars -->
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="font-mono text-fgMuted w-7 flex items-center gap-0.5 text-[11px]">4 <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i></span>
+                                <div class="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                                    <div id="review-bar-4" class="h-full rounded-full bg-gradient-to-r from-indigo-400 to-accent transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                                <span id="review-count-4" class="font-mono text-[11px] text-fgMuted w-14 text-right">0 (0%)</span>
+                            </div>
+                            <!-- 3 Stars -->
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="font-mono text-fgMuted w-7 flex items-center gap-0.5 text-[11px]">3 <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i></span>
+                                <div class="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                                    <div id="review-bar-3" class="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500 transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                                <span id="review-count-3" class="font-mono text-[11px] text-fgMuted w-14 text-right">0 (0%)</span>
+                            </div>
+                            <!-- 2 Stars -->
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="font-mono text-fgMuted w-7 flex items-center gap-0.5 text-[11px]">2 <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i></span>
+                                <div class="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                                    <div id="review-bar-2" class="h-full rounded-full bg-gradient-to-r from-orange-400 to-amber-500 transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                                <span id="review-count-2" class="font-mono text-[11px] text-fgMuted w-14 text-right">0 (0%)</span>
+                            </div>
+                            <!-- 1 Star -->
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="font-mono text-fgMuted w-7 flex items-center gap-0.5 text-[11px]">1 <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i></span>
+                                <div class="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                                    <div id="review-bar-1" class="h-full rounded-full bg-gradient-to-r from-rose-500 to-rose-400 transition-all duration-500" style="width: 0%;"></div>
+                                </div>
+                                <span id="review-count-1" class="font-mono text-[11px] text-fgMuted w-14 text-right">0 (0%)</span>
+                            </div>
+                        </div>
+
+                        <!-- Highlights & Quick CTA Card -->
+                        <div class="review-hero-stat rounded-3xl p-6 flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] font-mono text-accent font-bold uppercase tracking-widest block mb-2">KOMITMEN OSIS</span>
+                                <h3 class="text-base font-bold text-white mb-2">Transparan & Responsif</h3>
+                                <p class="text-xs text-fgMuted leading-relaxed">
+                                    Setiap penilaian dievaluasi bersama pembina untuk menghadirkan program kerja dan pelayanan yang semakin bermutu.
+                                </p>
+                            </div>
+                            <div class="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 text-[11px] font-mono text-emerald-300">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                                    <span>Akun Terverifikasi</span>
+                                </div>
+                                <a href="#review-form" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-white bg-accent/20 border border-accent/40 hover:bg-accent hover:border-accent transition-all flex items-center gap-1">
+                                    <span>Tulis Ulasan</span>
+                                    <i data-lucide="arrow-down-right" class="w-3.5 h-3.5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Two-column Composer & Feed -->
+                    <div id="review-content" class="grid grid-cols-1 xl:grid-cols-[0.95fr_1.35fr] gap-6 transition-all duration-300">
+                        
+                        <!-- Left Panel: Composer -->
+                        <div class="review-composer rounded-[30px] p-6 sm:p-7 relative overflow-hidden flex flex-col justify-between" data-aos="fade-right">
+                            <div>
+                                <!-- Form Header -->
+                                <div class="flex items-start justify-between gap-4 mb-5">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-accent animate-ping"></span>
+                                            <span id="review-form-eyebrow" class="font-mono text-[10px] text-accent font-bold tracking-widest uppercase">KIRIM PENILAIAN</span>
+                                        </div>
+                                        <h3 id="review-form-heading" class="text-xl sm:text-2xl font-bold text-white mt-1">Bagaimana kinerja OSIS?</h3>
+                                    </div>
+                                    <button id="review-cancel-edit" type="button" onclick="cancelReviewEdit()" class="hidden text-xs font-mono font-bold text-fgMuted hover:text-white px-3 py-1.5 rounded-xl border border-white/10 hover:border-white/30 transition-all flex items-center gap-1">
+                                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                        <span>BATAL</span>
+                                    </button>
+                                </div>
+
+                                <!-- Current User Preview Bar (Visible when logged in) -->
+                                <div id="review-user-preview" class="hidden mb-5 p-3 rounded-2xl bg-white/[0.03] border border-white/10 items-center justify-between gap-3">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <img id="review-user-avatar" src="" alt="Avatar Anda" class="w-9 h-9 rounded-xl object-cover border border-accent/40 bg-bgDeep flex-shrink-0">
+                                        <div class="min-w-0">
+                                            <p id="review-user-name" class="text-xs font-bold text-white truncate">User Name</p>
+                                            <p id="review-user-handle" class="text-[10px] font-mono text-fgMuted truncate">@handle</p>
+                                        </div>
+                                    </div>
+                                    <span id="review-user-role-badge" class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-accent/20 border border-accent/40 text-accent tracking-wider uppercase flex-shrink-0">SISWA</span>
+                                </div>
+
+                                <!-- Form -->
+                                <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-5">
+                                    <input id="review-editing-id" type="hidden">
+                                    
+                                    <!-- Rating Star Picker -->
+                                    <div>
+                                        <label class="block text-xs font-mono text-fgMuted mb-2">BINTANG PENILAIAN <span class="text-rose-400">*</span></label>
+                                        <div class="flex flex-wrap items-center gap-3">
+                                            <div id="review-stars" class="review-stars-wrap" aria-label="Pilih rating 1 sampai 5">
+                                                <button type="button" onclick="setReviewRating(1)" data-rating="1" class="review-star text-white/20" aria-label="1 bintang">★</button>
+                                                <button type="button" onclick="setReviewRating(2)" data-rating="2" class="review-star text-white/20" aria-label="2 bintang">★</button>
+                                                <button type="button" onclick="setReviewRating(3)" data-rating="3" class="review-star text-white/20" aria-label="3 bintang">★</button>
+                                                <button type="button" onclick="setReviewRating(4)" data-rating="4" class="review-star text-white/20" aria-label="4 bintang">★</button>
+                                                <button type="button" onclick="setReviewRating(5)" data-rating="5" class="review-star text-white/20" aria-label="5 bintang">★</button>
+                                            </div>
+                                            <div id="review-rating-label">
+                                                <span class="text-xs text-fgMuted font-mono">Pilih rating 1–5 bintang</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quick Inspiration Chips -->
+                                    <div id="review-inspiration-wrap">
+                                        <label class="block text-[11px] font-mono text-fgMuted mb-1.5">TOPIK INSPIRASI (KLIK UNTUK MENAMBAH)</label>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <button type="button" onclick="insertReviewInspiration('Program Kerja')" class="review-tag-chip">🎯 Program Kerja</button>
+                                            <button type="button" onclick="insertReviewInspiration('Acara & Lomba')" class="review-tag-chip">🎉 Acara & Lomba</button>
+                                            <button type="button" onclick="insertReviewInspiration('Komunikasi & Medsos')" class="review-tag-chip">📢 Medsos & Info</button>
+                                            <button type="button" onclick="insertReviewInspiration('Pelayanan Siswa')" class="review-tag-chip">🤝 Pelayanan Siswa</button>
+                                            <button type="button" onclick="insertReviewInspiration('Saran & Ide')" class="review-tag-chip">💡 Ide Baru</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Message Textarea -->
+                                    <div id="review-message-wrap">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label for="review-message" class="block text-xs font-mono text-fgMuted">PESAN & SARAN MEMBANGUN <span class="text-rose-400">*</span></label>
+                                            <span id="review-char-count" class="text-[10px] font-mono text-fgMuted">0/1000 karakter</span>
+                                        </div>
+                                        <textarea id="review-message" required minlength="5" maxlength="1000" rows="4" oninput="updateReviewCharCount()" placeholder="Tuliskan apresiasi, saran, atau ide konkret Anda untuk kemajuan OSIS..." class="w-full px-4 py-3.5 rounded-2xl bg-[#090c14] border border-white/10 text-white text-sm leading-relaxed resize-y focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none shadow-inner transition-all placeholder:text-fgMuted/50"></textarea>
+                                        <p class="mt-1.5 text-[10px] font-mono text-fgMuted flex items-center gap-1.5">
+                                            <i data-lucide="info" class="w-3.5 h-3.5 text-accent"></i>
+                                            <span>Minimal 5 karakter. Review Anda dapat diedit atau diperbarui kapan saja.</span>
+                                        </p>
+                                    </div>
+
+                                    <!-- Status message -->
+                                    <p id="review-form-status" class="hidden text-xs font-mono rounded-xl border px-3.5 py-2.5"></p>
+
+                                    <!-- Submit Button -->
+                                    <button id="review-submit-button" type="submit" class="w-full sm:w-auto px-7 py-3.5 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono flex items-center justify-center gap-2 tracking-wider uppercase cursor-pointer">
+                                        <i data-lucide="send" class="w-4 h-4"></i>
+                                        <span id="review-submit-text">KIRIM REVIEW</span>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Frosted Glass Lock Overlay (When logged out) -->
+                            <div id="review-lock-overlay" class="hidden absolute inset-0 z-20 rounded-[30px] bg-bgDeep/75 backdrop-blur-md items-center justify-center p-5">
+                                <div class="max-w-sm w-full rounded-3xl p-6 text-center bg-bgElevated/95 border border-accent/40 shadow-2xl shadow-accent/20">
+                                    <div class="w-14 h-14 rounded-2xl mx-auto mb-4 bg-accent/20 border border-accent/50 flex items-center justify-center text-accent shadow-lg shadow-accent/30">
                                         <i data-lucide="lock-keyhole" class="w-6 h-6"></i>
                                     </div>
-                                    <h3 class="text-lg font-bold text-white">Harap login terlebih dahulu</h3>
-                                    <p class="text-sm text-fgMuted mt-2">Masuk ke akun Anda agar bisa memberi bintang
-                                        dan pesan untuk OSIS.</p>
-                                    <button type="button" onclick="openAuthModal()"
-                                        class="mt-5 w-full py-3 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono">LOGIN
-                                        / REGISTER</button>
+                                    <h3 class="text-lg font-bold text-white">Login untuk Memberi Ulasan</h3>
+                                    <p class="text-xs text-fgMuted mt-2 leading-relaxed">Masuk dengan akun siswa atau pengurus Anda untuk memberikan penilaian dan aspirasi.</p>
+                                    <button type="button" onclick="openAuthModal()" class="mt-5 w-full py-3.5 rounded-xl text-xs font-bold text-white btn-primary-glow font-mono flex items-center justify-center gap-2">
+                                        <i data-lucide="log-in" class="w-4 h-4"></i>
+                                        <span>LOGIN / DAFTAR AKUN</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="space-y-4" data-aos="fade-left">
-                            <div class="flex items-end justify-between gap-4">
-                                <div>
-                                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest">MASUKAN
-                                        TERBARU</span>
-                                    <h3 class="text-xl font-bold text-white mt-1">Suara dari komunitas</h3>
+                        <!-- Right Panel: Reviews Showcase Feed -->
+                        <div class="space-y-4 flex flex-col justify-between" data-aos="fade-left">
+                            <div>
+                                <!-- Feed Header with Filters & Controls -->
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                                    <div>
+                                        <span class="font-mono text-[10px] text-accent font-bold tracking-widest uppercase block">FEEDBACK KOMUNITAS</span>
+                                        <h3 class="text-xl font-bold text-white mt-0.5">Suara Warga Sekolah</h3>
+                                    </div>
+                                    <div class="flex items-center gap-2 self-end sm:self-auto">
+                                        <button id="review-slider-prev" type="button" class="review-slider-btn" aria-label="Review sebelumnya">
+                                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                        </button>
+                                        <button id="review-slider-next" type="button" class="review-slider-btn" aria-label="Review berikutnya">
+                                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                        </button>
+                                        <button type="button" onclick="loadReviews()" class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors" title="Muat ulang review">
+                                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <button id="review-slider-prev" type="button" class="review-slider-btn"
-                                        aria-label="Review sebelumnya"><i data-lucide="chevron-left"
-                                            class="w-4 h-4"></i></button>
-                                    <button id="review-slider-next" type="button" class="review-slider-btn"
-                                        aria-label="Review berikutnya"><i data-lucide="chevron-right"
-                                            class="w-4 h-4"></i></button>
-                                    <button type="button" onclick="loadReviews()"
-                                        class="p-2.5 rounded-xl text-fgMuted hover:text-white bg-white/5 border border-white/10 hover:border-accent/50 transition-colors"
-                                        title="Muat ulang review"><i data-lucide="refresh-cw"
-                                            class="w-4 h-4"></i></button>
+
+                                <!-- Filter Buttons Bar -->
+                                <div class="flex flex-wrap items-center gap-2 pb-1">
+                                    <button type="button" onclick="setReviewFilter('all')" data-filter="all" class="review-filter-btn active px-3.5 py-1.5 rounded-full text-xs font-semibold border border-accent bg-accent/20 text-white shadow-sm shadow-accent/30 transition-all">
+                                        Semua (<span id="filter-count-all">0</span>)
+                                    </button>
+                                    <button type="button" onclick="setReviewFilter('5')" data-filter="5" class="review-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-fgMuted hover:text-white hover:border-white/20 transition-all">
+                                        ⭐ 5 Bintang (<span id="filter-count-5">0</span>)
+                                    </button>
+                                    <button type="button" onclick="setReviewFilter('4')" data-filter="4" class="review-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-fgMuted hover:text-white hover:border-white/20 transition-all">
+                                        ⭐ 4 Bintang (<span id="filter-count-4">0</span>)
+                                    </button>
+                                    <button type="button" onclick="setReviewFilter('3-less')" data-filter="3-less" class="review-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-fgMuted hover:text-white hover:border-white/20 transition-all">
+                                        ⭐ ≤ 3 Bintang (<span id="filter-count-3">0</span>)
+                                    </button>
                                 </div>
                             </div>
-                            <div id="review-list-wrapper" class="overflow-hidden rounded-2xl">
+
+                            <!-- Slider Cards Track -->
+                            <div id="review-list-wrapper" class="overflow-hidden rounded-2xl my-auto">
                                 <div id="review-list" class="review-slider-track">
-                                    <div class="card-linear rounded-2xl p-6 text-sm text-fgMuted text-center">Memuat
-                                        review...</div>
+                                    <div class="review-slide-card review-list-card rounded-2xl p-6 text-sm text-fgMuted text-center">
+                                        <div class="flex flex-col items-center justify-center py-8 space-y-3">
+                                            <div class="w-10 h-10 rounded-full border-2 border-accent border-t-transparent animate-spin"></div>
+                                            <p class="font-mono text-xs text-fgMuted">Memuat review komunitas...</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <p class="text-[11px] font-mono text-fgMuted text-center sm:text-left flex items-center justify-center sm:justify-start gap-1.5 pt-1">
+                                <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-accent"></i>
+                                <span>Tip: Klik kartu nama atau avatar untuk melihat profil publik pengguna.</span>
+                            </p>
                         </div>
                     </div>
 
@@ -2177,40 +2345,43 @@
 
     <!-- ==================== MODULE: REVIEW DETAIL MODAL ==================== -->
     <div id="review-detail-modal"
-        class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-bgDeep/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300"
+        class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-bgDeep/85 backdrop-blur-lg opacity-0 pointer-events-none transition-all duration-300"
         aria-hidden="true">
         <div
-            class="relative w-full max-w-2xl card-linear border-accent/40 bg-bgElevated p-6 sm:p-7 rounded-3xl shadow-2xl">
+            class="relative w-full max-w-2xl review-shell border border-accent/40 bg-bgElevated/95 p-6 sm:p-8 rounded-[32px] shadow-2xl shadow-accent/20">
             <button type="button" onclick="closeReviewDetailModal()" aria-label="Tutup review lengkap"
-                class="absolute top-4 right-4 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white transition-all"><i
-                    data-lucide="x" class="w-5 h-5"></i></button>
-            <div class="flex items-center gap-4 mb-5 text-left">
+                class="absolute top-5 right-5 p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-fgMuted hover:text-white border border-white/10 hover:border-white/20 transition-all cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-4 mb-6 text-left">
                 <img id="review-detail-avatar"
                     src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png"
-                    alt="Avatar review" class="w-16 h-16 rounded-2xl object-cover border border-accent/50 bg-bgDeep">
-                <div class="min-w-0">
-                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest">FULL REVIEW</span>
-                    <h2 id="review-detail-name" class="text-xl sm:text-2xl font-extrabold text-white mt-1 truncate">—
-                    </h2>
-                    <p id="review-detail-username" class="font-mono text-[11px] text-fgMuted mt-1">@—</p>
+                    alt="Avatar review" class="w-16 h-16 rounded-2xl object-cover border-2 border-accent/50 bg-bgDeep flex-shrink-0 shadow-lg shadow-accent/20">
+                <div class="min-w-0 pr-8">
+                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest uppercase block">ULASAN LENGKAP SISWA</span>
+                    <h2 id="review-detail-name" class="text-xl sm:text-2xl font-black text-white mt-1 truncate">—</h2>
+                    <p id="review-detail-username" class="font-mono text-xs text-fgMuted mt-0.5">@—</p>
                 </div>
             </div>
 
             <div
-                class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center p-4 rounded-2xl bg-white/[0.03] border border-white/5 mb-4">
+                class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center p-4 rounded-2xl bg-white/[0.03] border border-white/10 mb-5">
                 <div>
-                    <p class="font-mono text-[10px] text-accent font-bold tracking-widest">RATING</p>
-                    <p id="review-detail-date" class="mt-1 text-[10px] font-mono text-fgMuted"></p>
+                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest uppercase block">PENILAIAN</span>
+                    <p id="review-detail-date" class="mt-1 text-[11px] font-mono text-fgMuted flex items-center gap-1.5"></p>
                 </div>
                 <div id="review-detail-rating"
-                    class="text-amber-300 text-lg tracking-[2px] justify-self-start sm:justify-self-end"
+                    class="text-amber-400 text-lg tracking-[3px] font-bold justify-self-start sm:justify-self-end"
                     aria-label="Rating review">★☆☆☆☆</div>
             </div>
 
-            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-left">
-                <p class="font-mono text-[10px] text-accent font-bold tracking-widest mb-2">ISI REVIEW LENGKAP</p>
+            <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 text-left relative overflow-hidden">
+                <div class="flex items-center justify-between mb-2.5">
+                    <span class="font-mono text-[10px] text-accent font-bold tracking-widest uppercase">PESAN & SARAN</span>
+                    <i data-lucide="quote" class="w-4 h-4 text-accent/30"></i>
+                </div>
                 <div id="review-detail-text"
-                    class="text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap max-h-[55vh] overflow-y-auto pr-1">
+                    class="text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap max-h-[50vh] overflow-y-auto pr-2 font-sans">
                     —</div>
             </div>
         </div>
@@ -3071,14 +3242,43 @@
             const content = document.getElementById('review-content');
             const lock = document.getElementById('review-lock-overlay');
             const form = document.getElementById('review-form');
+            const userPreview = document.getElementById('review-user-preview');
+            const userName = document.getElementById('review-user-name');
+            const userHandle = document.getElementById('review-user-handle');
+            const userAvatar = document.getElementById('review-user-avatar');
+            const userRoleBadge = document.getElementById('review-user-role-badge');
+
             if (!content || !lock || !form) return;
-            const locked = !isUserLoggedIn();
+            const currentUser = getCurrentUser();
+            const loggedIn = Boolean(currentUser);
+
             content.classList.remove('blur-sm', 'pointer-events-none', 'select-none');
-            lock.classList.toggle('hidden', !locked);
-            lock.classList.toggle('flex', locked);
+            lock.classList.toggle('hidden', loggedIn);
+            lock.classList.toggle('flex', !loggedIn);
+
+            if (userPreview) {
+                if (loggedIn && currentUser) {
+                    userPreview.classList.remove('hidden');
+                    userPreview.classList.add('flex');
+                    if (userName) userName.textContent = currentUser.displayName || currentUser.username;
+                    if (userHandle) userHandle.textContent = `@${currentUser.username}`;
+                    if (userAvatar) userAvatar.src = currentUser.avatarUrl || DEFAULT_AVATAR_URL;
+                    if (userRoleBadge) {
+                        const role = currentUser.role || 'USER';
+                        userRoleBadge.textContent = role === 'SUPER_ADMIN' ? 'SUPER ADMIN' : role.replace('_', ' ');
+                        userRoleBadge.className = role === 'SUPER_ADMIN' || role === 'ADMIN'
+                            ? 'px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-400/20 border border-amber-400/40 text-amber-300 tracking-wider uppercase flex-shrink-0'
+                            : 'px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-accent/20 border border-accent/40 text-accent tracking-wider uppercase flex-shrink-0';
+                    }
+                } else {
+                    userPreview.classList.add('hidden');
+                    userPreview.classList.remove('flex');
+                }
+            }
+
             form.querySelectorAll('input, textarea, button').forEach((field) => {
                 if (field.id === 'review-cancel-edit') return;
-                field.disabled = locked;
+                field.disabled = !loggedIn;
             });
             if (window.lucide) lucide.createIcons();
         }
@@ -3549,16 +3749,63 @@
         // -------------------------------------------------------------------------
         // MODULE: REVIEW KINERJA OSIS
         // -------------------------------------------------------------------------
+        const REVIEW_RATING_DESCRIPTIONS = {
+            1: { label: 'Kurang Memuaskan 👎', textClass: 'text-rose-400', bgClass: 'bg-rose-500/10 border-rose-500/30' },
+            2: { label: 'Perlu Ditingkatkan ⚠️', textClass: 'text-amber-400', bgClass: 'bg-amber-500/10 border-amber-500/30' },
+            3: { label: 'Cukup Baik & Memuaskan 😊', textClass: 'text-sky-400', bgClass: 'bg-sky-500/10 border-sky-500/30' },
+            4: { label: 'Bagus & Berkualitas 👍', textClass: 'text-indigo-300', bgClass: 'bg-indigo-500/10 border-indigo-500/30' },
+            5: { label: 'Luar Biasa! Sangat Puas 🔥', textClass: 'text-amber-300', bgClass: 'bg-amber-500/15 border-amber-400/40' }
+        };
+
+        let allLoadedReviews = [];
+        let activeReviewFilter = 'all';
+
         function setReviewRating(rating) {
             reviewSelectedRating = Number(rating);
             document.querySelectorAll('.review-star').forEach((star) => {
-                const active = Number(star.dataset.rating) <= reviewSelectedRating;
-                star.classList.toggle('text-amber-300', active);
-                star.classList.toggle('text-fgMuted', !active);
+                const starVal = Number(star.dataset.rating);
+                const active = starVal <= reviewSelectedRating;
+                star.classList.toggle('text-amber-400', active);
+                star.classList.toggle('text-white/20', !active);
                 star.classList.toggle('scale-110', active);
             });
             const label = document.getElementById('review-rating-label');
-            if (label) label.textContent = reviewSelectedRating ? `${reviewSelectedRating} dari 5 bintang` : 'Pilih 1–5 bintang';
+            if (label) {
+                if (reviewSelectedRating && REVIEW_RATING_DESCRIPTIONS[reviewSelectedRating]) {
+                    const desc = REVIEW_RATING_DESCRIPTIONS[reviewSelectedRating];
+                    label.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${desc.bgClass} ${desc.textClass}">★ ${reviewSelectedRating}/5 • ${desc.label}</span>`;
+                } else {
+                    label.innerHTML = '<span class="text-xs text-fgMuted font-mono">Pilih rating 1–5 bintang</span>';
+                }
+            }
+        }
+
+        function insertReviewInspiration(tagText) {
+            const textarea = document.getElementById('review-message');
+            if (!textarea || textarea.disabled) return;
+            const current = textarea.value.trim();
+            if (!current) {
+                textarea.value = `[${tagText}] `;
+            } else if (!current.includes(`[${tagText}]`)) {
+                textarea.value = `${current}\n[${tagText}] `;
+            }
+            textarea.focus();
+            updateReviewCharCount();
+        }
+
+        function updateReviewCharCount() {
+            const textarea = document.getElementById('review-message');
+            const counter = document.getElementById('review-char-count');
+            if (!textarea || !counter) return;
+            const len = textarea.value.length;
+            counter.textContent = `${len}/1000 karakter`;
+            if (len === 0) {
+                counter.className = 'text-[10px] font-mono text-fgMuted';
+            } else if (len < 5) {
+                counter.className = 'text-[10px] font-mono text-rose-400 font-semibold';
+            } else {
+                counter.className = 'text-[10px] font-mono text-emerald-400 font-semibold';
+            }
         }
 
         function setReviewFormStatus(message, isError = false) {
@@ -3568,7 +3815,7 @@
                 element.classList.add('hidden');
                 return;
             }
-            element.className = `text-xs font-mono rounded-xl border px-3 py-2 ${isError ? 'bg-rose-500/10 border-rose-500/40 text-rose-200' : 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200'}`;
+            element.className = `text-xs font-mono rounded-xl border px-3.5 py-2.5 ${isError ? 'bg-rose-500/10 border-rose-500/40 text-rose-200' : 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200'}`;
             element.textContent = message;
         }
 
@@ -3578,34 +3825,47 @@
             const currentUser = getCurrentUser();
             const editIdInput = document.getElementById('review-editing-id');
             const messageInput = document.getElementById('review-message');
+            const submitText = document.getElementById('review-submit-text');
+            const inspirationWrap = document.getElementById('review-inspiration-wrap');
+
             if (currentUser && currentUserReviewId) {
                 const review = reviewCache.get(currentUserReviewId);
                 if (review) {
-                    editIdInput.value = review.id;
-                    messageInput.value = review.message;
-                    messageInput.disabled = false;
-                    messageInput.required = true;
-                    document.getElementById('review-message-wrap').classList.remove('hidden');
+                    if (editIdInput) editIdInput.value = review.id;
+                    if (messageInput) {
+                        messageInput.value = review.message;
+                        messageInput.disabled = false;
+                        messageInput.required = true;
+                    }
+                    if (inspirationWrap) inspirationWrap.classList.remove('hidden');
+                    document.getElementById('review-message-wrap')?.classList.remove('hidden');
                     document.getElementById('review-form-eyebrow').textContent = 'REVIEW ANDA';
-                    document.getElementById('review-form-heading').textContent = 'Perbarui review yang Anda kirim';
-                    document.getElementById('review-submit-button').textContent = 'PERBARUI REVIEW';
-                    document.getElementById('review-cancel-edit').classList.remove('hidden');
+                    document.getElementById('review-form-heading').textContent = 'Perbarui ulasan Anda';
+                    if (submitText) submitText.textContent = 'PERBARUI REVIEW';
+                    document.getElementById('review-cancel-edit')?.classList.remove('hidden');
                     setReviewRating(review.rating);
+                    updateReviewCharCount();
                     setReviewFormStatus('Anda sudah mengirim 1 review. Silakan edit review Anda di sini.', false);
                     return;
                 }
             }
-            editIdInput?.setAttribute('value', '');
-            editIdInput.value = '';
-            messageInput.value = '';
-            messageInput.disabled = false;
-            messageInput.required = true;
-            document.getElementById('review-message-wrap').classList.remove('hidden');
+            if (editIdInput) {
+                editIdInput.setAttribute('value', '');
+                editIdInput.value = '';
+            }
+            if (messageInput) {
+                messageInput.value = '';
+                messageInput.disabled = false;
+                messageInput.required = true;
+            }
+            if (inspirationWrap) inspirationWrap.classList.remove('hidden');
+            document.getElementById('review-message-wrap')?.classList.remove('hidden');
             document.getElementById('review-form-eyebrow').textContent = 'KIRIM PENILAIAN';
             document.getElementById('review-form-heading').textContent = 'Bagaimana kinerja OSIS?';
-            document.getElementById('review-submit-button').textContent = 'KIRIM REVIEW';
-            document.getElementById('review-cancel-edit').classList.add('hidden');
+            if (submitText) submitText.textContent = 'KIRIM REVIEW';
+            document.getElementById('review-cancel-edit')?.classList.add('hidden');
             setReviewRating(0);
+            updateReviewCharCount();
             setReviewFormStatus('');
         }
 
@@ -3623,8 +3883,9 @@
                 ? { rating: reviewSelectedRating }
                 : { rating: reviewSelectedRating, message: document.getElementById('review-message').value };
             const button = document.getElementById('review-submit-button');
+            const submitText = document.getElementById('review-submit-text');
             button.disabled = true;
-            button.textContent = 'MENYIMPAN...';
+            if (submitText) submitText.textContent = 'MENYIMPAN...';
             try {
                 const response = await fetch(editId ? `/api/reviews/${encodeURIComponent(editId)}` : '/api/reviews', {
                     method: editId ? 'PUT' : 'POST',
@@ -3642,7 +3903,7 @@
                 setReviewFormStatus(`Gagal menghubungi server: ${error.message}`, true);
             } finally {
                 button.disabled = false;
-                if (!document.getElementById('review-editing-id').value) button.textContent = 'KIRIM REVIEW';
+                if (submitText && !document.getElementById('review-editing-id').value) submitText.textContent = 'KIRIM REVIEW';
             }
         }
 
@@ -3654,15 +3915,19 @@
             if (!isOwner && !isCurrentUserAdmin()) return;
             reviewEditingAsAdmin = !isOwner;
             document.getElementById('review-editing-id').value = review.id;
-            document.getElementById('review-message').value = review.message;
-            document.getElementById('review-message').disabled = reviewEditingAsAdmin;
-            document.getElementById('review-message').required = !reviewEditingAsAdmin;
+            const messageInput = document.getElementById('review-message');
+            messageInput.value = review.message;
+            messageInput.disabled = reviewEditingAsAdmin;
+            messageInput.required = !reviewEditingAsAdmin;
             document.getElementById('review-message-wrap').classList.toggle('hidden', reviewEditingAsAdmin);
+            document.getElementById('review-inspiration-wrap')?.classList.toggle('hidden', reviewEditingAsAdmin);
             document.getElementById('review-form-eyebrow').textContent = reviewEditingAsAdmin ? 'ADMIN // UBAH RATING' : 'EDIT REVIEW ANDA';
             document.getElementById('review-form-heading').textContent = reviewEditingAsAdmin ? `Ubah rating dari @${review.author.username}` : 'Perbarui penilaian Anda';
-            document.getElementById('review-submit-button').textContent = reviewEditingAsAdmin ? 'SIMPAN RATING' : 'SIMPAN PERUBAHAN';
+            const submitText = document.getElementById('review-submit-text');
+            if (submitText) submitText.textContent = reviewEditingAsAdmin ? 'SIMPAN RATING' : 'SIMPAN PERUBAHAN';
             document.getElementById('review-cancel-edit').classList.remove('hidden');
             setReviewRating(review.rating);
+            updateReviewCharCount();
             setReviewFormStatus('');
             document.getElementById('review-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -3685,9 +3950,88 @@
             const button = document.createElement('button');
             button.type = 'button';
             button.textContent = label;
-            button.className = `px-3 py-1.5 rounded-lg border text-[10px] font-mono font-bold transition-colors ${className}`;
+            button.className = `px-3 py-1.5 rounded-lg border text-[10px] font-mono font-bold transition-all ${className}`;
             button.addEventListener('click', handler);
             return button;
+        }
+
+        function updateReviewBreakdown(reviews, summary) {
+            const total = reviews.length;
+            const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            reviews.forEach((r) => {
+                const rating = Math.min(5, Math.max(1, Math.round(Number(r.rating) || 5)));
+                counts[rating] = (counts[rating] || 0) + 1;
+            });
+
+            const avg = total > 0
+                ? (reviews.reduce((acc, r) => acc + Number(r.rating || 0), 0) / total).toFixed(1)
+                : (summary?.averageRating ? Number(summary.averageRating).toFixed(1) : '5.0');
+
+            const avgEl = document.getElementById('review-average');
+            const avgScoreLarge = document.getElementById('review-average-large');
+            const sentimentEl = document.getElementById('review-sentiment-badge');
+            const totalEl = document.getElementById('review-total');
+            const heroTotalEl = document.getElementById('review-total-hero');
+
+            if (avgEl) avgEl.textContent = total > 0 ? `${avg}/5` : '—';
+            if (avgScoreLarge) avgScoreLarge.textContent = total > 0 ? avg : '5.0';
+            if (totalEl) totalEl.textContent = `${total} masukan`;
+            if (heroTotalEl) heroTotalEl.textContent = `${total} ulasan terverifikasi`;
+
+            if (sentimentEl) {
+                const numAvg = parseFloat(avg);
+                if (total === 0) {
+                    sentimentEl.textContent = 'Belum ada penilaian';
+                    sentimentEl.className = 'text-xs font-mono text-fgMuted px-3 py-1.5 rounded-full bg-white/5 border border-white/10 inline-block';
+                } else if (numAvg >= 4.5) {
+                    sentimentEl.textContent = '⭐ Sangat Memuaskan (Luar Biasa)';
+                    sentimentEl.className = 'text-xs font-semibold text-amber-300 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 inline-block';
+                } else if (numAvg >= 3.5) {
+                    sentimentEl.textContent = '👍 Memuaskan & Positif';
+                    sentimentEl.className = 'text-xs font-semibold text-emerald-300 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/30 inline-block';
+                } else {
+                    sentimentEl.textContent = '💬 Perlu Peningkatan';
+                    sentimentEl.className = 'text-xs font-semibold text-indigo-300 px-3 py-1.5 rounded-full bg-indigo-400/10 border border-indigo-400/30 inline-block';
+                }
+            }
+
+            [5, 4, 3, 2, 1].forEach((star) => {
+                const barEl = document.getElementById(`review-bar-${star}`);
+                const countEl = document.getElementById(`review-count-${star}`);
+                const count = counts[star] || 0;
+                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                if (barEl) barEl.style.width = `${pct}%`;
+                if (countEl) countEl.textContent = `${count} (${pct}%)`;
+            });
+
+            const filterAllCount = document.getElementById('filter-count-all');
+            const filter5Count = document.getElementById('filter-count-5');
+            const filter4Count = document.getElementById('filter-count-4');
+            const filter3Count = document.getElementById('filter-count-3');
+            if (filterAllCount) filterAllCount.textContent = total;
+            if (filter5Count) filter5Count.textContent = counts[5] || 0;
+            if (filter4Count) filter4Count.textContent = counts[4] || 0;
+            if (filter3Count) filter3Count.textContent = (counts[3] || 0) + (counts[2] || 0) + (counts[1] || 0);
+        }
+
+        function setReviewFilter(filter) {
+            activeReviewFilter = filter;
+            document.querySelectorAll('.review-filter-btn').forEach((btn) => {
+                const isActive = btn.dataset.filter === filter;
+                btn.classList.toggle('active', isActive);
+                if (isActive) {
+                    btn.className = 'review-filter-btn active px-3.5 py-1.5 rounded-full text-xs font-semibold border border-accent bg-accent/20 text-white shadow-sm shadow-accent/30 transition-all';
+                } else {
+                    btn.className = 'review-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold border border-white/10 bg-white/5 text-fgMuted hover:text-white hover:border-white/20 transition-all';
+                }
+            });
+
+            let filtered = allLoadedReviews;
+            if (filter === '5') filtered = allLoadedReviews.filter((r) => Number(r.rating) === 5);
+            else if (filter === '4') filtered = allLoadedReviews.filter((r) => Number(r.rating) === 4);
+            else if (filter === '3-less') filtered = allLoadedReviews.filter((r) => Number(r.rating) <= 3);
+
+            renderReviewList(filtered);
         }
 
         function renderReviewList(reviews) {
@@ -3697,7 +4041,7 @@
             reviewCache.clear();
             currentUserReviewId = '';
             list.replaceChildren();
-            // remove existing dots (if any)
+
             const existingDots = document.getElementById('review-dots');
             if (existingDots) existingDots.remove();
 
@@ -3705,11 +4049,20 @@
                 const emptySlide = document.createElement('div');
                 emptySlide.className = 'review-slide';
                 const empty = document.createElement('div');
-                empty.className = 'review-slide-card card-linear rounded-2xl p-8 text-center';
-                empty.innerHTML = '<p class="text-sm font-semibold text-white">Belum ada review.</p><p class="text-xs text-fgMuted mt-1">Jadilah yang pertama memberi masukan untuk OSIS.</p>';
+                empty.className = 'review-slide-card review-list-card rounded-2xl p-8 text-center';
+                empty.innerHTML = `
+                    <div class="py-6 space-y-2">
+                        <div class="w-12 h-12 rounded-2xl mx-auto mb-3 bg-white/5 border border-white/10 flex items-center justify-center text-fgMuted">
+                            <i data-lucide="message-circle-off" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-white">Belum ada review pada kategori ini.</p>
+                        <p class="text-xs text-fgMuted">Jadilah yang pertama memberikan masukan untuk OSIS!</p>
+                    </div>
+                `;
                 emptySlide.appendChild(empty);
                 list.appendChild(emptySlide);
                 updateReviewSliderButtons();
+                if (window.lucide) lucide.createIcons();
                 return;
             }
 
@@ -3726,73 +4079,83 @@
                 group.forEach((review) => {
                     reviewCache.set(review.id, review);
                     const card = document.createElement('article');
-                    card.className = 'review-slide-card review-list-card card-linear rounded-2xl p-6 sm:p-6';
+                    card.className = 'review-slide-card review-list-card rounded-2xl p-6 relative flex flex-col justify-between';
 
-                    // Card header
+                    // Card header with clickable profile author badge
                     const top = document.createElement('div');
-                    top.className = 'flex items-start justify-between gap-4';
+                    top.className = 'flex items-start justify-between gap-3';
 
-                    const authorWrap = document.createElement('div');
-                    authorWrap.className = 'flex items-center gap-3 min-w-0';
+                    const authorWrap = document.createElement('button');
+                    authorWrap.type = 'button';
+                    authorWrap.className = 'review-author-button flex items-center gap-3 min-w-0 text-left group cursor-pointer';
+                    authorWrap.title = `Lihat profil @${review.author.username}`;
+                    authorWrap.addEventListener('click', () => openPublicProfile(review.author.username));
 
                     const avatar = document.createElement('img');
                     avatar.src = review.author.avatarUrl || DEFAULT_AVATAR_URL;
                     avatar.alt = `Avatar ${review.author.displayName}`;
-                    avatar.className = 'review-author-avatar w-12 h-12 rounded-xl object-cover border border-white/8 transition-colors bg-bgDeep flex-shrink-0';
+                    avatar.className = 'review-author-avatar w-11 h-11 rounded-xl object-cover border border-white/10 bg-bgDeep flex-shrink-0';
 
                     const authorInfo = document.createElement('div');
                     authorInfo.className = 'min-w-0';
                     const authorName = document.createElement('p');
-                    authorName.className = 'text-sm font-bold text-white truncate';
+                    authorName.className = 'text-sm font-bold text-white truncate group-hover:text-accent transition-colors flex items-center gap-1.5';
                     authorName.textContent = review.author.displayName;
-                    const authorUsername = document.createElement('p');
-                    authorUsername.className = 'text-[10px] font-mono text-fgMuted';
-                    authorUsername.textContent = `@${review.author.username}`;
-                    authorInfo.append(authorName, authorUsername);
 
+                    const authorMeta = document.createElement('div');
+                    authorMeta.className = 'flex items-center gap-1.5 text-[10px] font-mono text-fgMuted';
+                    authorMeta.innerHTML = `<span class="truncate">@${review.author.username}</span>`;
+
+                    authorInfo.append(authorName, authorMeta);
                     authorWrap.append(avatar, authorInfo);
 
                     const ratingWrap = document.createElement('div');
-                    ratingWrap.className = 'text-amber-300 text-base tracking-[1px]';
-                    ratingWrap.setAttribute('aria-label', `${review.rating} dari 5 bintang`);
-                    ratingWrap.textContent = `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}`;
+                    ratingWrap.className = 'flex items-center gap-1.5 flex-shrink-0';
+                    const starsDisplay = document.createElement('span');
+                    starsDisplay.className = 'text-amber-400 text-sm tracking-[1px]';
+                    starsDisplay.textContent = '★'.repeat(review.rating);
+                    const scorePill = document.createElement('span');
+                    scorePill.className = 'px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-400/10 border border-amber-400/30 text-amber-300';
+                    scorePill.textContent = `${Number(review.rating).toFixed(1)}`;
+                    ratingWrap.append(starsDisplay, scorePill);
 
                     top.append(authorWrap, ratingWrap);
 
                     // Message body
                     const messageWrap = document.createElement('div');
-                    messageWrap.className = 'mt-4';
+                    messageWrap.className = 'my-4 flex-1';
                     const message = document.createElement('p');
                     const reviewText = (review.message || '').trim();
-                    const truncatedText = reviewText.length > 320 ? `${reviewText.slice(0, 320).trim().replace(/\s+\S*$/, '')}...` : reviewText;
-                    message.className = `review-message text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap ${reviewText.length > 320 ? 'review-message-collapsed' : ''}`;
-                    message.textContent = truncatedText || 'Pengguna belum menulis review.';
+                    const truncatedText = reviewText.length > 280 ? `${reviewText.slice(0, 280).trim().replace(/\s+\S*$/, '')}...` : reviewText;
+                    message.className = `review-message text-xs sm:text-sm text-fgSubtle leading-relaxed whitespace-pre-wrap ${reviewText.length > 280 ? 'review-message-collapsed' : ''}`;
+                    message.textContent = truncatedText || 'Pengguna belum menulis pesan review.';
                     messageWrap.appendChild(message);
 
-                    if (reviewText.length > 320) {
+                    if (reviewText.length > 280) {
                         const viewMore = document.createElement('button');
                         viewMore.type = 'button';
-                        viewMore.className = 'review-view-more mt-3';
-                        viewMore.textContent = 'VIEW MORE';
+                        viewMore.className = 'review-view-more mt-2.5';
+                        viewMore.innerHTML = '<span>BACA LENGKAP</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>';
                         viewMore.addEventListener('click', () => openReviewDetail(review.id));
                         messageWrap.appendChild(viewMore);
                     }
 
                     // Footer actions
                     const footer = document.createElement('div');
-                    footer.className = 'review-footer mt-5 pt-4 border-t border-white/5 flex items-center justify-between gap-3';
+                    footer.className = 'review-footer pt-3.5 border-t border-white/5 flex items-center justify-between gap-2';
                     const timestamp = document.createElement('p');
-                    timestamp.className = 'text-[10px] font-mono text-fgMuted';
-                    timestamp.textContent = `${review.updatedAt !== review.createdAt ? 'Diperbarui ' : ''}${new Date(review.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+                    timestamp.className = 'text-[10px] font-mono text-fgMuted flex items-center gap-1';
+                    const dateStr = new Date(review.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                    timestamp.innerHTML = `<i data-lucide="calendar" class="w-3 h-3 text-fgMuted/70"></i> <span>${review.updatedAt !== review.createdAt ? 'Diperbarui ' : ''}${dateStr}</span>`;
                     footer.appendChild(timestamp);
 
                     const ownsReview = currentUser?.id === review.authorId;
                     const canAdminister = isCurrentUserAdmin() && !ownsReview;
                     if (ownsReview || canAdminister) {
                         const actions = document.createElement('div');
-                        actions.className = 'flex items-center gap-2';
-                        actions.appendChild(createReviewAction(ownsReview ? 'EDIT' : 'UBAH RATING', 'border-accent/40 text-accent hover:bg-accent/10', () => startReviewEdit(review.id)));
-                        actions.appendChild(createReviewAction('HAPUS', 'border-rose-500/35 text-rose-300 hover:bg-rose-500/10', () => deleteReview(review.id)));
+                        actions.className = 'flex items-center gap-1.5';
+                        actions.appendChild(createReviewAction(ownsReview ? 'EDIT' : 'UBAH RATING', 'border-accent/40 text-accent hover:bg-accent/15', () => startReviewEdit(review.id)));
+                        actions.appendChild(createReviewAction('HAPUS', 'border-rose-500/35 text-rose-300 hover:bg-rose-500/15', () => deleteReview(review.id)));
                         footer.appendChild(actions);
                     }
 
@@ -3814,6 +4177,7 @@
                     dot.type = 'button';
                     dot.className = 'review-dot' + (j === 0 ? ' active' : '');
                     dot.dataset.index = String(j);
+                    dot.setAttribute('aria-label', `Slide ${j + 1}`);
                     dot.addEventListener('click', () => {
                         const slideEl = list.children[j];
                         if (slideEl) list.scrollTo({ left: slideEl.offsetLeft, behavior: 'smooth' });
@@ -3828,32 +4192,42 @@
             if (currentUser && ownedReview) {
                 const editIdInput = document.getElementById('review-editing-id');
                 const messageInput = document.getElementById('review-message');
-                editIdInput.value = ownedReview.id;
-                messageInput.value = ownedReview.message;
-                messageInput.disabled = false;
-                messageInput.required = true;
+                const submitText = document.getElementById('review-submit-text');
+                if (editIdInput) editIdInput.value = ownedReview.id;
+                if (messageInput) {
+                    messageInput.value = ownedReview.message;
+                    messageInput.disabled = false;
+                    messageInput.required = true;
+                }
                 document.getElementById('review-form-eyebrow').textContent = 'REVIEW ANDA';
-                document.getElementById('review-form-heading').textContent = 'Perbarui review yang Anda kirim';
-                document.getElementById('review-submit-button').textContent = 'PERBARUI REVIEW';
-                document.getElementById('review-cancel-edit').classList.remove('hidden');
+                document.getElementById('review-form-heading').textContent = 'Perbarui ulasan Anda';
+                if (submitText) submitText.textContent = 'PERBARUI REVIEW';
+                document.getElementById('review-cancel-edit')?.classList.remove('hidden');
                 setReviewRating(ownedReview.rating);
+                updateReviewCharCount();
                 setReviewFormStatus('Anda sudah mengirim 1 review. Silakan edit review Anda di sini.', false);
             } else {
-                document.getElementById('review-editing-id').value = '';
-                document.getElementById('review-message').value = '';
-                document.getElementById('review-message').disabled = false;
-                document.getElementById('review-message').required = true;
+                const editIdInput = document.getElementById('review-editing-id');
+                const messageInput = document.getElementById('review-message');
+                const submitText = document.getElementById('review-submit-text');
+                if (editIdInput) editIdInput.value = '';
+                if (messageInput) {
+                    messageInput.value = '';
+                    messageInput.disabled = false;
+                    messageInput.required = true;
+                }
                 document.getElementById('review-form-eyebrow').textContent = 'KIRIM PENILAIAN';
                 document.getElementById('review-form-heading').textContent = 'Bagaimana kinerja OSIS?';
-                document.getElementById('review-submit-button').textContent = 'KIRIM REVIEW';
-                document.getElementById('review-cancel-edit').classList.add('hidden');
+                if (submitText) submitText.textContent = 'KIRIM REVIEW';
+                document.getElementById('review-cancel-edit')?.classList.add('hidden');
                 setReviewRating(0);
+                updateReviewCharCount();
                 setReviewFormStatus('');
             }
 
-            // Ensure slider resets to start and buttons/dots updated
             list.scrollLeft = 0;
             setTimeout(updateReviewSliderButtons, 120);
+            if (window.lucide) lucide.createIcons();
         }
 
         async function loadReviews() {
@@ -3863,31 +4237,25 @@
                 const data = await response.json();
                 if (!response.ok || !data.success) throw new Error(data.message || 'Review tidak dapat dimuat.');
 
-                // Batasi jumlah review yang dirender di sisi klien untuk mencegah masalah performa
                 const MAX_RENDER = 50;
                 const allReviews = Array.isArray(data.reviews) ? data.reviews : [];
-                const total = Number(data.summary?.total ?? allReviews.length);
-                let reviewsToRender = allReviews.slice(0, MAX_RENDER);
+                allLoadedReviews = allReviews.slice(0, MAX_RENDER);
 
-                // Jika user sedang login dan review milik user tidak termasuk di slice pertama,
-                // sertakan review milik user agar mereka dapat melihat/mengedit review mereka.
                 const currentUser = getCurrentUser();
                 if (currentUser) {
-                    const owned = allReviews.find(r => r.authorId === currentUser.id);
-                    if (owned && !reviewsToRender.some(r => r.id === owned.id)) {
-                        if (reviewsToRender.length >= MAX_RENDER) reviewsToRender.pop();
-                        reviewsToRender.unshift(owned);
+                    const owned = allReviews.find((r) => r.authorId === currentUser.id);
+                    if (owned && !allLoadedReviews.some((r) => r.id === owned.id)) {
+                        if (allLoadedReviews.length >= MAX_RENDER) allLoadedReviews.pop();
+                        allLoadedReviews.unshift(owned);
                     }
                 }
 
-                document.getElementById('review-average').textContent = total && data.summary?.averageRating ? `${data.summary.averageRating}/5` : '—';
-                document.getElementById('review-total').textContent = total > MAX_RENDER ? `${reviewsToRender.length} dari ${total} review (menampilkan terbaru)` : `${reviewsToRender.length} review`;
-
-                renderReviewList(reviewsToRender);
+                updateReviewBreakdown(allLoadedReviews, data.summary);
+                setReviewFilter(activeReviewFilter || 'all');
             } catch (error) {
                 if (list) {
                     const unavailable = document.createElement('div');
-                    unavailable.className = 'review-slide-card card-linear rounded-2xl p-6 text-sm text-rose-200 text-center';
+                    unavailable.className = 'review-slide-card review-list-card rounded-2xl p-6 text-sm text-rose-200 text-center';
                     unavailable.textContent = error.message;
                     list.replaceChildren(unavailable);
                     updateReviewSliderButtons();

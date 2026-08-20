@@ -20,6 +20,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const https = require('https');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 
 const app = express();
@@ -148,18 +149,36 @@ async function readJsonFile(fileName, fallbackValue) {
     return { value: JSON.parse(decoded), sha: response.sha };
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return { value: fallbackValue, sha: null };
+    const localPath = path.join(__dirname, '..', fileName);
+    if (fs.existsSync(localPath)) {
+      try {
+        const fileContent = fs.readFileSync(localPath, 'utf8');
+        return { value: JSON.parse(fileContent), sha: 'local_sha' };
+      } catch (localErr) {
+        console.warn(`[LOCAL FALLBACK FAILED] for ${fileName}:`, localErr.message);
+      }
+    }
     throw error;
   }
 }
 
 async function writeJsonFile(fileName, value, sha, commitMessage) {
   const content = Buffer.from(JSON.stringify(value, null, 2)).toString('base64');
-  return githubRequest('PUT', `contents/${fileName}`, {
-    message: commitMessage,
-    content,
-    branch: getBranchName(),
-    ...(sha ? { sha } : {})
-  });
+  try {
+    return await githubRequest('PUT', `contents/${fileName}`, {
+      message: commitMessage,
+      content,
+      branch: getBranchName(),
+      ...(sha && sha !== 'local_sha' ? { sha } : {})
+    });
+  } catch (error) {
+    const localPath = path.join(__dirname, '..', fileName);
+    if (fs.existsSync(localPath) || !process.env.GITHUB_TOKEN) {
+      fs.writeFileSync(localPath, JSON.stringify(value, null, 2), 'utf8');
+      return { content: { sha: 'local_sha' } };
+    }
+    throw error;
+  }
 }
 
 function isWriteConflict(error) {
@@ -797,6 +816,8 @@ app.delete(['/api/admin/users/:id', '/admin/users/:id'], authenticateAdminToken,
     return res.json({ success: true, message: 'Akun pengguna berhasil dihapus.' });
   } catch (error) { return next(error); }
 });
+
+app.use(express.static(path.join(__dirname, '..')));
 
 app.use((req, res) => res.status(404).json({ success: false, message: `Endpoint '${req.originalUrl}' tidak ditemukan.` }));
 
