@@ -119,10 +119,15 @@ function githubRequest(method, apiPath, body = null) {
         }
 
         const code = response.statusCode || 500;
-        reject(new ApiError(
-          code === 404 ? 404 : 502,
-          code === 404 ? 'Berkas penyimpanan tidak ditemukan.' : `Penyimpanan GitHub menolak permintaan (HTTP ${code}).`
-        ));
+        let errorMessage = `Penyimpanan GitHub menolak permintaan (HTTP ${code}).`;
+        if (code === 401) {
+          errorMessage = 'Token GitHub (GITHUB_TOKEN) tidak valid, telah kedaluwarsa, atau dicabut otomatis oleh GitHub (HTTP 401).';
+        } else if (code === 403) {
+          errorMessage = 'Akses GitHub ditolak (HTTP 403). Pastikan token memiliki izin scope repo / Contents read & write.';
+        } else if (code === 404) {
+          errorMessage = 'Berkas atau repositori penyimpanan GitHub tidak ditemukan (HTTP 404).';
+        }
+        reject(new ApiError(code === 404 ? 404 : 502, errorMessage));
       });
     });
 

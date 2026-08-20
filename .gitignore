@@ -1,0 +1,13 @@
+# Dependency directories
+node_modules/
+
+# Environment variables (SANGAT PENTING: Jangan upload ke git agar token tidak dicabut otomatis oleh GitHub)
+.env
+.env.local
+.env.*.local
+
+# Logs & temp files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel
