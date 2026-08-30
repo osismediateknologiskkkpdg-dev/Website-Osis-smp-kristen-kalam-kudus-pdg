@@ -27,15 +27,15 @@
     "verified": true
   },
   {
-    "id": "usr_1787221304262_b21305",
+    "id": "usr_1787807980960_1d1575",
     "email": "271417-guidobryan.martinus@kalamkuduspadangdigital.sch.id",
-    "username": "guido_bryan28",
+    "username": "guido_bryan24",
     "displayName": "Guido Bryan (Web Developer)",
     "avatarUrl": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png",
     "bio": "",
-    "passwordHash": "$2a$10$J/zfdMgo9bjnisPaiiwHo.8QzcKIKNc29EV1ON4B6fP5z71HkLUcC",
+    "passwordHash": "$2a$10$ANKRYikT.F3iM49Mc85dMuB1eNQoi4S/P7Vjh6.z0ndihJG8Olpj.",
     "role": "USER",
-    "createdAt": "2026-08-20T10:21:44.368Z",
+    "createdAt": "2026-08-27T05:19:41.064Z",
     "verified": true
   }
 ]
