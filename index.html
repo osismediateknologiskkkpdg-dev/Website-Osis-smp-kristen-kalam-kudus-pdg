@@ -450,6 +450,31 @@
         /* Fix btn-primary-glow in white theme */
         .theme-white .btn-primary-glow { background-color: rgb(var(--accent-rgb)); }
 
+        /* Fix heading gradient text for white theme — remove dark background effect */
+        .theme-white h1.text-transparent.bg-clip-text,
+        .theme-white h1.bg-gradient-to-b {
+            -webkit-text-fill-color: var(--heading-color);
+            background: none !important;
+            background-clip: unset !important;
+            -webkit-background-clip: unset !important;
+        }
+        .theme-white h2.text-transparent.bg-clip-text,
+        .theme-white h2.bg-gradient-to-b {
+            -webkit-text-fill-color: var(--heading-color);
+            background: none !important;
+            background-clip: unset !important;
+            -webkit-background-clip: unset !important;
+        }
+        .theme-white .animate-shimmer {
+            background: linear-gradient(90deg, rgb(var(--accent-rgb)) 0%, rgb(var(--accent-bright-rgb)) 50%, rgb(var(--accent-rgb)) 100%) !important;
+            background-size: 200% auto;
+            color: transparent !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            animation: shimmer 6s linear infinite;
+        }
+
         /* --- Non-white theme: keep dark backgrounds for specific elements --- */
         .theme-cyan .bg-\[\#050506\],
         .theme-emerald .bg-\[\#050506\],
