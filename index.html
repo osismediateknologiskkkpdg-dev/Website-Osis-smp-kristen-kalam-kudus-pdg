@@ -2182,6 +2182,48 @@
                     <label class="block text-[11px] font-mono text-fgMuted mb-1">CREATE PASSWORD</label>
                     <input type="password" id="reg-password" required placeholder="••••••••"
                         class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-white/10 text-white text-xs focus:border-accent focus:outline-none">
+                    
+                    <!-- Password Strength Meter Component (PasswordStrength Style) -->
+                    <div id="reg-password-strength" class="mt-2.5 space-y-2 hidden">
+                        <div class="grid grid-cols-4 gap-1.5" role="meter" aria-label="Password strength">
+                            <div class="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                <div id="pw-bar-0" class="h-full w-full bg-transparent transition-all duration-300"></div>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                <div id="pw-bar-1" class="h-full w-full bg-transparent transition-all duration-300"></div>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                <div id="pw-bar-2" class="h-full w-full bg-transparent transition-all duration-300"></div>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                <div id="pw-bar-3" class="h-full w-full bg-transparent transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] font-mono">
+                            <span id="pw-strength-label" class="text-stone-400 font-bold transition-colors">Lemah</span>
+                            <span id="pw-guessable-warn" class="text-amber-400 font-semibold hidden">Pola mudah ditebak</span>
+                        </div>
+
+                        <ul class="grid grid-cols-2 gap-1 text-[10.5px] font-mono pt-1 text-fgMuted">
+                            <li id="pw-rule-length" class="flex items-center gap-1.5 transition-colors">
+                                <span class="rule-icon w-3.5 h-3.5 rounded flex items-center justify-center bg-white/5 border border-white/10 text-[9px]">•</span>
+                                <span>12+ karakter</span>
+                            </li>
+                            <li id="pw-rule-case" class="flex items-center gap-1.5 transition-colors">
+                                <span class="rule-icon w-3.5 h-3.5 rounded flex items-center justify-center bg-white/5 border border-white/10 text-[9px]">•</span>
+                                <span>Huruf besar & kecil</span>
+                            </li>
+                            <li id="pw-rule-digit" class="flex items-center gap-1.5 transition-colors">
+                                <span class="rule-icon w-3.5 h-3.5 rounded flex items-center justify-center bg-white/5 border border-white/10 text-[9px]">•</span>
+                                <span>Angka (0-9)</span>
+                            </li>
+                            <li id="pw-rule-symbol" class="flex items-center gap-1.5 transition-colors">
+                                <span class="rule-icon w-3.5 h-3.5 rounded flex items-center justify-center bg-white/5 border border-white/10 text-[9px]">•</span>
+                                <span>Simbol (!@#$)</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[11px] font-mono text-fgMuted mb-1">CONFIRM YOUR PASSWORD</label>
@@ -3138,6 +3180,100 @@
             }
         }
 
+        // ==================== PASSWORD STRENGTH EVALUATOR ====================
+        const PW_COMMON = /^(?:password|passw0rd|qwerty|letmein|welcome|admin|iloveyou|monkey|dragon|abc123|111111|123123|123456)/i;
+        const PW_RUN = /(.)\1{3,}/;
+        const PW_RUN_UP = /(?:0123|1234|2345|3456|4567|5678|6789|abcd|bcde|cdef|defg|qwer|wert|erty|asdf)/i;
+        const PW_SYMBOL = /[!-/:-@[-`{-~]/;
+
+        function updatePasswordStrengthDisplay(value) {
+            const container = document.getElementById('reg-password-strength');
+            if (!container) return;
+
+            if (!value) {
+                container.classList.add('hidden');
+                return;
+            }
+            container.classList.remove('hidden');
+
+            const hasLength = value.length >= 12;
+            const hasCase = /[a-z]/.test(value) && /[A-Z]/.test(value);
+            const hasDigit = /\d/.test(value);
+            const hasSymbol = PW_SYMBOL.test(value);
+
+            const isGuessable = PW_COMMON.test(value) || PW_RUN.test(value) || PW_RUN_UP.test(value);
+            const passedCount = [hasLength, hasCase, hasDigit, hasSymbol].filter(Boolean).length;
+            const score = isGuessable ? 1 : Math.max(1, passedCount);
+
+            const updateRule = (id, met) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const icon = el.querySelector('.rule-icon');
+                if (met) {
+                    el.className = 'flex items-center gap-1.5 transition-colors text-emerald-400 font-semibold';
+                    if (icon) {
+                        icon.className = 'rule-icon w-3.5 h-3.5 rounded flex items-center justify-center bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px]';
+                        icon.textContent = '✓';
+                    }
+                } else {
+                    el.className = 'flex items-center gap-1.5 transition-colors text-fgMuted';
+                    if (icon) {
+                        icon.className = 'rule-icon w-3.5 h-3.5 rounded flex items-center justify-center bg-white/5 border border-white/10 text-[9px]';
+                        icon.textContent = '•';
+                    }
+                }
+            };
+
+            updateRule('pw-rule-length', hasLength);
+            updateRule('pw-rule-case', hasCase);
+            updateRule('pw-rule-digit', hasDigit);
+            updateRule('pw-rule-symbol', hasSymbol);
+
+            const guessableEl = document.getElementById('pw-guessable-warn');
+            if (guessableEl) {
+                if (isGuessable) {
+                    guessableEl.classList.remove('hidden');
+                } else {
+                    guessableEl.classList.add('hidden');
+                }
+            }
+
+            const labelEl = document.getElementById('pw-strength-label');
+            const labels = ['Sangat Lemah', 'Lemah', 'Sedang', 'Bagus', 'Sangat Kuat'];
+            let colorClass = 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]';
+            let textColor = 'text-red-400';
+
+            if (score === 2) {
+                colorClass = 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]';
+                textColor = 'text-amber-400';
+            } else if (score >= 3) {
+                colorClass = 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]';
+                textColor = 'text-emerald-400';
+            }
+
+            if (labelEl) {
+                labelEl.textContent = labels[score];
+                labelEl.className = `${textColor} font-bold transition-colors`;
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const bar = document.getElementById(`pw-bar-${i}`);
+                if (!bar) continue;
+                if (i < score) {
+                    bar.className = `h-full w-full ${colorClass} transition-all duration-300`;
+                } else {
+                    bar.className = 'h-full w-full bg-transparent transition-all duration-300';
+                }
+            }
+        }
+
+        function initPasswordStrength() {
+            const regPw = document.getElementById('reg-password');
+            if (regPw) {
+                regPw.addEventListener('input', (e) => updatePasswordStrengthDisplay(e.target.value));
+            }
+        }
+
         function switchAuthTab(tab) {
             currentAuthFlow = tab;
             document.getElementById('auth-alert')?.classList.add('hidden');
@@ -3234,6 +3370,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginStatus();
             initOtpInputs();
+            initPasswordStrength();
             if (window.lucide) {
                 lucide.createIcons();
             }
