@@ -108,26 +108,43 @@
         .theme-white   { --page-bg: 245,245,247; --page-text: 24,24,27;    --surface-1: 255,255,255; --surface-2: 240,240,242; --scrollbar-track: 230,230,232; --scrollbar-thumb: 160,160,170; --blob1: 94,106,210,0.07; --blob2: 67,56,202,0.05; --blob3: 88,28,135,0.04; --navbar-glass: rgba(255,255,255,0.82); --border-base: 0,0,0,0.08; --card-bg: 255,255,255; --heading-color: #18181b; --muted-color: 113,113,122; }
 
         /* --- Apply background variables to body & key elements --- */
-        html { background-color: rgb(var(--page-bg)); transition: background-color 0.4s ease; }
-        body { background-color: rgb(var(--page-bg)); color: rgb(var(--page-text)); }
+        html {
+            background-color: rgb(var(--page-bg));
+            transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body {
+            background-color: rgb(var(--page-bg));
+            color: rgb(var(--page-text));
+            transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+        }
+        *, *::before, *::after {
+            transition-property: background-color, border-color, color, box-shadow, opacity;
+            transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+            transition-duration: 0ms;
+        }
+        .theme-transitioning *,
+        .theme-transitioning *::before,
+        .theme-transitioning *::after {
+            transition-duration: 400ms !important;
+        }
 
         /* Scrollbar */
         ::-webkit-scrollbar-track { background: rgb(var(--scrollbar-track)); }
         ::-webkit-scrollbar-thumb { background: rgba(var(--scrollbar-thumb)); }
 
         /* Navbar glass background */
-        .header-nav-bar { background: var(--navbar-glass); }
+        .header-nav-bar { background: var(--navbar-glass); transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease; }
 
         /* Mobile menu glass */
         .mobile-menu-glass { background: var(--navbar-glass); }
 
         /* Card backgrounds */
-        .theme-card-bg { background: rgb(var(--card-bg)); }
+        .theme-card-bg { background: rgb(var(--card-bg)); transition: background-color 0.5s ease, border-color 0.5s ease; }
 
         /* Background blobs */
-        .theme-blob-1 { background: rgba(var(--blob1)); }
-        .theme-blob-2 { background: rgba(var(--blob2)); }
-        .theme-blob-3 { background: rgba(var(--blob3)); }
+        .theme-blob-1 { background: rgba(var(--blob1)); transition: background 0.8s ease; }
+        .theme-blob-2 { background: rgba(var(--blob2)); transition: background 0.8s ease; }
+        .theme-blob-3 { background: rgba(var(--blob3)); transition: background 0.8s ease; }
 
         /* Base border color */
         .theme-border-base { border-color: rgba(var(--border-base)); }
@@ -272,6 +289,167 @@
         .theme-white a { color: inherit; }
         .theme-white a:hover { color: rgb(var(--accent-rgb)); }
 
+        /* ===== WHITE THEME: MISSING OVERRIDES FIX ===== */
+
+        /* Fix hardcoded dark bg-[#090c14] (review textarea) */
+        .theme-white .bg-\[\#090c14\] { background-color: rgb(var(--surface-2)) !important; }
+
+        /* Fix bg-bgElevated/90, bg-bgElevated/95 */
+        .theme-white .bg-bgElevated\/90,
+        .theme-white .bg-bgElevated\/95 { background-color: rgba(255,255,255,0.95) !important; }
+
+        /* Fix bg-bgDeep/75, bg-bgDeep/80 (modals & overlays) */
+        .theme-white .bg-bgDeep\/75,
+        .theme-white .bg-bgDeep\/80,
+        .theme-white .bg-bgDeep\/85 { background-color: rgba(0,0,0,0.40) !important; }
+
+        /* Fix via-[#080d18]/90 gradient middle */
+        .theme-white .via-\[\#080d18\]\/90 { --tw-gradient-via: rgba(245,245,247,0.90) !important; }
+
+        /* Fix to-black gradient end */
+        .theme-white .to-black { --tw-gradient-to: rgba(230,230,232,1) !important; }
+
+        /* Fix leader card gradients (from-*-500/15 via-[#080d18]/90 to-black) */
+        .theme-white .from-amber-500\/15 { --tw-gradient-from: rgba(245,158,11,0.10) !important; }
+        .theme-white .from-cyan-500\/15 { --tw-gradient-from: rgba(6,182,212,0.10) !important; }
+
+        /* Fix text-cyan-200, text-cyan-300, text-cyan-400 in white theme */
+        .theme-white .text-cyan-200 { color: rgb(var(--accent-rgb)) !important; }
+        .theme-white .text-cyan-300 { color: rgb(var(--accent-rgb)) !important; }
+        .theme-white .text-cyan-400 { color: rgb(var(--accent-bright-rgb)) !important; }
+
+        /* Fix bg-cyan-500/10, bg-cyan-500/20 in white theme */
+        .theme-white .bg-cyan-500\/10 { background-color: rgba(var(--accent-rgb), 0.08) !important; }
+        .theme-white .bg-cyan-500\/20 { background-color: rgba(var(--accent-rgb), 0.12) !important; }
+
+        /* Fix border-cyan-* in white theme */
+        .theme-white .border-cyan-400\/40 { border-color: rgba(var(--accent-rgb), 0.25) !important; }
+        .theme-white .border-cyan-500\/20 { border-color: rgba(var(--accent-rgb), 0.15) !important; }
+        .theme-white .border-cyan-500\/30 { border-color: rgba(var(--accent-rgb), 0.20) !important; }
+        .theme-white .border-cyan-500\/40 { border-color: rgba(var(--accent-rgb), 0.25) !important; }
+        .theme-white .border-cyan-400\/50 { border-color: rgba(var(--accent-rgb), 0.30) !important; }
+        .theme-white .border-cyan-400\/60 { border-color: rgba(var(--accent-rgb), 0.40) !important; }
+
+        /* Fix border-accent/* in white theme */
+        .theme-white .border-accent\/20 { border-color: rgba(var(--accent-rgb), 0.15) !important; }
+        .theme-white .border-accent\/30 { border-color: rgba(var(--accent-rgb), 0.20) !important; }
+        .theme-white .border-accent\/40 { border-color: rgba(var(--accent-rgb), 0.30) !important; }
+        .theme-white .border-accent\/50 { border-color: rgba(var(--accent-rgb), 0.35) !important; }
+
+        /* Fix border-amber-500/* in white theme */
+        .theme-white .border-amber-500\/30 { border-color: rgba(245,158,11, 0.25) !important; }
+        .theme-white .border-amber-500\/40 { border-color: rgba(245,158,11, 0.30) !important; }
+        .theme-white .border-amber-500\/50 { border-color: rgba(245,158,11, 0.35) !important; }
+        .theme-white .text-amber-300 { color: rgba(245,158,11, 0.85) !important; }
+        .theme-white .text-amber-400 { color: rgba(245,158,11, 0.90) !important; }
+        .theme-white .bg-amber-500\/15 { background-color: rgba(245,158,11, 0.10) !important; }
+
+        /* Fix border-emerald-500/* in white theme */
+        .theme-white .border-emerald-500\/30 { border-color: rgba(16,185,129, 0.25) !important; }
+        .theme-white .border-emerald-500\/40 { border-color: rgba(16,185,129, 0.30) !important; }
+        .theme-white .text-emerald-200 { color: rgba(16,185,129, 0.85) !important; }
+        .theme-white .text-emerald-300 { color: rgba(16,185,129, 0.90) !important; }
+        .theme-white .text-emerald-400 { color: rgba(16,185,129, 0.95) !important; }
+        .theme-white .bg-emerald-500\/10 { background-color: rgba(16,185,129, 0.08) !important; }
+
+        /* Fix border-sky-500/* in white theme */
+        .theme-white .border-sky-500\/30 { border-color: rgba(14,165,233, 0.25) !important; }
+        .theme-white .text-sky-200 { color: rgba(14,165,233, 0.85) !important; }
+        .theme-white .text-sky-300 { color: rgba(14,165,233, 0.90) !important; }
+        .theme-white .text-sky-400 { color: rgba(14,165,233, 0.95) !important; }
+
+        /* Fix border-indigo-500/* in white theme */
+        .theme-white .border-indigo-500\/30 { border-color: rgba(99,102,241, 0.25) !important; }
+        .theme-white .text-indigo-200 { color: rgba(99,102,241, 0.85) !important; }
+        .theme-white .text-indigo-300 { color: rgba(99,102,241, 0.90) !important; }
+        .theme-white .bg-indigo-500\/10 { background-color: rgba(99,102,241, 0.08) !important; }
+
+        /* Fix border-orange-500/* in white theme */
+        .theme-white .border-orange-500\/30 { border-color: rgba(249,115,22, 0.25) !important; }
+        .theme-white .text-orange-300 { color: rgba(249,115,22, 0.85) !important; }
+        .theme-white .text-orange-400 { color: rgba(249,115,22, 0.90) !important; }
+        .theme-white .bg-orange-500\/10 { background-color: rgba(249,115,22, 0.08) !important; }
+
+        /* Fix border-pink-500/* in white theme */
+        .theme-white .border-pink-500\/30 { border-color: rgba(236,72,153, 0.25) !important; }
+        .theme-white .text-pink-200 { color: rgba(236,72,153, 0.85) !important; }
+        .theme-white .text-pink-300 { color: rgba(236,72,153, 0.90) !important; }
+        .theme-white .bg-pink-500\/10 { background-color: rgba(236,72,153, 0.08) !important; }
+
+        /* Fix border-accent/10 border-accent/20 in white theme */
+        .theme-white .border-accent\/10 { border-color: rgba(var(--accent-rgb), 0.10) !important; }
+        .theme-white .bg-accent\/10 { background-color: rgba(var(--accent-rgb), 0.08) !important; }
+        .theme-white .text-accent { color: rgb(var(--accent-rgb)) !important; }
+
+        /* Fix bg-gradient-to-r from-cyan-600 via-indigo-600 to-accent (login button) */
+        .theme-white .from-cyan-600 { --tw-gradient-from: rgb(var(--accent-rgb)) !important; }
+        .theme-white .via-indigo-600 { --tw-gradient-via: rgb(var(--accent-bright-rgb)) !important; }
+
+        /* Fix border-b border-cyan-500/20 in theme panel */
+        .theme-white .border-b { border-bottom-color: rgba(0,0,0,0.06) !important; }
+        .theme-white .border-t { border-top-color: rgba(0,0,0,0.06) !important; }
+        .theme-white .border-l { border-left-color: rgba(0,0,0,0.06) !important; }
+        .theme-white .border-r { border-right-color: rgba(0,0,0,0.06) !important; }
+
+        /* Fix border-cyan-500/20 section borders in white theme */
+        .theme-white .border-cyan-500\/20 { border-color: rgba(var(--accent-rgb), 0.12) !important; }
+
+        /* Fix shadow-cyan-* in white theme */
+        .theme-white .shadow-cyan-500\/25 { --tw-shadow-color: rgba(var(--accent-rgb), 0.15); }
+        .theme-white .shadow-cyan-500\/40 { --tw-shadow-color: rgba(var(--accent-rgb), 0.25); }
+
+        /* Fix border-accent/30 border-accent/40 theme-hero-badge */
+        .theme-white .theme-hero-badge { border-color: rgba(var(--accent-rgb), 0.20) !important; }
+        .theme-white .theme-hero-badge .w-2 { background-color: rgb(var(--accent-rgb)); }
+
+        /* Fix theme-nav-link in white theme */
+        .theme-white .border-cyan-500\/10 { border-color: rgba(0,0,0,0.06) !important; }
+
+        /* Fix bg-gradient-to-b from-cyan-100 (structure heading) */
+        .theme-white .from-cyan-100 { --tw-gradient-from: rgba(var(--accent-rgb), 0.15) !important; }
+
+        /* Fix border border-cyan-400 on profile badge */
+        .theme-white .border-cyan-400 { border-color: rgba(var(--accent-rgb), 0.35) !important; }
+        .theme-white .border-cyan-400\/50 { border-color: rgba(var(--accent-rgb), 0.35) !important; }
+        .theme-white .border-cyan-500\/50 { border-color: rgba(var(--accent-rgb), 0.35) !important; }
+
+        /* Fix theme panel backdrop for white theme */
+        .theme-white .bg-\[\#080d18\]\/98 { background-color: rgba(255,255,255,0.98) !important; }
+
+        /* Fix section borders with theme color for white */
+        .theme-white section.border-t { border-top-color: rgba(0,0,0,0.06) !important; }
+        .theme-white .border-t.border-cyan-500\/20 { border-top-color: rgba(0,0,0,0.06) !important; }
+
+        /* Fix hover:text-cyan-200, hover:text-cyan-300 in white theme */
+        .theme-white .hover\:text-cyan-200:hover { color: rgb(var(--accent-rgb)) !important; }
+        .theme-white .hover\:text-cyan-300:hover { color: rgb(var(--accent-rgb)) !important; }
+        .theme-white .hover\:text-cyan-400:hover { color: rgb(var(--accent-bright-rgb)) !important; }
+
+        /* Fix hover:bg-cyan-500/* in white theme */
+        .theme-white .hover\:bg-cyan-500\/10:hover { background-color: rgba(var(--accent-rgb), 0.08) !important; }
+        .theme-white .hover\:bg-cyan-500\/15:hover { background-color: rgba(var(--accent-rgb), 0.10) !important; }
+        .theme-white .hover\:bg-cyan-500\/20:hover { background-color: rgba(var(--accent-rgb), 0.14) !important; }
+        .theme-white .hover\:bg-cyan-500\/30:hover { background-color: rgba(var(--accent-rgb), 0.20) !important; }
+
+        /* Fix hover:border-cyan-400/50, hover:border-cyan-400/60 */
+        .theme-white .hover\:border-cyan-400\/50:hover { border-color: rgba(var(--accent-rgb), 0.35) !important; }
+        .theme-white .hover\:border-cyan-400\/60:hover { border-color: rgba(var(--accent-rgb), 0.40) !important; }
+
+        /* Fix bg-accent/10 bg-accent/20 quiz options */
+        .theme-white .bg-accent\/20 { background-color: rgba(var(--accent-rgb), 0.12) !important; }
+
+        /* Fix border-accent/20 in white theme */
+        .theme-white .border-accent\/20 { border-color: rgba(var(--accent-rgb), 0.15) !important; }
+
+        /* Fix border-accent/50 profile border */
+        .theme-white .border-accent\/50 { border-color: rgba(var(--accent-rgb), 0.35) !important; }
+
+        /* Fix shadow-accent/20 in white theme */
+        .theme-white .shadow-accent\/20 { --tw-shadow-color: rgba(var(--accent-rgb), 0.12); }
+
+        /* Fix btn-primary-glow in white theme */
+        .theme-white .btn-primary-glow { background-color: rgb(var(--accent-rgb)); }
+
         /* --- Non-white theme: keep dark backgrounds for specific elements --- */
         .theme-cyan .bg-\[\#050506\],
         .theme-emerald .bg-\[\#050506\],
@@ -348,11 +526,93 @@
         .theme-option.active-theme {
             border-color: rgba(var(--accent-rgb), 0.55) !important;
             background: rgba(var(--accent-rgb), 0.14) !important;
+            box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.25), 0 0 20px rgba(var(--accent-rgb), 0.15);
         }
+        .theme-option.active-theme::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            border: 2px solid rgba(var(--accent-rgb), 0.5);
+            animation: theme-ring-pulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes theme-ring-pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.005); }
+        }
+        .theme-option { position: relative; }
         .theme-option.active-theme .theme-check { opacity: 1 !important; }
         .theme-option:not(.active-theme) .theme-check { opacity: 0 !important; }
         .theme-white .theme-option.active-theme {
             background: rgba(var(--accent-rgb), 0.08) !important;
+        }
+
+        /* Theme preview mini-card */
+        .theme-preview-mini {
+            width: 100%;
+            height: 44px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 0.5rem;
+            opacity: 0.85;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .theme-option:hover .theme-preview-mini {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+        .theme-preview-mini .preview-bar {
+            height: 8px;
+            border-radius: 8px 8px 0 0;
+        }
+        .theme-preview-mini .preview-body {
+            display: flex;
+            gap: 3px;
+            padding: 4px 5px;
+            height: 36px;
+        }
+        .theme-preview-mini .preview-sidebar {
+            width: 18px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .theme-preview-mini .preview-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            border-radius: 4px;
+            padding: 3px;
+        }
+        .theme-preview-mini .preview-line {
+            height: 2px;
+            border-radius: 2px;
+            width: 100%;
+        }
+        .theme-preview-mini .preview-line.short { width: 60%; }
+        .theme-preview-mini .preview-line.medium { width: 80%; }
+
+        /* Theme panel slide-in animation */
+        #theme-panel {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #theme-panel-backdrop {
+            transition: opacity 0.3s ease;
+        }
+
+        /* Theme switching flash overlay */
+        .theme-flash-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .theme-flash-overlay.active {
+            opacity: 1;
         }
 
         /* Custom Smooth Scrollbar & Base Reset */
@@ -999,11 +1259,11 @@
     </header>
 
     <!-- ==================== THEME PANEL (DRAWER) ==================== -->
-    <div id="theme-panel-backdrop" class="fixed inset-0 z-[60] hidden pointer-events-none transition-opacity duration-300">
+    <div id="theme-panel-backdrop" class="fixed inset-0 z-[60] hidden pointer-events-none">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" onclick="toggleThemePanel()"></div>
     </div>
     <div id="theme-panel"
-        class="fixed top-0 right-0 h-full w-80 max-w-[90vw] z-[70] translate-x-full transition-transform duration-300 ease-out pointer-events-auto">
+        class="fixed top-0 right-0 h-full w-80 max-w-[90vw] z-[70] translate-x-full pointer-events-auto">
         <div class="h-full bg-[#080d18]/98 backdrop-blur-3xl border-l border-cyan-500/30 shadow-[-20px_0_60px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.15)] flex flex-col overflow-y-auto">
             <!-- Panel Header -->
             <div class="flex items-center justify-between px-6 py-5 border-b border-cyan-500/20">
@@ -1016,97 +1276,182 @@
                 </button>
             </div>
             <!-- Panel Body -->
-            <div class="px-6 py-5 flex-1 space-y-5">
+            <div class="px-5 py-5 flex-1 space-y-4">
                 <p class="text-xs text-fgMuted leading-relaxed">
                     Pilih tema tampilan untuk menyesuaikan warna aksen seluruh website.
                 </p>
+                <!-- Keyboard shortcut hint -->
+                <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <i data-lucide="keyboard" class="w-3.5 h-3.5 text-fgMuted"></i>
+                    <span class="text-[10px] font-mono text-fgMuted">Ctrl+Shift+T untuk quick switch</span>
+                </div>
                 <!-- Theme Options -->
-                <div id="theme-options" class="space-y-3">
+                <div id="theme-options" class="space-y-2.5">
                     <!-- Cyan (Default) -->
                     <button onclick="applyTheme('cyan')" data-theme="cyan"
-                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all cursor-pointer group">
-                        <div class="flex-shrink-0 flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-cyan-400 border-2 border-white/30"></span>
-                            <span class="w-5 h-5 rounded-full bg-indigo-500 border-2 border-white/20 -ml-2"></span>
+                        class="theme-option active-theme w-full rounded-2xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all cursor-pointer group overflow-hidden">
+                        <div class="theme-preview-mini" style="background: #050506;">
+                            <div class="preview-bar" style="background: linear-gradient(90deg, rgba(6,8,16,0.95), rgba(6,8,16,0.88)); border-bottom: 1px solid rgba(94,106,210,0.3);"></div>
+                            <div class="preview-body">
+                                <div class="preview-sidebar" style="background: rgba(94,106,210,0.15); border: 1px solid rgba(94,106,210,0.2);"></div>
+                                <div class="preview-content" style="background: rgba(10,10,12,0.9);">
+                                    <div class="preview-line" style="background: rgba(94,106,210,0.6);"></div>
+                                    <div class="preview-line medium" style="background: rgba(255,255,255,0.12);"></div>
+                                    <div class="preview-line short" style="background: rgba(255,255,255,0.07);"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-left flex-1">
-                            <span class="text-xs font-bold text-white block">Cyber Cyan</span>
-                            <span class="text-[10px] font-mono text-fgMuted">Default • Futuristik</span>
+                        <div class="flex items-center gap-3 px-4 pb-3">
+                            <div class="flex-shrink-0 flex items-center gap-1">
+                                <span class="w-4 h-4 rounded-full bg-cyan-400 border-2 border-white/30"></span>
+                                <span class="w-4 h-4 rounded-full bg-indigo-500 border-2 border-white/20 -ml-1.5"></span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <span class="text-[11px] font-bold text-white block">Cyber Cyan</span>
+                                <span class="text-[9px] font-mono text-fgMuted">Default • Futuristik</span>
+                            </div>
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400 theme-check"></i>
                         </div>
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400 opacity-100 theme-check"></i>
                     </button>
                     <!-- Emerald -->
                     <button onclick="applyTheme('emerald')" data-theme="emerald"
-                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group">
-                        <div class="flex-shrink-0 flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-emerald-400 border-2 border-white/30"></span>
-                            <span class="w-5 h-5 rounded-full bg-teal-500 border-2 border-white/20 -ml-2"></span>
+                        class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group overflow-hidden">
+                        <div class="theme-preview-mini" style="background: #040605;">
+                            <div class="preview-bar" style="background: linear-gradient(90deg, rgba(5,12,10,0.95), rgba(5,12,10,0.88)); border-bottom: 1px solid rgba(16,185,129,0.3);"></div>
+                            <div class="preview-body">
+                                <div class="preview-sidebar" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.2);"></div>
+                                <div class="preview-content" style="background: rgba(6,16,12,0.9);">
+                                    <div class="preview-line" style="background: rgba(16,185,129,0.6);"></div>
+                                    <div class="preview-line medium" style="background: rgba(255,255,255,0.12);"></div>
+                                    <div class="preview-line short" style="background: rgba(255,255,255,0.07);"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-left flex-1">
-                            <span class="text-xs font-bold text-white group-hover:text-emerald-200 transition-colors block">Emerald Nature</span>
-                            <span class="text-[10px] font-mono text-fgMuted">Alami • Organik</span>
+                        <div class="flex items-center gap-3 px-4 pb-3">
+                            <div class="flex-shrink-0 flex items-center gap-1">
+                                <span class="w-4 h-4 rounded-full bg-emerald-400 border-2 border-white/30"></span>
+                                <span class="w-4 h-4 rounded-full bg-teal-500 border-2 border-white/20 -ml-1.5"></span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <span class="text-[11px] font-bold text-white group-hover:text-emerald-200 transition-colors block">Emerald Nature</span>
+                                <span class="text-[9px] font-mono text-fgMuted">Alami • Organik</span>
+                            </div>
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 opacity-0 theme-check transition-opacity"></i>
                         </div>
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 opacity-0 theme-check transition-opacity"></i>
                     </button>
                     <!-- Amber -->
                     <button onclick="applyTheme('amber')" data-theme="amber"
-                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-amber-500/10 hover:border-amber-500/30 transition-all cursor-pointer group">
-                        <div class="flex-shrink-0 flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-amber-400 border-2 border-white/30"></span>
-                            <span class="w-5 h-5 rounded-full bg-orange-500 border-2 border-white/20 -ml-2"></span>
+                        class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-amber-500/10 hover:border-amber-500/30 transition-all cursor-pointer group overflow-hidden">
+                        <div class="theme-preview-mini" style="background: #060504;">
+                            <div class="preview-bar" style="background: linear-gradient(90deg, rgba(14,10,6,0.95), rgba(14,10,6,0.88)); border-bottom: 1px solid rgba(245,158,11,0.3);"></div>
+                            <div class="preview-body">
+                                <div class="preview-sidebar" style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.2);"></div>
+                                <div class="preview-content" style="background: rgba(18,14,8,0.9);">
+                                    <div class="preview-line" style="background: rgba(245,158,11,0.6);"></div>
+                                    <div class="preview-line medium" style="background: rgba(255,255,255,0.12);"></div>
+                                    <div class="preview-line short" style="background: rgba(255,255,255,0.07);"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-left flex-1">
-                            <span class="text-xs font-bold text-white group-hover:text-amber-200 transition-colors block">Sunset Amber</span>
-                            <span class="text-[10px] font-mono text-fgMuted">Hangat • Berenergi</span>
+                        <div class="flex items-center gap-3 px-4 pb-3">
+                            <div class="flex-shrink-0 flex items-center gap-1">
+                                <span class="w-4 h-4 rounded-full bg-amber-400 border-2 border-white/30"></span>
+                                <span class="w-4 h-4 rounded-full bg-orange-500 border-2 border-white/20 -ml-1.5"></span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <span class="text-[11px] font-bold text-white group-hover:text-amber-200 transition-colors block">Sunset Amber</span>
+                                <span class="text-[9px] font-mono text-fgMuted">Hangat • Berenergi</span>
+                            </div>
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400 opacity-0 theme-check transition-opacity"></i>
                         </div>
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400 opacity-0 theme-check transition-opacity"></i>
                     </button>
                     <!-- Rose -->
                     <button onclick="applyTheme('rose')" data-theme="rose"
-                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-rose-500/10 hover:border-rose-500/30 transition-all cursor-pointer group">
-                        <div class="flex-shrink-0 flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-rose-400 border-2 border-white/30"></span>
-                            <span class="w-5 h-5 rounded-full bg-pink-500 border-2 border-white/20 -ml-2"></span>
+                        class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-rose-500/10 hover:border-rose-500/30 transition-all cursor-pointer group overflow-hidden">
+                        <div class="theme-preview-mini" style="background: #060405;">
+                            <div class="preview-bar" style="background: linear-gradient(90deg, rgba(14,6,10,0.95), rgba(14,6,10,0.88)); border-bottom: 1px solid rgba(244,63,94,0.3);"></div>
+                            <div class="preview-body">
+                                <div class="preview-sidebar" style="background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.2);"></div>
+                                <div class="preview-content" style="background: rgba(18,8,14,0.9);">
+                                    <div class="preview-line" style="background: rgba(244,63,94,0.6);"></div>
+                                    <div class="preview-line medium" style="background: rgba(255,255,255,0.12);"></div>
+                                    <div class="preview-line short" style="background: rgba(255,255,255,0.07);"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-left flex-1">
-                            <span class="text-xs font-bold text-white group-hover:text-rose-200 transition-colors block">Rose Quartz</span>
-                            <span class="text-[10px] font-mono text-fgMuted">Lembut • Elegan</span>
+                        <div class="flex items-center gap-3 px-4 pb-3">
+                            <div class="flex-shrink-0 flex items-center gap-1">
+                                <span class="w-4 h-4 rounded-full bg-rose-400 border-2 border-white/30"></span>
+                                <span class="w-4 h-4 rounded-full bg-pink-500 border-2 border-white/20 -ml-1.5"></span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <span class="text-[11px] font-bold text-white group-hover:text-rose-200 transition-colors block">Rose Quartz</span>
+                                <span class="text-[9px] font-mono text-fgMuted">Lembut • Elegan</span>
+                            </div>
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 opacity-0 theme-check transition-opacity"></i>
                         </div>
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 opacity-0 theme-check transition-opacity"></i>
                     </button>
                     <!-- Violet -->
                     <button onclick="applyTheme('violet')" data-theme="violet"
-                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-violet-500/10 hover:border-violet-500/30 transition-all cursor-pointer group">
-                        <div class="flex-shrink-0 flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-violet-400 border-2 border-white/30"></span>
-                            <span class="w-5 h-5 rounded-full bg-purple-500 border-2 border-white/20 -ml-2"></span>
+                        class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-violet-500/10 hover:border-violet-500/30 transition-all cursor-pointer group overflow-hidden">
+                        <div class="theme-preview-mini" style="background: #050406;">
+                            <div class="preview-bar" style="background: linear-gradient(90deg, rgba(10,6,16,0.95), rgba(10,6,16,0.88)); border-bottom: 1px solid rgba(139,92,246,0.3);"></div>
+                            <div class="preview-body">
+                                <div class="preview-sidebar" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.2);"></div>
+                                <div class="preview-content" style="background: rgba(14,8,20,0.9);">
+                                    <div class="preview-line" style="background: rgba(139,92,246,0.6);"></div>
+                                    <div class="preview-line medium" style="background: rgba(255,255,255,0.12);"></div>
+                                    <div class="preview-line short" style="background: rgba(255,255,255,0.07);"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-left flex-1">
-                            <span class="text-xs font-bold text-white group-hover:text-violet-200 transition-colors block">Royal Violet</span>
-                            <span class="text-[10px] font-mono text-fgMuted">Klasik • Megah</span>
+                        <div class="flex items-center gap-3 px-4 pb-3">
+                            <div class="flex-shrink-0 flex items-center gap-1">
+                                <span class="w-4 h-4 rounded-full bg-violet-400 border-2 border-white/30"></span>
+                                <span class="w-4 h-4 rounded-full bg-purple-500 border-2 border-white/20 -ml-1.5"></span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <span class="text-[11px] font-bold text-white group-hover:text-violet-200 transition-colors block">Royal Violet</span>
+                                <span class="text-[9px] font-mono text-fgMuted">Klasik • Megah</span>
+                            </div>
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-violet-400 opacity-0 theme-check transition-opacity"></i>
                         </div>
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-violet-400 opacity-0 theme-check transition-opacity"></i>
                     </button>
                     <!-- White / Light -->
                     <button onclick="applyTheme('white')" data-theme="white"
-                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-zinc-200/10 hover:border-zinc-300/30 transition-all cursor-pointer group">
-                        <div class="flex-shrink-0 flex items-center gap-1.5">
-                            <span class="w-5 h-5 rounded-full bg-white border-2 border-zinc-300"></span>
-                            <span class="w-5 h-5 rounded-full bg-zinc-200 border-2 border-zinc-300 -ml-2"></span>
+                        class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-zinc-200/10 hover:border-zinc-300/30 transition-all cursor-pointer group overflow-hidden">
+                        <div class="theme-preview-mini" style="background: #f5f5f7;">
+                            <div class="preview-bar" style="background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88)); border-bottom: 1px solid rgba(0,0,0,0.08);"></div>
+                            <div class="preview-body">
+                                <div class="preview-sidebar" style="background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.06);"></div>
+                                <div class="preview-content" style="background: rgba(255,255,255,0.9);">
+                                    <div class="preview-line" style="background: rgba(94,106,210,0.5);"></div>
+                                    <div class="preview-line medium" style="background: rgba(0,0,0,0.12);"></div>
+                                    <div class="preview-line short" style="background: rgba(0,0,0,0.07);"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-left flex-1">
-                            <span class="text-xs font-bold text-white group-hover:text-zinc-200 transition-colors block">Clean White</span>
-                            <span class="text-[10px] font-mono text-fgMuted">Terang • Minimalis</span>
+                        <div class="flex items-center gap-3 px-4 pb-3">
+                            <div class="flex-shrink-0 flex items-center gap-1">
+                                <span class="w-4 h-4 rounded-full bg-white border-2 border-zinc-300"></span>
+                                <span class="w-4 h-4 rounded-full bg-zinc-200 border-2 border-zinc-300 -ml-1.5"></span>
+                            </div>
+                            <div class="text-left flex-1">
+                                <span class="text-[11px] font-bold text-white group-hover:text-zinc-200 transition-colors block">Clean White</span>
+                                <span class="text-[9px] font-mono text-fgMuted">Terang • Minimalis</span>
+                            </div>
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-zinc-300 opacity-0 theme-check transition-opacity"></i>
                         </div>
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-zinc-300 opacity-0 theme-check transition-opacity"></i>
                     </button>
                 </div>
-            </div>
-            <!-- Panel Footer -->
+            </div>                    <!-- Panel Footer -->
             <div class="px-6 py-4 border-t border-cyan-500/10">
-                <p class="text-[10px] font-mono text-fgMuted text-center tracking-wide">
-                    THEME_ACTIVE // <span id="theme-active-label">CYBER_CYAN</span>
-                </p>
+                <div class="flex items-center justify-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <p class="text-[10px] font-mono text-fgMuted tracking-wide">
+                        ACTIVE // <span id="theme-active-label" class="text-cyan-300 font-bold">CYBER_CYAN</span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -3312,24 +3657,43 @@
                 violet:  { label: 'ROYAL_VIOLET',   themeClass: 'theme-violet'  },
                 white:   { label: 'CLEAN_WHITE',    themeClass: 'theme-white'   }
             };
+            const THEME_ORDER = ['cyan', 'emerald', 'amber', 'rose', 'violet', 'white'];
             const ALL_THEME_CLASSES = Object.values(THEMES).map(t => t.themeClass);
             let current = localStorage.getItem('osis_theme') || 'cyan';
+            let panelAutoCloseTimer = null;
 
-            // Apply theme to <html>
-            function setTheme(name) {
+            // Apply theme to <html> with smooth transition
+            function setTheme(name, options = {}) {
                 if (!THEMES[name]) return;
+                const { animate = true, autoClose = false } = options;
                 current = name;
+
+                // Add transition class for smooth cross-fade
+                if (animate) {
+                    document.documentElement.classList.add('theme-transitioning');
+                    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 500);
+                }
+
                 // Remove all theme classes from <html>
                 ALL_THEME_CLASSES.forEach(cls => document.documentElement.classList.remove(cls));
                 document.documentElement.classList.add(THEMES[name].themeClass);
                 localStorage.setItem('osis_theme', name);
+
                 // Update active label in panel
                 const label = document.getElementById('theme-active-label');
                 if (label) label.textContent = THEMES[name].label;
-                // Update active state on buttons
+
+                // Update active state on buttons with smooth indicator
                 document.querySelectorAll('.theme-option').forEach(btn => {
-                    btn.classList.toggle('active-theme', btn.getAttribute('data-theme') === name);
+                    const isActive = btn.getAttribute('data-theme') === name;
+                    btn.classList.toggle('active-theme', isActive);
+                    const check = btn.querySelector('.theme-check');
+                    if (check) {
+                        check.style.opacity = isActive ? '1' : '0';
+                        check.style.transition = 'opacity 0.3s ease';
+                    }
                 });
+
                 // Update meta theme-color for mobile browsers
                 const pageBg = getComputedStyle(document.documentElement).getPropertyValue('--page-bg').trim();
                 const [r, g, b] = pageBg.split(',').map(s => parseInt(s.trim()));
@@ -3338,15 +3702,28 @@
                     document.getElementById('meta-theme-color')?.setAttribute('content', hex);
                     document.getElementById('meta-tile-color')?.setAttribute('content', hex);
                 }
+
                 // Re-create icons to reflect any dynamically shown/hidden checks
                 if (window.lucide) lucide.createIcons();
+
+                // Auto-close panel after selection
+                if (autoClose) {
+                    clearTimeout(panelAutoCloseTimer);
+                    panelAutoCloseTimer = setTimeout(() => {
+                        const panel = document.getElementById('theme-panel');
+                        if (panel && !panel.classList.contains('translate-x-full')) {
+                            window.toggleThemePanel();
+                        }
+                    }, 400);
+                }
             }
 
-            // Expose globally
+            // Toggle panel open/close
             window.toggleThemePanel = function () {
-                const panel  = document.getElementById('theme-panel');
+                const panel = document.getElementById('theme-panel');
                 const backdrop = document.getElementById('theme-panel-backdrop');
                 const isOpen = !panel.classList.contains('translate-x-full');
+
                 if (isOpen) {
                     panel.classList.add('translate-x-full');
                     backdrop.classList.add('hidden');
@@ -3357,19 +3734,30 @@
                     document.body.style.overflow = 'hidden';
                 }
                 // Refresh active state
-                setTheme(current);
+                setTheme(current, { animate: false });
             };
 
+            // Apply theme (from button click)
             window.applyTheme = function (name) {
-                setTheme(name);
+                setTheme(name, { animate: true, autoClose: true });
             };
+
+            // Keyboard shortcut: Ctrl+Shift+T to cycle themes
+            document.addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+                    e.preventDefault();
+                    const currentIdx = THEME_ORDER.indexOf(current);
+                    const nextIdx = (currentIdx + 1) % THEME_ORDER.length;
+                    setTheme(THEME_ORDER[nextIdx], { animate: true, autoClose: false });
+                }
+            });
 
             // Run on DOM ready
             document.addEventListener('DOMContentLoaded', () => {
-                setTheme(current);
+                setTheme(current, { animate: false });
             });
             // Also run immediately for fast paint
-            setTheme(current);
+            setTheme(current, { animate: false });
         })();
     </script>
     <script>
