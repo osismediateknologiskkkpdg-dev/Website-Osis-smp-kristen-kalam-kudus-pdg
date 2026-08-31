@@ -24,8 +24,9 @@
     <!-- 3. Windows Metro & Android Theme Integration -->
     <meta name="msapplication-TileImage" content="./favicon-circle.png">
     <meta name="msapplication-TileColor" content="#050506">
-    <meta name="theme-color" content="#050506">
+    <meta name="theme-color" content="#050506" id="meta-theme-color">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#050506" id="meta-tile-color">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -86,10 +87,276 @@
     </script>
 
     <style>
+        /* =========================================================================
+           THEME SYSTEM — DYNAMIC COLOR OVERRIDES
+           ========================================================================= */
+
+        /* --- Accent RGB (all themes) --- */
+        .theme-cyan   { --accent-rgb: 94,106,210; --accent-bright-rgb: 104,114,217; }
+        .theme-emerald { --accent-rgb: 16,185,129; --accent-bright-rgb: 52,211,153; }
+        .theme-amber   { --accent-rgb: 245,158,11; --accent-bright-rgb: 251,191,36; }
+        .theme-rose    { --accent-rgb: 244,63,94;  --accent-bright-rgb: 251,113,133; }
+        .theme-violet  { --accent-rgb: 139,92,246; --accent-bright-rgb: 167,139,250; }
+        .theme-white   { --accent-rgb: 94,106,210;  --accent-bright-rgb: 104,114,217; }
+
+        /* --- Background / Surface RGB (all themes) --- */
+        .theme-cyan   { --page-bg: 5,5,6;       --page-text: 237,237,239; --surface-1: 6,8,16;    --surface-2: 8,13,24;   --scrollbar-track: 2,2,3;   --scrollbar-thumb: 255,255,255,0.15; --blob1: 94,106,210,0.18; --blob2: 67,56,202,0.12; --blob3: 88,28,135,0.08; --navbar-glass: rgba(6,8,16,0.88); --border-base: 255,255,255,0.06; --card-bg: 10,10,12; --heading-color: #ffffff; --muted-color: 138,143,152; }
+        .theme-emerald { --page-bg: 4,6,5;       --page-text: 237,237,239; --surface-1: 5,12,10;   --surface-2: 6,16,12;   --scrollbar-track: 2,4,3;   --scrollbar-thumb: 255,255,255,0.15; --blob1: 16,185,129,0.16; --blob2: 13,148,136,0.12; --blob3: 6,95,70,0.08; --navbar-glass: rgba(5,12,10,0.88); --border-base: 255,255,255,0.06; --card-bg: 8,14,12; --heading-color: #ffffff; --muted-color: 138,143,152; }
+        .theme-amber   { --page-bg: 6,5,4;       --page-text: 237,237,239; --surface-1: 14,10,6;   --surface-2: 18,14,8;   --scrollbar-track: 3,3,2;   --scrollbar-thumb: 255,255,255,0.15; --blob1: 245,158,11,0.14; --blob2: 234,88,12,0.10; --blob3: 180,83,9,0.06; --navbar-glass: rgba(14,10,6,0.88); --border-base: 255,255,255,0.06; --card-bg: 12,10,8; --heading-color: #ffffff; --muted-color: 138,143,152; }
+        .theme-rose    { --page-bg: 6,4,5;       --page-text: 237,237,239; --surface-1: 14,6,10;   --surface-2: 18,8,14;   --scrollbar-track: 3,2,3;   --scrollbar-thumb: 255,255,255,0.15; --blob1: 244,63,94,0.14; --blob2: 219,39,119,0.10; --blob3: 157,23,77,0.06; --navbar-glass: rgba(14,6,10,0.88); --border-base: 255,255,255,0.06; --card-bg: 12,8,10; --heading-color: #ffffff; --muted-color: 138,143,152; }
+        .theme-violet  { --page-bg: 5,4,6;       --page-text: 237,237,239; --surface-1: 10,6,16;   --surface-2: 14,8,20;   --scrollbar-track: 2,2,3;   --scrollbar-thumb: 255,255,255,0.15; --blob1: 139,92,246,0.14; --blob2: 168,85,247,0.10; --blob3: 109,40,217,0.06; --navbar-glass: rgba(10,6,16,0.88); --border-base: 255,255,255,0.06; --card-bg: 10,8,14; --heading-color: #ffffff; --muted-color: 138,143,152; }
+        .theme-white   { --page-bg: 245,245,247; --page-text: 24,24,27;    --surface-1: 255,255,255; --surface-2: 240,240,242; --scrollbar-track: 230,230,232; --scrollbar-thumb: 160,160,170; --blob1: 94,106,210,0.07; --blob2: 67,56,202,0.05; --blob3: 88,28,135,0.04; --navbar-glass: rgba(255,255,255,0.82); --border-base: 0,0,0,0.08; --card-bg: 255,255,255; --heading-color: #18181b; --muted-color: 113,113,122; }
+
+        /* --- Apply background variables to body & key elements --- */
+        html { background-color: rgb(var(--page-bg)); transition: background-color 0.4s ease; }
+        body { background-color: rgb(var(--page-bg)); color: rgb(var(--page-text)); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar-track { background: rgb(var(--scrollbar-track)); }
+        ::-webkit-scrollbar-thumb { background: rgba(var(--scrollbar-thumb)); }
+
+        /* Navbar glass background */
+        .header-nav-bar { background: var(--navbar-glass); }
+
+        /* Mobile menu glass */
+        .mobile-menu-glass { background: var(--navbar-glass); }
+
+        /* Card backgrounds */
+        .theme-card-bg { background: rgb(var(--card-bg)); }
+
+        /* Background blobs */
+        .theme-blob-1 { background: rgba(var(--blob1)); }
+        .theme-blob-2 { background: rgba(var(--blob2)); }
+        .theme-blob-3 { background: rgba(var(--blob3)); }
+
+        /* Base border color */
+        .theme-border-base { border-color: rgba(var(--border-base)); }
+
+        /* Heading color */
+        .theme-heading { color: var(--heading-color); }
+
+        /* Muted text color */
+        .theme-muted { color: rgb(var(--muted-color)); }
+
+        /* Background gradient base */
+        .theme-bg-gradient {
+            background: radial-gradient(ellipse at top, rgb(var(--surface-1)) 0%, rgb(var(--page-bg)) 60%, rgb(var(--scrollbar-track)) 100%);
+        }
+
+        /* --- White theme specific overrides --- */
+        .theme-white .bg-bgBase,
+        .theme-white .bg-bgElevated,
+        .theme-white .bg-bgDeep { background-color: rgb(var(--page-bg)) !important; }
+        .theme-white .card-linear {
+            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.005) 100%);
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.06), inset 0 1px 0 0 rgba(255,255,255,0.8);
+        }
+        .theme-white .card-linear:hover {
+            border-color: rgba(0,0,0,0.15);
+            box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.2), 0 12px 40px rgba(0,0,0,0.08), inset 0 1px 0 0 rgba(255,255,255,0.9);
+        }
+        .theme-white .review-shell {
+            background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(245,245,247,0.94));
+            border-color: rgba(var(--accent-rgb), 0.18);
+            box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.08), 0 30px 80px rgba(0,0,0,0.08), inset 0 1px 0 rgba(0,0,0,0.05);
+        }
+        .theme-white .review-list-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,245,247,0.9));
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 18px 45px rgba(0,0,0,0.04);
+        }
+        .theme-white .review-composer {
+            background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.01) 100%);
+            border-color: rgba(0,0,0,0.08);
+        }
+        .theme-white .review-stars-wrap {
+            background: rgba(245,245,247,0.95);
+            border-color: rgba(0,0,0,0.1);
+        }
+        .theme-white .review-tag-chip {
+            background: rgba(0,0,0,0.03);
+            border-color: rgba(0,0,0,0.08);
+            color: rgba(0,0,0,0.6);
+        }
+        .theme-white .review-tag-chip:hover {
+            background: rgba(var(--accent-rgb), 0.08);
+            border-color: rgba(var(--accent-rgb), 0.4);
+            color: #18181b;
+        }
+        .theme-white .review-view-more {
+            border-color: rgba(var(--accent-rgb), 0.35);
+            background: rgba(var(--accent-rgb), 0.06);
+            color: rgb(var(--accent-rgb));
+        }
+        .theme-white .review-view-more:hover {
+            background: rgba(var(--accent-rgb), 0.12);
+            color: rgb(var(--accent-rgb));
+        }
+        .theme-white .review-author-avatar {
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+        }
+        .theme-white .review-hero-stat {
+            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.005) 100%);
+            border-color: rgba(0,0,0,0.06);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 30px rgba(0,0,0,0.04);
+        }
+        .theme-white .review-dots .review-dot:not(.active) {
+            background: rgba(0,0,0,0.12);
+        }
+        .theme-white .review-slider-btn {
+            border-color: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.03);
+            color: #3f3f46;
+        }
+        .theme-white .review-slider-btn:hover:not(:disabled) {
+            border-color: rgba(var(--accent-rgb), 0.5);
+            background: rgba(var(--accent-rgb), 0.08);
+        }
+        .theme-white .review-message { color: #27272a; }
+        .theme-white .review-footer { color: #52525b; }
+        .theme-white .spotlight-card::before {
+            background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(var(--accent-rgb), 0.08), transparent 80%);
+        }
+        .theme-white .img-card-frame {
+            background-color: #f4f4f5;
+            border-color: rgba(0,0,0,0.06);
+        }
+        .theme-white .bg-surface { background: rgba(0,0,0,0.04); }
+        .theme-white .bg-surface:hover { background: rgba(0,0,0,0.06); }
+        .theme-white blockquote,
+        .theme-white .bg-white\/\[0\.02\] { background: rgba(0,0,0,0.03); }
+        .theme-white .text-fgMuted { color: rgb(var(--muted-color)); }
+        .theme-white .text-fgSubtle { color: rgba(0,0,0,0.50); }
+        .theme-white .text-fg { color: rgb(var(--page-text)); }
+        .theme-white footer {
+            border-top-color: rgba(0,0,0,0.06);
+            background: rgb(var(--page-bg));
+        }
+        .theme-white .bg-\[\#080d18\],
+        .theme-white .bg-\[\#080d1a\],
+        .theme-white .bg-\[\#080d18\]\/80,
+        .theme-white .bg-\[\#080d18\]\/95,
+        .theme-white .bg-\[\#080d18\]\/98,
+        .theme-white .bg-\[\#080d18\]\/60,
+        .theme-white .bg-\[\#060810\]\/85 {
+            background-color: var(--navbar-glass) !important;
+        }
+        .theme-white .bg-\[\#0a0a0f\],
+        .theme-white .bg-\[\#0a0a0c\] {
+            background-color: rgb(var(--surface-2)) !important;
+        }
+        .theme-white .bg-\[\#020203\] { background-color: rgb(var(--scrollbar-track)); }
+        .theme-white .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+        .theme-white .border-white\/10 { border-color: rgba(0,0,0,0.08) !important; }
+        .theme-white .border-white\/\[0\.06\] { border-color: rgba(0,0,0,0.06) !important; }
+        .theme-white .border-white\/\[0\.08\] { border-color: rgba(0,0,0,0.08) !important; }
+        .theme-white .border-white\/\[0\.15\] { border-color: rgba(0,0,0,0.10) !important; }
+        .theme-white .bg-white\/\[0\.02\] { background-color: rgba(0,0,0,0.02); }
+        .theme-white .bg-white\/\[0\.04\] { background-color: rgba(0,0,0,0.03); }
+        .theme-white .bg-white\/\[0\.05\] { background-color: rgba(0,0,0,0.04); }
+        .theme-white .bg-black\/85 { background-color: rgba(0,0,0,0.75); }
+        .theme-white .bg-black\/60 { background-color: rgba(0,0,0,0.30); }
+        .theme-white .text-white { color: rgb(var(--page-text)); }
+        .theme-white .text-white\/95 { color: rgba(0,0,0,0.90); }
+        .theme-white .text-white\/90 { color: rgba(0,0,0,0.80); }
+        .theme-white .text-white\/60 { color: rgba(0,0,0,0.50); }
+        .theme-white .text-transparent { -webkit-text-fill-color: var(--heading-color); background-clip: unset; }
+        .theme-white .from-white { --tw-gradient-from: var(--heading-color); }
+        .theme-white .from-cyan-100 { --tw-gradient-from: #cffafe; }
+        .theme-white .via-white\/95 { --tw-gradient-via: rgba(0,0,0,0.88); }
+        .theme-white .via-white\/90 { --tw-gradient-via: rgba(0,0,0,0.80); }
+        .theme-white .to-white\/60 { --tw-gradient-to: rgba(0,0,0,0.30); }
+        .theme-white .opacity-\[0\.015\] { opacity: 0.008; }
+        .theme-white [data-lucide] { color: inherit; }
+        .theme-white a { color: inherit; }
+        .theme-white a:hover { color: rgb(var(--accent-rgb)); }
+
+        /* --- Non-white theme: keep dark backgrounds for specific elements --- */
+        .theme-cyan .bg-\[\#050506\],
+        .theme-emerald .bg-\[\#050506\],
+        .theme-amber .bg-\[\#050506\],
+        .theme-rose .bg-\[\#050506\],
+        .theme-violet .bg-\[\#050506\] { background-color: rgb(var(--page-bg)); }
+
+        /* Navbar theme toggle button */
+        #theme-toggle-btn {
+            border-color: rgba(var(--accent-rgb), 0.30);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.12);
+        }
+        #theme-toggle-btn:hover {
+            border-color: rgba(var(--accent-bright-rgb), 0.50);
+            background: rgba(var(--accent-rgb), 0.18);
+            box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+        }
+
+        /* Hero CTA primary button */
+        .hero-cta-primary {
+            background-color: rgb(var(--accent-rgb));
+            box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.5),
+                        0 4px 16px rgba(var(--accent-rgb),0.4),
+                        inset 0 1px 0 0 rgba(255,255,255,0.25);
+        }
+        .hero-cta-primary:hover {
+            background-color: rgb(var(--accent-bright-rgb));
+            box-shadow: 0 0 0 1px rgba(var(--accent-bright-rgb),0.8),
+                        0 6px 24px rgba(var(--accent-rgb),0.6),
+                        inset 0 1px 0 0 rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Card linear hover glow */
+        .card-linear.theme-glow:hover {
+            border-color: rgba(var(--accent-rgb), 0.40);
+            box-shadow: 0 0 0 1px rgba(var(--accent-rgb),0.3),
+                        0 12px 40px rgba(0,0,0,0.6),
+                        0 0 60px rgba(var(--accent-rgb),0.12),
+                        inset 0 1px 0 0 rgba(255,255,255,0.25);
+        }
+
+        /* Section top border accent */
+        .theme-border-top { border-color: rgba(var(--accent-rgb), 0.18) !important; }
+
+        /* Review list card top line */
+        .theme-review-line::before {
+            background: linear-gradient(90deg, rgb(var(--accent-rgb)), rgba(var(--accent-rgb),0.1) 80%, transparent) !important;
+        }
+
+        /* Slider active dot */
+        .theme-dot-active {
+            background: linear-gradient(90deg, rgb(var(--accent-rgb)), rgb(var(--accent-bright-rgb)));
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.50);
+        }
+
+        /* Nav link hover */
+        .theme-nav-link:hover {
+            background: rgba(var(--accent-rgb), 0.15);
+            border-color: rgba(var(--accent-rgb), 0.30);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25);
+        }
+        .theme-white .theme-nav-link:hover {
+            background: rgba(var(--accent-rgb), 0.08);
+            border-color: rgba(var(--accent-rgb), 0.25);
+            box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.12);
+        }
+
+        /* Hero badge */
+        .theme-hero-badge { border-color: rgba(var(--accent-rgb), 0.30); }
+        .theme-hero-badge .w-2 { background-color: rgb(var(--accent-rgb)); }
+
+        /* Theme panel active state */
+        .theme-option.active-theme {
+            border-color: rgba(var(--accent-rgb), 0.55) !important;
+            background: rgba(var(--accent-rgb), 0.14) !important;
+        }
+        .theme-option.active-theme .theme-check { opacity: 1 !important; }
+        .theme-option:not(.active-theme) .theme-check { opacity: 0 !important; }
+        .theme-white .theme-option.active-theme {
+            background: rgba(var(--accent-rgb), 0.08) !important;
+        }
+
         /* Custom Smooth Scrollbar & Base Reset */
         body {
-            background-color: #050506;
-            color: #EDEDEF;
             font-family: 'Inter', system-ui, sans-serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
@@ -97,15 +364,6 @@
 
         ::-webkit-scrollbar {
             width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #020203;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
@@ -570,17 +828,17 @@
     <!-- ==================== BACKGROUND LIGHTING SYSTEM ==================== -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <!-- Layer 1: Base Radial Gradient -->
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#0a0a0f_0%,#050506_60%,#020203_100%)]"></div>
+        <div class="absolute inset-0 theme-bg-gradient"></div>
 
         <!-- Layer 2: Animated Ambient Blobs -->
         <div
-            class="absolute -top-[200px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-accent/20 rounded-full blur-[160px] animate-float-1">
+            class="absolute -top-[200px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] theme-blob-1 rounded-full blur-[160px] animate-float-1">
         </div>
         <div
-            class="absolute top-[40%] -left-[200px] w-[700px] h-[500px] bg-indigo-900/15 rounded-full blur-[140px] animate-float-2">
+            class="absolute top-[40%] -left-[200px] w-[700px] h-[500px] theme-blob-2 rounded-full blur-[140px] animate-float-2">
         </div>
         <div
-            class="absolute top-[70%] -right-[200px] w-[650px] h-[550px] bg-purple-900/10 rounded-full blur-[150px] animate-float-1">
+            class="absolute top-[70%] -right-[200px] w-[650px] h-[550px] theme-blob-3 rounded-full blur-[150px] animate-float-1">
         </div>
 
         <!-- Layer 3: Noise Texture Overlay -->
@@ -597,7 +855,7 @@
     <!-- ==================== HEADER NAVIGATION (CYBER-MECHA GLASS NAVBAR) ==================== -->
     <header class="sticky top-3 sm:top-4 z-50 w-full px-3 sm:px-6 lg:px-8 flex justify-center pointer-events-none">
         <div
-            class="pointer-events-auto flex items-center justify-between px-5 sm:px-7 lg:px-8 py-2.5 sm:py-3 bg-[#060810]/85 backdrop-blur-3xl rounded-full border border-cyan-500/30 shadow-[0_0_40px_rgba(6,182,212,0.18),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:border-cyan-400/60 w-full max-w-[1380px] relative z-10 transition-all duration-300">
+            class="pointer-events-auto flex items-center justify-between px-5 sm:px-7 lg:px-8 py-2.5 sm:py-3 header-nav-bar backdrop-blur-3xl rounded-full border border-cyan-500/30 shadow-[0_0_40px_rgba(6,182,212,0.18),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:border-cyan-400/60 w-full max-w-[1380px] relative z-10 transition-all duration-300">
 
             <!-- Zone 1: Brand & Logo (Left - Mecha Cyber Badge) -->
             <a href="#" class="flex items-center space-x-3 group flex-shrink-0">
@@ -626,20 +884,20 @@
             <nav
                 class="hidden lg:flex items-center gap-1.5 xl:gap-2.5 bg-white/[0.04] backdrop-blur-2xl p-1.5 rounded-full border border-cyan-500/20 shadow-inner mx-3 xl:mx-5">
                 <a href="#about-us"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Tentang</a>
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Tentang</a>
                 <a href="#vision-mission"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Visi
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Visi
                     & Misi</a>
                 <a href="#structure"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Pengurus</a>
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Pengurus</a>
                 <a href="#gallery"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Galeri</a>
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Galeri</a>
                 <a href="#events"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Kegiatan</a>
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Kegiatan</a>
                 <a href="#quiz"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Brainstorming</a>
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Brainstorming</a>
                 <a href="#review-osis"
-                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white hover:bg-cyan-500/15 hover:border-cyan-400/30 border border-transparent hover:shadow-[0_0_12px_rgba(6,182,212,0.25)] transition-all duration-200">Review</a>
+                    class="px-3.5 xl:px-4 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white theme-nav-link transition-all duration-200 border border-transparent">Review</a>
             </nav>
 
             <!-- Zone 3: Actions & Auth (Right) -->
@@ -680,6 +938,12 @@
                     </div>
                 </div>
 
+                <!-- Theme Selector Button -->
+                <button id="theme-toggle-btn" onclick="toggleThemePanel()" title="Ganti Tema"
+                    class="inline-flex items-center justify-center p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
+                    <i data-lucide="palette" class="w-4.5 h-4.5"></i>
+                </button>
+
                 <!-- Toggle Menu Mobile -->
                 <button id="mobile-toggle" aria-label="Toggle Menu"
                     class="lg:hidden p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
@@ -691,7 +955,7 @@
 
         <!-- Floating Mobile Menu Overlay (Mecha Glass Theme) -->
         <div id="mobile-menu"
-            class="hidden lg:hidden fixed inset-x-4 top-24 bg-[#080d18]/95 backdrop-blur-3xl border border-cyan-500/30 rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.2)] space-y-3 z-50 pointer-events-auto transition-all duration-300">
+            class="hidden lg:hidden fixed inset-x-4 top-24 mobile-menu-glass backdrop-blur-3xl border border-cyan-500/30 rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.2)] space-y-3 z-50 pointer-events-auto transition-all duration-300">
             <div class="flex items-center justify-between pb-3 border-b border-cyan-500/20">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
@@ -727,8 +991,125 @@
                 class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 shadow-[0_0_15px_rgba(6,182,212,0.25)] transition-all mt-2">
                 <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> HUBUNGI KAMI
             </a>
+            <button onclick="toggleThemePanel(); document.getElementById('mobile-menu').classList.add('hidden')"
+                class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-200 bg-white/[0.04] hover:bg-cyan-500/15 border border-cyan-500/20 hover:border-cyan-400/40 transition-all mt-1">
+                <i data-lucide="palette" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> GANTI TEMA
+            </button>
         </div>
     </header>
+
+    <!-- ==================== THEME PANEL (DRAWER) ==================== -->
+    <div id="theme-panel-backdrop" class="fixed inset-0 z-[60] hidden pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" onclick="toggleThemePanel()"></div>
+    </div>
+    <div id="theme-panel"
+        class="fixed top-0 right-0 h-full w-80 max-w-[90vw] z-[70] translate-x-full transition-transform duration-300 ease-out pointer-events-auto">
+        <div class="h-full bg-[#080d18]/98 backdrop-blur-3xl border-l border-cyan-500/30 shadow-[-20px_0_60px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.15)] flex flex-col overflow-y-auto">
+            <!-- Panel Header -->
+            <div class="flex items-center justify-between px-6 py-5 border-b border-cyan-500/20">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="font-mono text-xs text-cyan-300 font-bold tracking-wider">THEME // SELECTOR</span>
+                </div>
+                <button onclick="toggleThemePanel()" class="p-1.5 text-fgMuted hover:text-cyan-300 transition-colors cursor-pointer rounded-lg hover:bg-white/5">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <!-- Panel Body -->
+            <div class="px-6 py-5 flex-1 space-y-5">
+                <p class="text-xs text-fgMuted leading-relaxed">
+                    Pilih tema tampilan untuk menyesuaikan warna aksen seluruh website.
+                </p>
+                <!-- Theme Options -->
+                <div id="theme-options" class="space-y-3">
+                    <!-- Cyan (Default) -->
+                    <button onclick="applyTheme('cyan')" data-theme="cyan"
+                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all cursor-pointer group">
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-cyan-400 border-2 border-white/30"></span>
+                            <span class="w-5 h-5 rounded-full bg-indigo-500 border-2 border-white/20 -ml-2"></span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <span class="text-xs font-bold text-white block">Cyber Cyan</span>
+                            <span class="text-[10px] font-mono text-fgMuted">Default • Futuristik</span>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400 opacity-100 theme-check"></i>
+                    </button>
+                    <!-- Emerald -->
+                    <button onclick="applyTheme('emerald')" data-theme="emerald"
+                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group">
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-emerald-400 border-2 border-white/30"></span>
+                            <span class="w-5 h-5 rounded-full bg-teal-500 border-2 border-white/20 -ml-2"></span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <span class="text-xs font-bold text-white group-hover:text-emerald-200 transition-colors block">Emerald Nature</span>
+                            <span class="text-[10px] font-mono text-fgMuted">Alami • Organik</span>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 opacity-0 theme-check transition-opacity"></i>
+                    </button>
+                    <!-- Amber -->
+                    <button onclick="applyTheme('amber')" data-theme="amber"
+                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-amber-500/10 hover:border-amber-500/30 transition-all cursor-pointer group">
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-amber-400 border-2 border-white/30"></span>
+                            <span class="w-5 h-5 rounded-full bg-orange-500 border-2 border-white/20 -ml-2"></span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <span class="text-xs font-bold text-white group-hover:text-amber-200 transition-colors block">Sunset Amber</span>
+                            <span class="text-[10px] font-mono text-fgMuted">Hangat • Berenergi</span>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400 opacity-0 theme-check transition-opacity"></i>
+                    </button>
+                    <!-- Rose -->
+                    <button onclick="applyTheme('rose')" data-theme="rose"
+                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-rose-500/10 hover:border-rose-500/30 transition-all cursor-pointer group">
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-rose-400 border-2 border-white/30"></span>
+                            <span class="w-5 h-5 rounded-full bg-pink-500 border-2 border-white/20 -ml-2"></span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <span class="text-xs font-bold text-white group-hover:text-rose-200 transition-colors block">Rose Quartz</span>
+                            <span class="text-[10px] font-mono text-fgMuted">Lembut • Elegan</span>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-rose-400 opacity-0 theme-check transition-opacity"></i>
+                    </button>
+                    <!-- Violet -->
+                    <button onclick="applyTheme('violet')" data-theme="violet"
+                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-violet-500/10 hover:border-violet-500/30 transition-all cursor-pointer group">
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-violet-400 border-2 border-white/30"></span>
+                            <span class="w-5 h-5 rounded-full bg-purple-500 border-2 border-white/20 -ml-2"></span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <span class="text-xs font-bold text-white group-hover:text-violet-200 transition-colors block">Royal Violet</span>
+                            <span class="text-[10px] font-mono text-fgMuted">Klasik • Megah</span>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-violet-400 opacity-0 theme-check transition-opacity"></i>
+                    </button>
+                    <!-- White / Light -->
+                    <button onclick="applyTheme('white')" data-theme="white"
+                        class="theme-option w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-zinc-200/10 hover:border-zinc-300/30 transition-all cursor-pointer group">
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-white border-2 border-zinc-300"></span>
+                            <span class="w-5 h-5 rounded-full bg-zinc-200 border-2 border-zinc-300 -ml-2"></span>
+                        </div>
+                        <div class="text-left flex-1">
+                            <span class="text-xs font-bold text-white group-hover:text-zinc-200 transition-colors block">Clean White</span>
+                            <span class="text-[10px] font-mono text-fgMuted">Terang • Minimalis</span>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-zinc-300 opacity-0 theme-check transition-opacity"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Panel Footer -->
+            <div class="px-6 py-4 border-t border-cyan-500/10">
+                <p class="text-[10px] font-mono text-fgMuted text-center tracking-wide">
+                    THEME_ACTIVE // <span id="theme-active-label">CYBER_CYAN</span>
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================== MAIN CONTENT ==================== -->
     <main class="relative z-10">
@@ -737,7 +1118,7 @@
         <section class="pt-20 pb-32 px-4 sm:px-8 max-w-7xl mx-auto text-center relative">
 
             <!-- Category Badge -->
-            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-surface border border-accent/30 mb-8 backdrop-blur-md"
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-surface border border-accent/30 theme-hero-badge mb-8 backdrop-blur-md"
                 data-aos="fade-down">
                 <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
                 <span class="font-mono text-xs text-indigo-200 tracking-wider font-medium">OFFICIAL STUDENT COUNCIL //
@@ -760,7 +1141,7 @@
             <!-- CTA Buttons -->
             <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
                 <a href="#structure"
-                    class="px-8 py-4 rounded-xl font-semibold text-sm text-white btn-primary-glow inline-flex items-center">
+                    class="px-8 py-4 rounded-xl font-semibold text-sm text-white hero-cta-primary inline-flex items-center">
                     Lihat Pengurus <i data-lucide="users" class="w-4 h-4 ml-2"></i>
                 </a>
                 <a href="#gallery"
@@ -2028,7 +2409,7 @@
         </section>
 
         <!-- ==================== MODULE: REVIEW KINERJA OSIS ==================== -->
-        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5 relative">
+        <section id="review-osis" class="py-24 px-4 sm:px-8 max-w-6xl mx-auto border-t border-white/5 theme-border-top relative">
             <!-- Ambient Glow Backdrop -->
             <div
                 class="absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/15 rounded-full blur-3xl pointer-events-none -z-10">
@@ -2919,6 +3300,78 @@
 
     <!-- ==================== JAVASCRIPT ENGINE ==================== -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- ==================== THEME SYSTEM JAVASCRIPT ==================== -->
+    <script>
+        (function () {
+            const THEMES = {
+                cyan:    { label: 'CYBER_CYAN',    themeClass: 'theme-cyan'    },
+                emerald: { label: 'EMERALD_NATURE', themeClass: 'theme-emerald' },
+                amber:   { label: 'SUNSET_AMBER',   themeClass: 'theme-amber'   },
+                rose:    { label: 'ROSE_QUARTZ',    themeClass: 'theme-rose'    },
+                violet:  { label: 'ROYAL_VIOLET',   themeClass: 'theme-violet'  },
+                white:   { label: 'CLEAN_WHITE',    themeClass: 'theme-white'   }
+            };
+            const ALL_THEME_CLASSES = Object.values(THEMES).map(t => t.themeClass);
+            let current = localStorage.getItem('osis_theme') || 'cyan';
+
+            // Apply theme to <html>
+            function setTheme(name) {
+                if (!THEMES[name]) return;
+                current = name;
+                // Remove all theme classes from <html>
+                ALL_THEME_CLASSES.forEach(cls => document.documentElement.classList.remove(cls));
+                document.documentElement.classList.add(THEMES[name].themeClass);
+                localStorage.setItem('osis_theme', name);
+                // Update active label in panel
+                const label = document.getElementById('theme-active-label');
+                if (label) label.textContent = THEMES[name].label;
+                // Update active state on buttons
+                document.querySelectorAll('.theme-option').forEach(btn => {
+                    btn.classList.toggle('active-theme', btn.getAttribute('data-theme') === name);
+                });
+                // Update meta theme-color for mobile browsers
+                const pageBg = getComputedStyle(document.documentElement).getPropertyValue('--page-bg').trim();
+                const [r, g, b] = pageBg.split(',').map(s => parseInt(s.trim()));
+                if (!isNaN(r)) {
+                    const hex = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+                    document.getElementById('meta-theme-color')?.setAttribute('content', hex);
+                    document.getElementById('meta-tile-color')?.setAttribute('content', hex);
+                }
+                // Re-create icons to reflect any dynamically shown/hidden checks
+                if (window.lucide) lucide.createIcons();
+            }
+
+            // Expose globally
+            window.toggleThemePanel = function () {
+                const panel  = document.getElementById('theme-panel');
+                const backdrop = document.getElementById('theme-panel-backdrop');
+                const isOpen = !panel.classList.contains('translate-x-full');
+                if (isOpen) {
+                    panel.classList.add('translate-x-full');
+                    backdrop.classList.add('hidden');
+                    document.body.style.overflow = '';
+                } else {
+                    panel.classList.remove('translate-x-full');
+                    backdrop.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+                // Refresh active state
+                setTheme(current);
+            };
+
+            window.applyTheme = function (name) {
+                setTheme(name);
+            };
+
+            // Run on DOM ready
+            document.addEventListener('DOMContentLoaded', () => {
+                setTheme(current);
+            });
+            // Also run immediately for fast paint
+            setTheme(current);
+        })();
+    </script>
     <script>
         // AOS Animation Init
         AOS.init({
