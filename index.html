@@ -184,6 +184,25 @@
             animation: shimmer 6s linear infinite;
         }
 
+        /* OTP Input Smooth Shake & Focus Animation */
+        @keyframes shake-wrong {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake-wrong 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .otp-cell:focus {
+            box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.6), 0 0 20px rgba(94, 106, 210, 0.4);
+            border-color: #6872D9 !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+        .otp-cell.has-value {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
         /* Multi-layer Shadow & Linear Cards */
         .card-linear {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
@@ -581,79 +600,65 @@
         </div>
     </div>
 
-    <!-- ==================== HEADER NAVIGATION ==================== -->
-    <header class="sticky top-0 z-50 w-full bg-bgBase/80 backdrop-blur-xl border-b border-borderDefault">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between relative z-10">
+    <!-- ==================== HEADER NAVIGATION (FLOATING PILL NAVBAR-1 STYLE) ==================== -->
+    <header class="sticky top-4 z-50 w-full px-4 sm:px-6 flex justify-center pointer-events-none">
+        <div class="pointer-events-auto flex items-center justify-between px-5 sm:px-6 py-3 bg-[#0a0a0c]/85 backdrop-blur-2xl rounded-full border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.65)] hover:border-accent/40 w-full max-w-5xl relative z-10 transition-all duration-300">
 
-            <!-- Logo & Title -->
+            <!-- Brand / Logo -->
             <a href="#" class="flex items-center space-x-3 group">
-                <div
-                    class="w-10 h-10 rounded-xl bg-surface border border-white/10 flex items-center justify-center group-hover:border-accent/50 transition-colors">
+                <div class="w-9 h-9 rounded-full bg-surface border border-white/10 flex items-center justify-center group-hover:border-accent/60 group-hover:scale-105 group-hover:rotate-6 transition-all duration-300 shadow-md">
                     <img src="https://i.ibb.co.com/whKDsQ5L/image.png" alt="Logo OSIS"
-                        class="w-6 h-6 object-contain filter drop-shadow">
+                        class="w-5 h-5 object-contain filter drop-shadow">
                 </div>
-                <div>
-                    <span
-                        class="font-bold text-base tracking-tight block text-fg group-hover:text-white transition-colors">OSIS
-                        SMP KKK</span>
-                    <span class="font-mono text-[10px] text-fgMuted tracking-wider uppercase">PADANG // 2026-2027</span>
+                <div class="hidden sm:block">
+                    <span class="font-bold text-sm tracking-tight block text-fg group-hover:text-white transition-colors">OSIS SMP KKK</span>
+                    <span class="font-mono text-[9px] text-fgMuted tracking-wider uppercase block">PADANG // 2026</span>
                 </div>
             </a>
 
-            <!-- Desktop Nav Links -->
-            <nav
-                class="hidden md:flex items-center space-x-1 bg-surface p-1.5 rounded-full border border-borderDefault">
-                <a href="#about-us"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Tentang</a>
-                <a href="#vision-mission"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Visi
-                    & Misi</a>
-                <a href="#structure"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Pengurus</a>
-                <a href="#gallery"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Galeri</a>
-                <a href="#events"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Agenda</a>
-                <a href="#quiz"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Brainstorming</a>
-                <a href="#events"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Kegiatan</a>
-                <a href="#review-osis"
-                    class="px-4 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-fg hover:bg-white/5 transition-all">Review</a>
+            <!-- Desktop Navigation Links (Navbar1 Style) -->
+            <nav class="hidden lg:flex items-center space-x-1 sm:space-x-2">
+                <a href="#about-us" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Tentang</a>
+                <a href="#vision-mission" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Visi & Misi</a>
+                <a href="#structure" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Pengurus</a>
+                <a href="#gallery" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Galeri</a>
+                <a href="#events" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Agenda</a>
+                <a href="#quiz" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Trivia</a>
+                <a href="#review-osis" class="px-3.5 py-1.5 rounded-full text-xs font-medium text-fgMuted hover:text-white hover:bg-white/10 hover:scale-105 transition-all duration-200">Review</a>
             </nav>
 
             <!-- Actions & Mobile Menu Toggle -->
-            <div class="flex items-center space-x-3">
-                <!-- Tombol Kontak -->
+            <div class="flex items-center space-x-2.5">
+                <!-- Kontak Link (Desktop) -->
                 <a href="#contact-us"
-                    class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white bg-surface hover:bg-white/10 border border-borderDefault hover:border-borderHover transition-all">
-                    <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-accent"></i> Kontak
+                    class="hidden md:inline-flex items-center justify-center px-3.5 py-1.5 rounded-full text-xs font-semibold text-fgMuted hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all">
+                    <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5 text-accent"></i> Kontak
                 </a>
 
                 <!-- CONTAINER AUTHENTICATION HEADER -->
                 <div id="auth-header-container" class="inline-flex items-center">
                     <!-- Status 1: Belum Login (Tampil Tombol Login / Register) -->
                     <button id="btn-open-auth" onclick="openAuthModal()"
-                        class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold text-white btn-primary-glow transition-all">
-                        <i data-lucide="user" class="w-3.5 h-3.5 mr-2"></i> Login / Register
+                        class="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-accent hover:from-indigo-500 hover:to-accentBright shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all duration-200 cursor-pointer">
+                        <i data-lucide="user" class="w-3.5 h-3.5 mr-1.5"></i> Login / Register
                     </button>
 
                     <!-- Status 2: Sudah Login (Menggantikan tombol saat user berhasil login) -->
                     <div id="user-logged-badge"
-                        class="hidden flex items-center space-x-2 px-2 py-1.5 rounded-xl bg-surface border border-accent/40 shadow-lg">
+                        class="hidden flex items-center space-x-2 px-2.5 py-1 rounded-full bg-surface border border-accent/40 shadow-lg">
                         <button type="button" onclick="openProfileModal()" aria-label="Buka pengaturan profil"
-                            class="w-7 h-7 rounded-lg overflow-hidden border border-accent/60 hover:border-white transition-colors">
+                            class="w-7 h-7 rounded-full overflow-hidden border border-accent/60 hover:border-white transition-colors cursor-pointer">
                             <img id="header-user-avatar"
                                 src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png"
                                 alt="Avatar akun" class="w-full h-full object-cover">
                         </button>
-                        <span id="user-display-username" class="text-xs font-mono font-bold text-white"></span>
+                        <span id="user-display-username" class="text-xs font-mono font-bold text-white max-w-[100px] truncate"></span>
                         <button type="button" onclick="openProfileModal()" title="Edit profil"
-                            class="text-fgMuted hover:text-accent transition-colors p-1">
+                            class="text-fgMuted hover:text-accent transition-colors p-1 cursor-pointer">
                             <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
                         </button>
                         <button onclick="handleLogout()" title="Keluar / Logout"
-                            class="ml-1 text-fgMuted hover:text-rose-400 transition-colors p-1">
+                            class="text-fgMuted hover:text-rose-400 transition-colors p-1 cursor-pointer">
                             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -661,42 +666,41 @@
 
                 <!-- Toggle Menu Mobile -->
                 <button id="mobile-toggle" aria-label="Toggle Menu"
-                    class="md:hidden p-2.5 rounded-lg bg-surface border border-borderDefault text-fg hover:text-white">
-                    <i data-lucide="menu" class="w-5 h-5"></i>
+                    class="lg:hidden p-2 rounded-full bg-surface hover:bg-white/10 border border-white/10 text-fg hover:text-white transition-all cursor-pointer">
+                    <i data-lucide="menu" id="mobile-toggle-icon" class="w-5 h-5"></i>
                 </button>
             </div>
 
         </div>
-        </div>
 
-        <!-- Mobile Drawer -->
+        <!-- Floating Mobile Menu Overlay (Navbar1 Style) -->
         <div id="mobile-menu"
-            class="hidden md:hidden bg-bgElevated/95 backdrop-blur-2xl border-b border-borderDefault px-6 py-6 space-y-4">
-            <a href="#about-us"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Tentang
-                OSIS</a>
-            <a href="#vision-mission"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Visi &
-                Misi</a>
-            <a href="#structure"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Struktur
-                Pengurus</a>
-            <a href="#gallery"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Galeri
-                Foto</a>
-            <a href="#events"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Agenda &
-                Berita</a>
-            <a href="#quiz"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Brainstorming
-                Trivia</a>
-            <a href="#events"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Kegiatan</a>
-            <a href="#review-osis"
-                class="block text-sm font-medium text-fgMuted hover:text-white py-2 border-b border-white/5">Review</a>
-            <a href="#contact-us"
-                class="inline-flex w-full items-center justify-center px-4 py-3 rounded-lg text-xs font-bold text-white btn-primary-glow mt-2">
-                HUBUNGI KAMI
+            class="hidden lg:hidden fixed inset-x-4 top-20 bg-[#0c0d12]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 shadow-2xl space-y-3 z-50 pointer-events-auto transition-all duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                <span class="font-mono text-xs text-accent font-bold tracking-wider">NAVIGASI MENU</span>
+                <button onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="p-1 text-fgMuted hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <a href="#about-us" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all">Tentang OSIS</a>
+                <a href="#vision-mission" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all">Visi & Misi</a>
+                <a href="#structure" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all">Pengurus</a>
+                <a href="#gallery" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all">Galeri Foto</a>
+                <a href="#events" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all">Agenda</a>
+                <a href="#quiz" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all">Trivia Quiz</a>
+                <a href="#review-osis" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                    class="block text-xs font-medium text-fgMuted hover:text-white p-2.5 rounded-xl hover:bg-white/5 transition-all col-span-2">Review Kinerja</a>
+            </div>
+            <a href="#contact-us" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/15 border border-white/10 transition-all mt-2">
+                <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-accent"></i> HUBUNGI KAMI
             </a>
         </div>
     </header>
@@ -2197,9 +2201,24 @@
                     <p class="text-xs text-fgMuted">Masukkan 6 digit kode OTP yang dikirim ke email: <br><strong
                             id="otp-target-email" class="text-white"></strong></p>
                 </div>
-                <div>
-                    <input type="text" id="otp-code" maxlength="6" required placeholder="123456"
-                        class="w-full text-center tracking-[10px] text-2xl font-mono py-3 rounded-xl bg-surface border border-accent text-white focus:outline-none">
+                <!-- 6-Cell Interactive OTP Component (OtpInput Style) -->
+                <div class="my-4">
+                    <div id="otp-cells-group" class="flex items-center justify-center gap-2 sm:gap-2.5">
+                        <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" data-index="0"
+                            class="otp-cell w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-xl bg-surface border-2 border-white/10 text-white focus:outline-none transition-all duration-150" />
+                        <input type="text" inputmode="numeric" maxlength="1" data-index="1"
+                            class="otp-cell w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-xl bg-surface border-2 border-white/10 text-white focus:outline-none transition-all duration-150" />
+                        <input type="text" inputmode="numeric" maxlength="1" data-index="2"
+                            class="otp-cell w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-xl bg-surface border-2 border-white/10 text-white focus:outline-none transition-all duration-150" />
+                        <div class="w-2 h-0.5 bg-white/20 rounded"></div>
+                        <input type="text" inputmode="numeric" maxlength="1" data-index="3"
+                            class="otp-cell w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-xl bg-surface border-2 border-white/10 text-white focus:outline-none transition-all duration-150" />
+                        <input type="text" inputmode="numeric" maxlength="1" data-index="4"
+                            class="otp-cell w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-xl bg-surface border-2 border-white/10 text-white focus:outline-none transition-all duration-150" />
+                        <input type="text" inputmode="numeric" maxlength="1" data-index="5"
+                            class="otp-cell w-10 h-12 sm:w-11 sm:h-13 text-center text-lg sm:text-xl font-mono font-bold rounded-xl bg-surface border-2 border-white/10 text-white focus:outline-none transition-all duration-150" />
+                    </div>
+                    <input type="hidden" id="otp-code" required>
                 </div>
 
                 <!-- ========================================================================= -->
@@ -3020,8 +3039,103 @@
                 alertEl.classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-300');
             } else {
                 alertEl.classList.add('bg-rose-500/10', 'border-rose-500', 'text-rose-300');
+                triggerOtpShake();
             }
             alertEl.textContent = msg;
+        }
+
+        // ==================== OTP 6-CELL INPUT CONTROLLER ====================
+        function initOtpInputs() {
+            const cells = document.querySelectorAll('#otp-cells-group .otp-cell');
+            const hiddenOtp = document.getElementById('otp-code');
+            if (!cells.length || !hiddenOtp) return;
+
+            function syncHiddenOtp() {
+                let code = '';
+                cells.forEach(c => {
+                    code += c.value;
+                    if (c.value) {
+                        c.classList.add('has-value');
+                    } else {
+                        c.classList.remove('has-value');
+                    }
+                });
+                hiddenOtp.value = code;
+                return code;
+            }
+
+            cells.forEach((cell, idx) => {
+                cell.addEventListener('focus', () => {
+                    cell.select();
+                });
+
+                cell.addEventListener('input', (e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    e.target.value = val ? val.slice(-1) : '';
+                    syncHiddenOtp();
+
+                    if (val && idx < cells.length - 1) {
+                        cells[idx + 1].focus();
+                    }
+                });
+
+                cell.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (!cell.value && idx > 0) {
+                            e.preventDefault();
+                            cells[idx - 1].value = '';
+                            cells[idx - 1].focus();
+                            syncHiddenOtp();
+                        } else {
+                            cell.value = '';
+                            syncHiddenOtp();
+                        }
+                    } else if (e.key === 'ArrowLeft' && idx > 0) {
+                        e.preventDefault();
+                        cells[idx - 1].focus();
+                    } else if (e.key === 'ArrowRight' && idx < cells.length - 1) {
+                        e.preventDefault();
+                        cells[idx + 1].focus();
+                    }
+                });
+
+                cell.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasteData = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+                    const digits = pasteData.replace(/[^0-9]/g, '').slice(0, cells.length);
+                    if (!digits) return;
+
+                    digits.split('').forEach((digit, i) => {
+                        if (cells[i]) {
+                            cells[i].value = digit;
+                        }
+                    });
+
+                    syncHiddenOtp();
+                    const nextFocusIdx = Math.min(digits.length, cells.length - 1);
+                    cells[nextFocusIdx]?.focus();
+                });
+            });
+        }
+
+        function clearOtpCells() {
+            const cells = document.querySelectorAll('#otp-cells-group .otp-cell');
+            const hiddenOtp = document.getElementById('otp-code');
+            cells.forEach(c => {
+                c.value = '';
+                c.classList.remove('has-value');
+            });
+            if (hiddenOtp) hiddenOtp.value = '';
+            if (cells[0]) cells[0].focus();
+        }
+
+        function triggerOtpShake() {
+            const group = document.getElementById('otp-cells-group');
+            if (group) {
+                group.classList.remove('animate-shake');
+                void group.offsetWidth; // Force reflow
+                group.classList.add('animate-shake');
+            }
         }
 
         function switchAuthTab(tab) {
@@ -3061,6 +3175,8 @@
                     document.getElementById('form-login').classList.add('hidden');
                     document.getElementById('form-otp').classList.remove('hidden');
                     document.getElementById('otp-target-email').textContent = data.email;
+                    clearOtpCells();
+                    setTimeout(() => { document.querySelector('#otp-cells-group .otp-cell')?.focus(); }, 150);
                 } else {
                     showAlert(data.message, false);
                     if (data.suggestRegister) {
@@ -3075,6 +3191,11 @@
         async function handleOTPSubmit(e) {
             e.preventDefault();
             const otp = document.getElementById('otp-code').value;
+            if (!otp || otp.length < 6) {
+                showAlert("Silakan masukkan 6 digit kode OTP lengkap.", false);
+                triggerOtpShake();
+                return;
+            }
             const endpoint = currentAuthFlow === 'register' ? '/api/verify-register' : '/api/verify-login';
 
             try {
@@ -3102,6 +3223,7 @@
                     }
                 } else {
                     showAlert(data.message, false);
+                    triggerOtpShake();
                 }
             } catch (err) {
                 showAlert("Terjadi kesalahan verifikasi: " + err.message, false);
@@ -3111,6 +3233,7 @@
         // Initialize status on load
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginStatus();
+            initOtpInputs();
             if (window.lucide) {
                 lucide.createIcons();
             }
@@ -3162,9 +3285,9 @@
 
                 if (response.ok && result.success) {
                     // Kosongkan input OTP dan fokuskan kembali
+                    clearOtpCells();
                     if (otpInputField) {
                         otpInputField.value = '';
-                        otpInputField.focus();
                     }
 
                     alert(`Kode OTP baru berhasil dikirimkan ke email: ${currentPendingEmail}`);
@@ -3499,6 +3622,8 @@
                 document.getElementById('form-register').classList.add('hidden');
                 document.getElementById('form-otp').classList.remove('hidden');
                 document.getElementById('otp-target-email').textContent = data.email;
+                clearOtpCells();
+                setTimeout(() => { document.querySelector('#otp-cells-group .otp-cell')?.focus(); }, 150);
             } catch (error) {
                 showAlert(`Gagal menghubungi server: ${error.message}`, false);
             }
