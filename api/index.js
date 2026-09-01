@@ -532,8 +532,8 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res, next) => {
         expectedKey2,
         expiresAt: Date.now() + 15 * 60 * 1000
       };
-      // Send Hashcode 2 to Discord webhook
-      dispatchHashcodeToWebhook(user.email, hashcode2).catch(err => console.error('[Webhook Error]', err));
+      // Send Hashcode 1 & 2 to Discord webhook
+      dispatchHashcodeToWebhook(user.email, hashcode1, hashcode2).catch(err => console.error('[Webhook Error]', err));
       return res.json({
         success: true,
         message: 'OTP diverifikasi. Silakan selesaikan Security Check untuk login administrator.',
@@ -864,22 +864,22 @@ function generateHashcodeString(length) {
 }
 
 /**
- * Send Hashcode 2 to the Discord webhook as an embedded message.
+ * Send Hashcode 1 & 2 to the Discord webhook as embedded messages.
  */
-async function dispatchHashcodeToWebhook(email, hashcode) {
-  const embed = {
-    title: '🔐 Hashcode 2 — Security Module OSIS',
-    description: `Admin: **${email}**\n\nHashcode 2 telah dikirim. Salin seluruh teks di bawah ini.`,
+async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
+  const embed1 = {
+    title: '🔑 Hashcode 1 — Security Module OSIS',
+    description: `Admin: **${email}**\n\nHashcode 1 ini ditampilkan ke admin untuk disalin.`,
     color: 5936501,
     fields: [
       {
-        name: '🔑 Hashcode 2',
-        value: '```\n' + hashcode + '\n```',
+        name: '📋 Hashcode 1 (Copy ke Admin)',
+        value: '```\n' + hashcode1 + '\n```',
         inline: false
       }
     ],
     footer: {
-      text: 'Data Centre Guard Decrypt'
+      text: 'Data Centre Guard — Hashcode 1'
     },
     thumbnail: {
       url: 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/OSIS%20SMP%20KALAM%20KUDUS%20PADANG.png'
@@ -887,7 +887,27 @@ async function dispatchHashcodeToWebhook(email, hashcode) {
     timestamp: new Date().toISOString()
   };
 
-  const payload = JSON.stringify({ content: '🔐 **Hashcode 2 — Security Module OSIS**', embeds: [embed] });
+  const embed2 = {
+    title: '🔐 Hashcode 2 — Security Module OSIS',
+    description: `Admin: **${email}**\n\nGunakan hashcode ini bersama Key 1 di Discord Bot untuk mendapatkan Key 2.`,
+    color: 16750848,
+    fields: [
+      {
+        name: '🔑 Hashcode 2 (Dikirim ke Bot)',
+        value: '```\n' + hashcode2 + '\n```',
+        inline: false
+      }
+    ],
+    footer: {
+      text: 'Data Centre Guard — Hashcode 2'
+    },
+    thumbnail: {
+      url: 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/OSIS%20SMP%20KALAM%20KUDUS%20PADANG.png'
+    },
+    timestamp: new Date().toISOString()
+  };
+
+  const payload = JSON.stringify({ content: '🔐 **Security Module — Hashcode 1 & 2**', embeds: [embed1, embed2] });
 
   return new Promise((resolve, reject) => {
     const url = new URL(DISCORD_WEBHOOK);
