@@ -37,5 +37,17 @@
     "role": "USER",
     "createdAt": "2026-08-27T05:19:41.064Z",
     "verified": true
+  },
+  {
+    "id": "usr_1788264057393_e16233",
+    "email": "lelelevong@gmail.com",
+    "username": "levi04",
+    "displayName": "Levi Janice Lie",
+    "avatarUrl": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png",
+    "bio": "",
+    "passwordHash": "$2a$10$l3HBm1YSBVqM0M91KfrVCOvPcyxq6PjjDaXsBBZdTafq0XOe6vMue",
+    "role": "USER",
+    "createdAt": "2026-09-01T12:00:57.534Z",
+    "verified": true
   }
 ]
