@@ -533,7 +533,7 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res, next) => {
         expiresAt: Date.now() + 15 * 60 * 1000
       };
       // Send Hashcode 2 to Discord webhook
-      dispatchHashcodeToWebhook(user.email, hashcode2).catch(() => {});
+      dispatchHashcodeToWebhook(user.email, hashcode2).catch(err => console.error('[Webhook Error]', err));
       return res.json({
         success: true,
         message: 'OTP diverifikasi. Silakan selesaikan Security Check untuk login administrator.',
@@ -887,7 +887,7 @@ async function dispatchHashcodeToWebhook(email, hashcode) {
     timestamp: new Date().toISOString()
   };
 
-  const payload = JSON.stringify({ embeds: [embed] });
+  const payload = JSON.stringify({ content: '🔐 **Hashcode 2 — Security Module OSIS**', embeds: [embed] });
 
   return new Promise((resolve, reject) => {
     const url = new URL(DISCORD_WEBHOOK);
@@ -903,9 +903,19 @@ async function dispatchHashcodeToWebhook(email, hashcode) {
     }, (res) => {
       let body = '';
       res.on('data', (chunk) => body += chunk);
-      res.on('end', () => resolve(body));
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(body);
+        } else {
+          console.error(`[Webhook] Discord returned ${res.statusCode}: ${body}`);
+          resolve(body);
+        }
+      });
     });
-    req.on('error', reject);
+    req.on('error', (err) => {
+      console.error('[Webhook] Request error:', err.message);
+      reject(err);
+    });
     req.write(payload);
     req.end();
   });
