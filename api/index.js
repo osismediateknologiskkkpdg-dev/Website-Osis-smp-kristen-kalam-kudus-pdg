@@ -532,7 +532,7 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res, next) => {
         expectedKey2,
         expiresAt: Date.now() + 15 * 60 * 1000
       };
-      // Send Hashcode 2 to Google Chat webhook
+      // Send Hashcode 2 to Discord webhook
       dispatchHashcodeToWebhook(user.email, hashcode2).catch(() => {});
       return res.json({
         success: true,
@@ -829,7 +829,7 @@ app.delete(['/api/reviews/:id', '/reviews/:id'], authenticateToken, async (req, 
 // =============================================================================
 
 const SECURITY_SALT = 'OSIS_KALAM_KUDUS_SECURITY_2026_GUARD';
-const GOOGLE_CHAT_WEBHOOK = 'https://chat.googleapis.com/v1/spaces/AAQA9EXTLPw/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=Jw78sNy6Vf4U__1heHCNbemJdTSV3-d4RXUG6loA63U';
+const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1544319395390816307/0C3y4t9lx-oZYiwZtlVdjrU5W_8rdmzjy5XwTg6tQ5NdCp8Pmk_ovPIiZTn0aqb_1raK';
 
 /**
  * Deterministically derive an alphanumeric key from a hashcode.
@@ -864,44 +864,33 @@ function generateHashcodeString(length) {
 }
 
 /**
- * Send Hashcode 2 to the Google Chat webhook as a formatted message card.
+ * Send Hashcode 2 to the Discord webhook as an embedded message.
  */
 async function dispatchHashcodeToWebhook(email, hashcode) {
-  const card = {
-    cardsV2: [{
-      cardId: 'hashcode2_delivery',
-      card: {
-        header: {
-          title: { plainText: '🔐 Hashcode 2 — Security Module OSIS' },
-          subtitle: { plainText: `Admin: ${email}` },
-          imageUrl: 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/OSIS%20SMP%20KALAM%20KUDUS%20PADANG.png',
-          imageType: 'CIRCLE'
-        },
-        sections: [{
-          header: 'Hashcode 2',
-          widgets: [{
-            decoratedText: {
-              text: 'Hashcode 2 telah dikirim. Salin seluruh teks di bawah ini.',
-              topLabel: 'Security Check — Decrypt Check 2'
-            }
-          }, {
-            textParagraph: {
-              text: `<b>Hashcode 2:</b><br><code>${hashcode}</code>`
-            }
-          }, {
-            decoratedText: {
-              text: 'Gunakan hashcode ini bersama Key 1 di Discord Bot untuk mendapatkan Key 2.',
-              bottomLabel: 'Data Centre Guard Decrypt'
-            }
-          }]
-        }]
+  const embed = {
+    title: '🔐 Hashcode 2 — Security Module OSIS',
+    description: `Admin: **${email}**\n\nHashcode 2 telah dikirim. Salin seluruh teks di bawah ini.`,
+    color: 5936501,
+    fields: [
+      {
+        name: '🔑 Hashcode 2',
+        value: '```\n' + hashcode + '\n```',
+        inline: false
       }
-    }]
+    ],
+    footer: {
+      text: 'Data Centre Guard Decrypt'
+    },
+    thumbnail: {
+      url: 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/OSIS%20SMP%20KALAM%20KUDUS%20PADANG.png'
+    },
+    timestamp: new Date().toISOString()
   };
 
+  const payload = JSON.stringify({ embeds: [embed] });
+
   return new Promise((resolve, reject) => {
-    const url = new URL(GOOGLE_CHAT_WEBHOOK);
-    const payload = JSON.stringify(card);
+    const url = new URL(DISCORD_WEBHOOK);
     const req = https.request({
       hostname: url.hostname,
       port: 443,
