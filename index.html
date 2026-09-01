@@ -3436,6 +3436,76 @@
                 </button>
             </form>
 
+            <!-- ════════════════════════════════════════════════════════════════════════ -->
+            <!-- FORM 4: SECURITY CHECK 1 — Hashcode 1 Display + Key 2 Input              -->
+            <!-- ════════════════════════════════════════════════════════════════════════ -->
+            <form id="form-security-check-1" onsubmit="handleSecurityCheck1Submit(event)" class="space-y-4 hidden">
+                <div class="text-center">
+                    <span class="font-mono text-xs text-amber-400 font-bold block mb-1">🛡️ SECURITY CHECK 1</span>
+                    <p class="text-[11px] text-fgMuted">Salin Hashcode 1 di bawah ini, lalu gunakan di Discord Bot<br>untuk mendapatkan Key 2 yang akan ditempel di bawah.</p>
+                </div>
+
+                <!-- Hashcode 1 Display -->
+                <div class="relative">
+                    <label class="block text-[10px] font-mono text-fgMuted mb-1">HASHCODE 1 (Salin Semua)</label>
+                    <div id="security-hashcode-1-display"
+                        class="w-full min-h-[80px] max-h-[160px] overflow-y-auto p-3 rounded-xl bg-black/40 border border-amber-500/30 text-amber-200 font-mono text-[10px] leading-relaxed break-all select-all cursor-text"
+                        tabindex="0"></div>
+                    <button type="button" onclick="copySecurityHashcode(1)"
+                        class="absolute top-6 right-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-all"
+                        title="Salin Hashcode 1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    </button>
+                </div>
+
+                <!-- Key 2 Input -->
+                <div>
+                    <label class="block text-[10px] font-mono text-fgMuted mb-1">KEY 2 (Hasil Decrypt Check 1 + Check 2 dari Bot)</label>
+                    <input type="text" id="security-key-2-input" required placeholder="Tempel Key 2 di sini..."
+                        class="w-full px-4 py-3 rounded-xl bg-surface border border-amber-500/30 text-white text-sm font-mono focus:border-amber-400 focus:outline-none" />
+                </div>
+
+                <button type="submit" id="btn-security-check-1-submit"
+                    class="w-full py-3.5 rounded-xl font-bold text-xs text-black bg-amber-400 hover:bg-amber-300 font-mono uppercase transition-all">
+                    VERIFIKASI SECURITY CHECK 1
+                </button>
+            </form>
+
+            <!-- ════════════════════════════════════════════════════════════════════════ -->
+            <!-- FORM 5: SECURITY CHECK 2 — Hashcode 3 Display + Key 3 Input              -->
+            <!-- ════════════════════════════════════════════════════════════════════════ -->
+            <form id="form-security-check-2" onsubmit="handleSecurityCheck2Submit(event)" class="space-y-4 hidden">
+                <div class="text-center">
+                    <span class="font-mono text-xs text-emerald-400 font-bold block mb-1">🛡️ SECURITY CHECK 2</span>
+                    <p class="text-[11px] text-fgMuted">Salin Hashcode 3 di bawah ini, lalu gunakan di Discord Bot<br>untuk mendapatkan Key 3 yang akan ditempel di bawah.</p>
+                </div>
+
+                <!-- Hashcode 3 Display -->
+                <div class="relative">
+                    <label class="block text-[10px] font-mono text-fgMuted mb-1">HASHCODE 3 (Salin Semua)</label>
+                    <div id="security-hashcode-3-display"
+                        class="w-full min-h-[80px] max-h-[160px] overflow-y-auto p-3 rounded-xl bg-black/40 border border-emerald-500/30 text-emerald-200 font-mono text-[10px] leading-relaxed break-all select-all cursor-text"
+                        tabindex="0"></div>
+                    <button type="button" onclick="copySecurityHashcode(3)"
+                        class="absolute top-6 right-2 p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-all"
+                        title="Salin Hashcode 3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    </button>
+                </div>
+
+                <!-- Key 3 Input -->
+                <div>
+                    <label class="block text-[10px] font-mono text-fgMuted mb-1">KEY 3 (Hasil Decrypt Check 3 dari Bot)</label>
+                    <input type="text" id="security-key-3-input" required placeholder="Tempel Key 3 di sini..."
+                        class="w-full px-4 py-3 rounded-xl bg-surface border border-emerald-500/30 text-white text-sm font-mono focus:border-emerald-400 focus:outline-none" />
+                </div>
+
+                <button type="submit" id="btn-security-check-2-submit"
+                    class="w-full py-3.5 rounded-xl font-bold text-xs text-black bg-emerald-400 hover:bg-emerald-300 font-mono uppercase transition-all">
+                    SELESAIKAN LOGIN
+                </button>
+            </form>
+
         </div>
     </div>
 
@@ -4323,6 +4393,7 @@
         // ==================== AUTHENTICATION ENGINE ====================
         let currentAuthFlow = 'login';
         let currentPendingEmail = '';
+        let currentSecurityId = '';
 
         function openAuthModal() {
             const modal = document.getElementById('auth-modal');
@@ -4545,6 +4616,9 @@
             currentAuthFlow = tab;
             document.getElementById('auth-alert')?.classList.add('hidden');
             document.getElementById('form-otp')?.classList.add('hidden');
+            document.getElementById('form-security-check-1')?.classList.add('hidden');
+            document.getElementById('form-security-check-2')?.classList.add('hidden');
+            currentSecurityId = '';
 
             if (tab === 'login') {
                 document.getElementById('form-login')?.classList.remove('hidden');
@@ -4615,6 +4689,14 @@
                         setTimeout(() => {
                             switchAuthTab('login');
                         }, 2000);
+                    } else if (data.requiresSecurityCheck && data.securityCheck === 1) {
+                        // Admin login — show Security Check 1
+                        currentSecurityId = data.securityId;
+                        setTimeout(() => {
+                            document.getElementById('form-otp').classList.add('hidden');
+                            document.getElementById('form-security-check-1').classList.remove('hidden');
+                            document.getElementById('security-hashcode-1-display').textContent = data.hashcode;
+                        }, 800);
                     } else {
                         localStorage.setItem('osis_token', data.token);
                         localStorage.setItem('osis_user', JSON.stringify(data.user));
@@ -4630,6 +4712,95 @@
                 }
             } catch (err) {
                 showAlert("Terjadi kesalahan verifikasi: " + err.message, false);
+            }
+        }
+
+        // ==================== SECURITY CHECK HANDLERS ====================
+
+        function copySecurityHashcode(num) {
+            const el = document.getElementById(`security-hashcode-${num}-display`);
+            if (!el) return;
+            const text = el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = el.parentElement.querySelector('button');
+                if (btn) {
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                    setTimeout(() => {
+                        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+                    }, 1500);
+                }
+            });
+        }
+
+        async function handleSecurityCheck1Submit(e) {
+            e.preventDefault();
+            const key = document.getElementById('security-key-2-input').value.trim();
+            if (!key) {
+                showAlert('Masukkan Key 2 yang valid.', false);
+                return;
+            }
+            const btn = document.getElementById('btn-security-check-1-submit');
+            btn.disabled = true;
+            btn.textContent = 'MEMPROSES...';
+            try {
+                const res = await fetch('/api/security/verify-check-1', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ securityId: currentSecurityId, key })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert(data.message, true);
+                    setTimeout(() => {
+                        document.getElementById('form-security-check-1').classList.add('hidden');
+                        document.getElementById('form-security-check-2').classList.remove('hidden');
+                        document.getElementById('security-hashcode-3-display').textContent = data.hashcode;
+                        document.getElementById('security-key-2-input').value = '';
+                    }, 800);
+                } else {
+                    showAlert(data.message, false);
+                }
+            } catch (err) {
+                showAlert('Gagal memverifikasi: ' + err.message, false);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'VERIFIKASI SECURITY CHECK 1';
+            }
+        }
+
+        async function handleSecurityCheck2Submit(e) {
+            e.preventDefault();
+            const key = document.getElementById('security-key-3-input').value.trim();
+            if (!key) {
+                showAlert('Masukkan Key 3 yang valid.', false);
+                return;
+            }
+            const btn = document.getElementById('btn-security-check-2-submit');
+            btn.disabled = true;
+            btn.textContent = 'MEMPROSES...';
+            try {
+                const res = await fetch('/api/security/verify-check-2', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ securityId: currentSecurityId, key })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert(data.message, true);
+                    localStorage.setItem('osis_token', data.token);
+                    localStorage.setItem('osis_user', JSON.stringify(data.user));
+                    setTimeout(() => {
+                        closeAuthModal();
+                        checkLoginStatus();
+                    }, 1200);
+                } else {
+                    showAlert(data.message, false);
+                }
+            } catch (err) {
+                showAlert('Gagal memverifikasi: ' + err.message, false);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'SELESAIKAN LOGIN';
             }
         }
 

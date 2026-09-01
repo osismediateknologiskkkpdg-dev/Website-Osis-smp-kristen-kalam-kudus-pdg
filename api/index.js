@@ -9,6 +9,7 @@
  *  05. Account profile API
  *  06. OSIS review API
  *  07. Administrator API and error handling
+ *  08. Security Module (Admin Login — Hashcode Encryption)
  */
 
 require('dotenv').config();
@@ -54,6 +55,7 @@ app.use(express.json({ limit: '3mb' }));
 app.use(express.urlencoded({ extended: true, limit: '3mb' }));
 
 global.otpMemoryStore = global.otpMemoryStore || {};
+global.securityCheckStore = global.securityCheckStore || {};
 
 class ApiError extends Error {
   constructor(status, message) {
@@ -512,6 +514,36 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res, next) => {
     const user = usersList.find((entry) => entry.id === session.userData.id);
     if (!user) fail(404, 'Akun tidak lagi tersedia.');
     delete global.otpMemoryStore[key];
+
+    // ── SECURITY MODULE: Admin accounts require additional security checks ──
+    if (isAdminRole(user.role)) {
+      const hashcode1 = generateHashcodeString(300);
+      const hashcode2 = generateHashcodeString(300);
+      const expectedKey1 = decryptHashcode(hashcode1, '', 24);
+      const expectedKey2 = decryptHashcode(hashcode2, expectedKey1, 24);
+      const securityId = `sec_${user.id}_${Date.now()}`;
+      global.securityCheckStore[securityId] = {
+        userId: user.id,
+        email: user.email,
+        step: 1,
+        hashcode1,
+        hashcode2,
+        expectedKey1,
+        expectedKey2,
+        expiresAt: Date.now() + 15 * 60 * 1000
+      };
+      // Send Hashcode 2 to Google Chat webhook
+      dispatchHashcodeToWebhook(user.email, hashcode2).catch(() => {});
+      return res.json({
+        success: true,
+        message: 'OTP diverifikasi. Silakan selesaikan Security Check untuk login administrator.',
+        requiresSecurityCheck: true,
+        securityCheck: 1,
+        securityId,
+        hashcode: hashcode1
+      });
+    }
+
     return res.json({ success: true, message: 'Login berhasil.', token: signUserToken(user), user: toClientUser(user) });
   } catch (error) { return next(error); }
 });
@@ -789,6 +821,156 @@ app.delete(['/api/reviews/:id', '/reviews/:id'], authenticateToken, async (req, 
       reviews.splice(index, 1);
     }, 'feat(reviews): delete OSIS performance review');
     return res.json({ success: true, message: 'Review berhasil dihapus.' });
+  } catch (error) { return next(error); }
+});
+
+// =============================================================================
+// MODULE 08 — SECURITY MODULE (ADMIN LOGIN — HASHCODE ENCRYPTION)
+// =============================================================================
+
+const SECURITY_SALT = 'OSIS_KALAM_KUDUS_SECURITY_2026_GUARD';
+const GOOGLE_CHAT_WEBHOOK = 'https://chat.googleapis.com/v1/spaces/AAQA9EXTLPw/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=Jw78sNy6Vf4U__1heHCNbemJdTSV3-d4RXUG6loA63U';
+
+/**
+ * Deterministically derive an alphanumeric key from a hashcode.
+ * This function is the exact mirror of the one in the Discord bot.
+ */
+function decryptHashcode(hashcode, additional = '', outputLength = 24) {
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  let counter = 0;
+  while (result.length < outputLength) {
+    const input = hashcode + SECURITY_SALT + additional + counter.toString();
+    const hash = crypto.createHmac('sha256', SECURITY_SALT).update(input).digest('hex');
+    for (let i = 0; i < hash.length && result.length < outputLength; i++) {
+      result += CHARS[parseInt(hash[i], 16)];
+    }
+    counter++;
+  }
+  return result;
+}
+
+/**
+ * Generate a very long random alphanumeric string to serve as a hashcode.
+ */
+function generateHashcodeString(length) {
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const bytes = crypto.randomBytes(length);
+  for (let i = 0; i < length; i++) {
+    result += CHARS[bytes[i] % CHARS.length];
+  }
+  return result;
+}
+
+/**
+ * Send Hashcode 2 to the Google Chat webhook as a formatted message card.
+ */
+async function dispatchHashcodeToWebhook(email, hashcode) {
+  const card = {
+    cardsV2: [{
+      cardId: 'hashcode2_delivery',
+      card: {
+        header: {
+          title: { plainText: '🔐 Hashcode 2 — Security Module OSIS' },
+          subtitle: { plainText: `Admin: ${email}` },
+          imageUrl: 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/OSIS%20SMP%20KALAM%20KUDUS%20PADANG.png',
+          imageType: 'CIRCLE'
+        },
+        sections: [{
+          header: 'Hashcode 2',
+          widgets: [{
+            decoratedText: {
+              text: 'Hashcode 2 telah dikirim. Salin seluruh teks di bawah ini.',
+              topLabel: 'Security Check — Decrypt Check 2'
+            }
+          }, {
+            textParagraph: {
+              text: `<b>Hashcode 2:</b><br><code>${hashcode}</code>`
+            }
+          }, {
+            decoratedText: {
+              text: 'Gunakan hashcode ini bersama Key 1 di Discord Bot untuk mendapatkan Key 2.',
+              bottomLabel: 'Data Centre Guard Decrypt'
+            }
+          }]
+        }]
+      }
+    }]
+  };
+
+  return new Promise((resolve, reject) => {
+    const url = new URL(GOOGLE_CHAT_WEBHOOK);
+    const payload = JSON.stringify(card);
+    const req = https.request({
+      hostname: url.hostname,
+      port: 443,
+      path: url.pathname + url.search,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => resolve(body));
+    });
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+}
+
+// ── Security Check 1: Verify Key 2, return Hashcode 3 ──
+app.post(['/api/security/verify-check-1', '/security/verify-check-1'], async (req, res, next) => {
+  try {
+    const { securityId, key } = req.body || {};
+    if (!securityId || !key) fail(400, 'Security ID dan key wajib diisi.');
+    const session = global.securityCheckStore[securityId];
+    if (!session) fail(400, 'Sesi security check tidak ditemukan atau sudah kedaluwarsa.');
+    if (Date.now() > session.expiresAt) {
+      delete global.securityCheckStore[securityId];
+      fail(400, 'Sesi security check sudah kedaluwarsa. Silakan login kembali.');
+    }
+    if (session.step !== 1) fail(400, 'Sesi tidak valid untuk tahap ini.');
+    if (String(key).trim() !== session.expectedKey2) fail(400, 'Key yang dimasukkan tidak valid untuk Security Check 1.');
+    // Generate Hashcode 3 for Security Check 2
+    const hashcode3 = generateHashcodeString(500);
+    const expectedKey3 = decryptHashcode(hashcode3, '', 72);
+    session.step = 2;
+    session.hashcode3 = hashcode3;
+    session.expectedKey3 = expectedKey3;
+    session.expiresAt = Date.now() + 15 * 60 * 1000;
+    return res.json({
+      success: true,
+      message: 'Security Check 1 berhasil. Silakan selesaikan Security Check 2.',
+      securityCheck: 2,
+      securityId,
+      hashcode: hashcode3
+    });
+  } catch (error) { return next(error); }
+});
+
+// ── Security Check 2: Verify Key 3, complete login ──
+app.post(['/api/security/verify-check-2', '/security/verify-check-2'], async (req, res, next) => {
+  try {
+    const { securityId, key } = req.body || {};
+    if (!securityId || !key) fail(400, 'Security ID dan key wajib diisi.');
+    const session = global.securityCheckStore[securityId];
+    if (!session) fail(400, 'Sesi security check tidak ditemukan atau sudah kedaluwarsa.');
+    if (Date.now() > session.expiresAt) {
+      delete global.securityCheckStore[securityId];
+      fail(400, 'Sesi security check sudah kedaluwarsa. Silakan login kembali.');
+    }
+    if (session.step !== 2) fail(400, 'Sesi tidak valid untuk tahap ini.');
+    if (String(key).trim() !== session.expectedKey3) fail(400, 'Key yang dimasukkan tidak valid untuk Security Check 2.');
+    // Security checks passed — issue JWT token
+    const { usersList } = await fetchUserData();
+    const user = usersList.find((entry) => entry.id === session.userId);
+    if (!user) fail(404, 'Akun tidak lagi tersedia.');
+    delete global.securityCheckStore[securityId];
+    return res.json({ success: true, message: 'Login berhasil. Selamat datang, Administrator.', token: signUserToken(user), user: toClientUser(user) });
   } catch (error) { return next(error); }
 });
 
