@@ -864,7 +864,44 @@ function generateHashcodeString(length) {
 }
 
 /**
- * Send Hashcode 1 & 2 to the Discord webhook as embedded messages.
+ * Send a single embed to the Discord webhook.
+ */
+async function sendDiscordEmbed(content, embed) {
+  const payload = JSON.stringify({ content, embeds: [embed] });
+  return new Promise((resolve, reject) => {
+    const url = new URL(DISCORD_WEBHOOK);
+    const req = https.request({
+      hostname: url.hostname,
+      port: 443,
+      path: url.pathname + url.search,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(body);
+        } else {
+          console.error(`[Webhook] Discord returned ${res.statusCode}: ${body}`);
+          resolve(body);
+        }
+      });
+    });
+    req.on('error', (err) => {
+      console.error('[Webhook] Request error:', err.message);
+      reject(err);
+    });
+    req.write(payload);
+    req.end();
+  });
+}
+
+/**
+ * Send Hashcode 1 & 2 to the Discord webhook as separate messages.
  */
 async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
   const embed1 = {
@@ -907,38 +944,10 @@ async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
     timestamp: new Date().toISOString()
   };
 
-  const payload = JSON.stringify({ content: '🔐 **Security Module — Hashcode 1 & 2**', embeds: [embed1, embed2] });
-
-  return new Promise((resolve, reject) => {
-    const url = new URL(DISCORD_WEBHOOK);
-    const req = https.request({
-      hostname: url.hostname,
-      port: 443,
-      path: url.pathname + url.search,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload)
-      }
-    }, (res) => {
-      let body = '';
-      res.on('data', (chunk) => body += chunk);
-      res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(body);
-        } else {
-          console.error(`[Webhook] Discord returned ${res.statusCode}: ${body}`);
-          resolve(body);
-        }
-      });
-    });
-    req.on('error', (err) => {
-      console.error('[Webhook] Request error:', err.message);
-      reject(err);
-    });
-    req.write(payload);
-    req.end();
-  });
+  // Send Hashcode 1 as a separate message
+  await sendDiscordEmbed('🔑 **Security Module — Hashcode 1**', embed1);
+  // Send Hashcode 2 as a separate message
+  await sendDiscordEmbed('🔐 **Security Module — Hashcode 2**', embed2);
 }
 
 // ── Security Check 1: Verify Key 2, return Hashcode 3 ──
