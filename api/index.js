@@ -896,30 +896,10 @@ function sendToWebhook(payload) {
 }
 
 /**
- * Send Hashcode 1 & 2 to the Discord webhook.
- * Both embeds are sent in ONE webhook call to guarantee both arrive.
+ * Send Hashcode 2 to the Discord webhook.
+ * Hashcode 1 is already shown on the website, so only Hashcode 2 needs to go to Discord.
  */
 async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
-  const embed1 = {
-    title: '🔑 Hashcode 1 — Security Module OSIS',
-    description: `Admin: **${email}**\n\nHashcode 1 ini ditampilkan ke admin untuk disalin.`,
-    color: 5936501,
-    fields: [
-      {
-        name: '📋 Hashcode 1 (Copy ke Admin)',
-        value: '```\n' + hashcode1 + '\n```',
-        inline: false
-      }
-    ],
-    footer: {
-      text: 'Data Centre Guard — Hashcode 1'
-    },
-    thumbnail: {
-      url: 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/OSIS%20SMP%20KALAM%20KUDUS%20PADANG.png'
-    },
-    timestamp: new Date().toISOString()
-  };
-
   const embed2 = {
     title: '🔐 Hashcode 2 — Security Module OSIS',
     description: `Admin: **${email}**\n\nGunakan hashcode ini bersama Key 1 di Discord Bot untuk mendapatkan Key 2.`,
@@ -940,28 +920,15 @@ async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
     timestamp: new Date().toISOString()
   };
 
-  // Send as separate messages so each hashcode is clearly visible
-  // and to avoid Discord's per-message embed size limits.
-  console.log('[Webhook] Sending Hashcode 1 to Discord...');
-  const result1 = await sendToWebhook(JSON.stringify({
-    content: '🔐 **Security Module — Hashcode 1**',
-    embeds: [embed1]
-  }));
-  if (result1.status >= 200 && result1.status < 300) {
-    console.log('[Webhook] Hashcode 1 sent successfully.');
-  } else {
-    console.error('[Webhook] Failed to send Hashcode 1:', result1.body);
-  }
-
   console.log('[Webhook] Sending Hashcode 2 to Discord...');
-  const result2 = await sendToWebhook(JSON.stringify({
+  const result = await sendToWebhook(JSON.stringify({
     content: '🔐 **Security Module — Hashcode 2**',
     embeds: [embed2]
   }));
-  if (result2.status >= 200 && result2.status < 300) {
+  if (result.status >= 200 && result.status < 300) {
     console.log('[Webhook] Hashcode 2 sent successfully.');
   } else {
-    console.error('[Webhook] Failed to send Hashcode 2:', result2.body);
+    console.error('[Webhook] Failed to send Hashcode 2:', result.body);
   }
 }
 
