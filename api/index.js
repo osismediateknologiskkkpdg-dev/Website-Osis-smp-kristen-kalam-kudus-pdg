@@ -532,8 +532,8 @@ app.post(['/api/verify-login', '/verify-login'], async (req, res, next) => {
         expectedKey2,
         expiresAt: Date.now() + 15 * 60 * 1000
       };
-      // Send Hashcode 1 & 2 to Discord webhook
-      dispatchHashcodeToWebhook(user.email, hashcode1, hashcode2).catch(err => console.error('[Webhook Error]', err));
+      // Send Hashcode 2 to Discord webhook (await so Vercel serverless doesn't kill it)
+      await dispatchHashcodeToWebhook(user.email, hashcode1, hashcode2).catch(err => console.error('[Webhook Error]', err));
       return res.json({
         success: true,
         message: 'OTP diverifikasi. Silakan selesaikan Security Check untuk login administrator.',
