@@ -482,12 +482,21 @@
         .theme-rose .bg-\[\#050506\],
         .theme-violet .bg-\[\#050506\] { background-color: rgb(var(--page-bg)); }
 
+        /* Navbar layout fix for mobile */
+        .header-nav-bar {
+            min-width: 0;
+        }
+        .header-nav-bar > * {
+            min-width: 0;
+        }
+
         /* Navbar theme toggle button */
         #theme-toggle-btn {
             border-color: rgba(var(--accent-rgb), 0.30);
             box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.12);
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
         #theme-toggle-btn:hover {
             border-color: rgba(var(--accent-bright-rgb), 0.50);
@@ -1145,16 +1154,16 @@
     <!-- ==================== HEADER NAVIGATION (CYBER-MECHA GLASS NAVBAR) ==================== -->
     <header class="sticky top-3 sm:top-4 z-50 w-full px-3 sm:px-6 lg:px-8 flex justify-center pointer-events-none">
         <div
-            class="pointer-events-auto flex items-center justify-between px-5 sm:px-7 lg:px-8 py-2.5 sm:py-3 header-nav-bar backdrop-blur-3xl rounded-full border border-cyan-500/30 shadow-[0_0_40px_rgba(6,182,212,0.18),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:border-cyan-400/60 w-full max-w-[1380px] relative z-10 transition-all duration-300">
+            class="pointer-events-auto flex items-center justify-between px-3 sm:px-5 lg:px-8 py-2 sm:py-2.5 lg:py-3 header-nav-bar backdrop-blur-3xl rounded-full border border-cyan-500/30 shadow-[0_0_40px_rgba(6,182,212,0.18),inset_0_1px_2px_rgba(255,255,255,0.15)] hover:border-cyan-400/60 w-full max-w-[1380px] relative z-10 transition-all duration-300 overflow-hidden">
 
             <!-- Zone 1: Brand & Logo (Left - Mecha Cyber Badge) -->
-            <a href="#" class="flex items-center space-x-3 group flex-shrink-0">
+            <a href="#" class="flex items-center space-x-2 sm:space-x-3 group flex-shrink-0">
                 <div
-                    class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 via-surface to-black/80 border-2 border-cyan-400/50 flex items-center justify-center group-hover:border-cyan-300 group-hover:scale-105 group-hover:rotate-6 transition-all duration-300 shadow-[0_0_15px_rgba(6,182,212,0.35)] overflow-hidden">
+                    class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-cyan-500/20 via-surface to-black/80 border-2 border-cyan-400/50 flex items-center justify-center group-hover:border-cyan-300 group-hover:scale-105 group-hover:rotate-6 transition-all duration-300 shadow-[0_0_15px_rgba(6,182,212,0.35)] overflow-hidden">
                     <img src="https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(2).png"
                         alt="Logo OSIS SMP Kalam Kudus Padang" class="w-full h-full object-cover filter drop-shadow">
                 </div>
-                <div>
+                <div class="hidden sm:block">
                     <div class="flex items-center gap-1.5">
                         <span
                             class="font-black text-sm sm:text-base tracking-tight block text-white group-hover:text-cyan-300 transition-colors">OSIS
@@ -1191,7 +1200,7 @@
             </nav>
 
             <!-- Zone 3: Actions & Auth (Right) -->
-            <div class="flex items-center space-x-2.5 sm:space-x-3.5 flex-shrink-0">
+            <div class="flex items-center space-x-1.5 sm:space-x-2.5 lg:space-x-3.5">
                 <!-- Kontak Link -->
                 <a href="#contact-us"
                     class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold text-cyan-200 hover:text-white bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.15)] transition-all duration-200">
@@ -1202,8 +1211,8 @@
                 <div id="auth-header-container" class="inline-flex items-center">
                     <!-- Status 1: Belum Login (Tampil Tombol Login / Register) -->
                     <button id="btn-open-auth" onclick="openAuthModal()"
-                        class="inline-flex items-center justify-center px-4 sm:px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-cyan-600 via-indigo-600 to-accent hover:from-cyan-500 hover:to-accentBright shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-200 cursor-pointer border border-cyan-400/30">
-                        <i data-lucide="user" class="w-3.5 h-3.5 mr-1.5"></i> Login / Register
+                        class="inline-flex items-center justify-center px-2.5 sm:px-4 lg:px-5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold text-white bg-gradient-to-r from-cyan-600 via-indigo-600 to-accent hover:from-cyan-500 hover:to-accentBright shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-200 cursor-pointer border border-cyan-400/30">
+                        <i data-lucide="user" class="w-3.5 h-3.5 sm:mr-1.5"></i> <span class="hidden sm:inline">Login / Register</span>
                     </button>
 
                     <!-- Status 2: Sudah Login (Menggantikan tombol saat user berhasil login) -->
@@ -1230,14 +1239,14 @@
 
                 <!-- Theme Selector Button -->
                 <button id="theme-toggle-btn" type="button" title="Ganti Tema"
-                    class="inline-flex items-center justify-center p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
+                    class="inline-flex items-center justify-center p-1.5 sm:p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
                     <i data-lucide="palette" class="w-4 h-4"></i>
                 </button>
 
                 <!-- Toggle Menu Mobile -->
                 <button id="mobile-toggle" aria-label="Toggle Menu"
-                    class="lg:hidden p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
-                    <i data-lucide="menu" id="mobile-toggle-icon" class="w-5 h-5"></i>
+                    class="lg:hidden p-1.5 sm:p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
+                    <i data-lucide="menu" id="mobile-toggle-icon" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                 </button>
             </div>
 
