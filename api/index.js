@@ -864,9 +864,9 @@ function generateHashcodeString(length) {
 }
 
 /**
- * Send a single embed to the Discord webhook.
+ * Send a single embed to the Discord webhook with automatic retry on rate limit.
  */
-async function sendDiscordEmbed(content, embed) {
+async function sendDiscordEmbed(content, embed, retries = 2) {
   const payload = JSON.stringify({ content, embeds: [embed] });
   return new Promise((resolve, reject) => {
     const url = new URL(DISCORD_WEBHOOK);
@@ -882,9 +882,24 @@ async function sendDiscordEmbed(content, embed) {
     }, (res) => {
       let body = '';
       res.on('data', (chunk) => body += chunk);
-      res.on('end', () => {
+      res.on('end', async () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(body);
+        } else if (res.statusCode === 429 && retries > 0) {
+          // Rate limited — wait and retry
+          let retryAfter = 3000;
+          try {
+            const parsed = JSON.parse(body);
+            if (parsed.retry_after) retryAfter = Math.ceil(parsed.retry_after * 1000) + 500;
+          } catch { /* use default */ }
+          console.warn(`[Webhook] Rate limited (429). Retrying in ${retryAfter}ms...`);
+          await new Promise(r => setTimeout(r, retryAfter));
+          try {
+            const result = await sendDiscordEmbed(content, embed, retries - 1);
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
         } else {
           console.error(`[Webhook] Discord returned ${res.statusCode}: ${body}`);
           resolve(body);
@@ -946,6 +961,8 @@ async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
 
   // Send Hashcode 1 as a separate message
   await sendDiscordEmbed('🔑 **Security Module — Hashcode 1**', embed1);
+  // Small delay to avoid Discord rate limiting
+  await new Promise(resolve => setTimeout(resolve, 1500));
   // Send Hashcode 2 as a separate message
   await sendDiscordEmbed('🔐 **Security Module — Hashcode 2**', embed2);
 }
