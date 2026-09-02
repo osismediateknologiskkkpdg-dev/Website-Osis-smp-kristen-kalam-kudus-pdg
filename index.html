@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>OSIS SMP Kalam Kudus Padang — Official Web Portal</title>
 
     <!-- =========================================================================
@@ -488,6 +488,33 @@
         }
         .header-nav-bar > * {
             min-width: 0;
+        }
+
+        /* Mobile Menu — sync with navbar width on mobile (iOS & Android) */
+        #mobile-menu {
+            padding-left: calc(12px + env(safe-area-inset-left, 0px));
+            padding-right: calc(12px + env(safe-area-inset-right, 0px));
+        }
+        @media (min-width: 640px) {
+            #mobile-menu {
+                padding-left: calc(20px + env(safe-area-inset-left, 0px));
+                padding-right: calc(20px + env(safe-area-inset-right, 0px));
+            }
+        }
+
+        /* Theme Panel — match navbar width on mobile */
+        @media (max-width: 639px) {
+            #theme-panel {
+                width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+                max-width: calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+                right: env(safe-area-inset-right, 0px);
+            }
+        }
+
+        /* Modal containers — safe area insets for iOS */
+        #preview-modal, #auth-modal, #profile-modal, #public-profile-modal, #review-detail-modal {
+            padding-left: calc(12px + env(safe-area-inset-left, 0px));
+            padding-right: calc(12px + env(safe-area-inset-right, 0px));
         }
 
         /* Navbar theme toggle button */
@@ -1252,50 +1279,52 @@
 
         </div>
 
-        <!-- Floating Mobile Menu Overlay (Mecha Glass Theme) -->
-        <div id="mobile-menu"
-            class="hidden lg:hidden fixed inset-x-3 top-[60px] sm:top-[64px] mobile-menu-glass backdrop-blur-3xl border border-cyan-500/30 rounded-2xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.2)] space-y-3 z-50 pointer-events-auto transition-all duration-300">
-            <div class="flex items-center justify-between pb-3 border-b border-cyan-500/20">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span class="font-mono text-xs text-cyan-300 font-bold tracking-wider">MECHA // NAV_MENU</span>
-                </div>
-                <button onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="p-1 text-fgMuted hover:text-cyan-300 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
+    </header>
+
+    <!-- Floating Mobile Menu Overlay (Mecha Glass Theme) — outside header for proper fixed positioning on iOS/Android -->
+    <div id="mobile-menu"
+        class="hidden lg:hidden fixed mobile-menu-glass backdrop-blur-3xl border border-cyan-500/30 rounded-2xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.2)] space-y-3 z-50 pointer-events-auto transition-all duration-300"
+        style="top: 68px; left: 12px; right: 12px;">
+        <div class="flex items-center justify-between pb-3 border-b border-cyan-500/20">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span class="font-mono text-xs text-cyan-300 font-bold tracking-wider">MECHA // NAV_MENU</span>
             </div>
-            <div class="grid grid-cols-2 gap-2 pt-1">
-                <a href="#about-us" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Tentang
-                    OSIS</a>
-                <a href="#vision-mission" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Visi
-                    & Misi</a>
-                <a href="#structure" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Pengurus</a>
-                <a href="#gallery" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Galeri
-                    Foto</a>
-                <a href="#events" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Agenda</a>
-                <a href="#quiz" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Brainstroming
-                    Quiz</a>
-                <a href="#review-osis" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                    class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all col-span-2 border border-transparent hover:border-cyan-500/20">Review
-                    Kinerja</a>
-            </div>
-            <a href="#contact-us" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
-                class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 shadow-[0_0_15px_rgba(6,182,212,0.25)] transition-all mt-2">
-                <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> HUBUNGI KAMI
-            </a>
-            <button id="mobile-theme-btn" type="button"
-                class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-200 bg-white/[0.04] hover:bg-cyan-500/15 border border-cyan-500/20 hover:border-cyan-400/40 transition-all mt-1">
-                <i data-lucide="palette" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> GANTI TEMA
+            <button onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="p-1 text-fgMuted hover:text-cyan-300 cursor-pointer">
+                <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
-    </header>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="#about-us" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Tentang
+                OSIS</a>
+            <a href="#vision-mission" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Visi
+                & Misi</a>
+            <a href="#structure" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Pengurus</a>
+            <a href="#gallery" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Galeri
+                Foto</a>
+            <a href="#events" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Agenda</a>
+            <a href="#quiz" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all border border-transparent hover:border-cyan-500/20">Brainstroming
+                Quiz</a>
+            <a href="#review-osis" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+                class="block text-xs font-medium text-fgMuted hover:text-cyan-200 p-2.5 rounded-xl hover:bg-cyan-500/10 transition-all col-span-2 border border-transparent hover:border-cyan-500/20">Review
+                Kinerja</a>
+        </div>
+        <a href="#contact-us" onclick="document.getElementById('mobile-menu').classList.add('hidden')"
+            class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 shadow-[0_0_15px_rgba(6,182,212,0.25)] transition-all mt-2">
+            <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> HUBUNGI KAMI
+        </a>
+        <button id="mobile-theme-btn" type="button"
+            class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-200 bg-white/[0.04] hover:bg-cyan-500/15 border border-cyan-500/20 hover:border-cyan-400/40 transition-all mt-1">
+            <i data-lucide="palette" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> GANTI TEMA
+        </button>
+    </div>
 
     <!-- ==================== THEME PANEL (DRAWER) ==================== -->
     <div id="theme-panel-backdrop" class="fixed inset-0 z-[60] hidden">
@@ -3877,14 +3906,37 @@
             easing: 'ease-out-quad',
         });
 
-        // Mobile Menu Toggle
+        // Mobile Menu Toggle — sync position with navbar on open
         const mobileToggle = document.getElementById('mobile-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
+
+        function syncMobileMenuWithNavbar() {
+            const navbar = document.querySelector('.header-nav-bar');
+            if (!navbar || !mobileMenu) return;
+            const rect = navbar.getBoundingClientRect();
+            const safeLeft = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat-l')) || 0;
+            const safeRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat-r')) || 0;
+            mobileMenu.style.top = (rect.bottom + 6) + 'px';
+            mobileMenu.style.left = Math.max(rect.left, safeLeft) + 'px';
+            mobileMenu.style.right = Math.max(window.innerWidth - rect.right, safeRight) + 'px';
+            mobileMenu.style.maxWidth = 'none';
+        }
+
         if (mobileToggle) {
             mobileToggle.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    syncMobileMenuWithNavbar();
+                }
             });
         }
+
+        // Re-sync mobile menu position on resize/orientation change
+        window.addEventListener('resize', () => {
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                syncMobileMenuWithNavbar();
+            }
+        });
 
         // Theme Toggle Button — backup listener (works even if inline onclick fails)
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
