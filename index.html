@@ -486,6 +486,8 @@
         #theme-toggle-btn {
             border-color: rgba(var(--accent-rgb), 0.30);
             box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.12);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         #theme-toggle-btn:hover {
             border-color: rgba(var(--accent-bright-rgb), 0.50);
@@ -622,10 +624,13 @@
         /* Theme panel slide-in animation */
         #theme-panel {
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            touch-action: pan-y;
         }
         #theme-panel-backdrop {
             transition: opacity 0.3s ease;
+            touch-action: manipulation;
         }
+
 
         /* Theme switching flash overlay */
         .theme-flash-overlay {
@@ -1284,8 +1289,8 @@
     </header>
 
     <!-- ==================== THEME PANEL (DRAWER) ==================== -->
-    <div id="theme-panel-backdrop" class="fixed inset-0 z-[60] hidden pointer-events-none">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" onclick="toggleThemePanel()"></div>
+    <div id="theme-panel-backdrop" class="fixed inset-0 z-[60] hidden">
+        <div id="theme-backdrop-click" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
     </div>
     <div id="theme-panel"
         class="fixed top-0 right-0 h-full w-80 max-w-[90vw] z-[70] translate-x-full pointer-events-auto">
@@ -1296,7 +1301,7 @@
                     <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
                     <span class="font-mono text-xs text-cyan-300 font-bold tracking-wider">THEME // SELECTOR</span>
                 </div>
-                <button onclick="toggleThemePanel()" class="p-1.5 text-fgMuted hover:text-cyan-300 transition-colors cursor-pointer rounded-lg hover:bg-white/5">
+                <button id="theme-panel-close" type="button" class="p-1.5 text-fgMuted hover:text-cyan-300 transition-colors cursor-pointer rounded-lg hover:bg-white/5">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -1313,7 +1318,7 @@
                 <!-- Theme Options -->
                 <div id="theme-options" class="space-y-2.5">
                     <!-- Cyan (Default) -->
-                    <button onclick="applyTheme('cyan')" data-theme="cyan"
+                    <button data-theme="cyan"
                         class="theme-option active-theme w-full rounded-2xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all cursor-pointer group overflow-hidden">
                         <div class="theme-preview-mini" style="background: #050506;">
                             <div class="preview-bar" style="background: linear-gradient(90deg, rgba(6,8,16,0.95), rgba(6,8,16,0.88)); border-bottom: 1px solid rgba(94,106,210,0.3);"></div>
@@ -1339,7 +1344,7 @@
                         </div>
                     </button>
                     <!-- Emerald -->
-                    <button onclick="applyTheme('emerald')" data-theme="emerald"
+                    <button data-theme="emerald"
                         class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group overflow-hidden">
                         <div class="theme-preview-mini" style="background: #040605;">
                             <div class="preview-bar" style="background: linear-gradient(90deg, rgba(5,12,10,0.95), rgba(5,12,10,0.88)); border-bottom: 1px solid rgba(16,185,129,0.3);"></div>
@@ -1365,7 +1370,7 @@
                         </div>
                     </button>
                     <!-- Amber -->
-                    <button onclick="applyTheme('amber')" data-theme="amber"
+                    <button data-theme="amber"
                         class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-amber-500/10 hover:border-amber-500/30 transition-all cursor-pointer group overflow-hidden">
                         <div class="theme-preview-mini" style="background: #060504;">
                             <div class="preview-bar" style="background: linear-gradient(90deg, rgba(14,10,6,0.95), rgba(14,10,6,0.88)); border-bottom: 1px solid rgba(245,158,11,0.3);"></div>
@@ -1391,7 +1396,7 @@
                         </div>
                     </button>
                     <!-- Rose -->
-                    <button onclick="applyTheme('rose')" data-theme="rose"
+                    <button data-theme="rose"
                         class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-rose-500/10 hover:border-rose-500/30 transition-all cursor-pointer group overflow-hidden">
                         <div class="theme-preview-mini" style="background: #060405;">
                             <div class="preview-bar" style="background: linear-gradient(90deg, rgba(14,6,10,0.95), rgba(14,6,10,0.88)); border-bottom: 1px solid rgba(244,63,94,0.3);"></div>
@@ -1417,7 +1422,7 @@
                         </div>
                     </button>
                     <!-- Violet -->
-                    <button onclick="applyTheme('violet')" data-theme="violet"
+                    <button data-theme="violet"
                         class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-violet-500/10 hover:border-violet-500/30 transition-all cursor-pointer group overflow-hidden">
                         <div class="theme-preview-mini" style="background: #050406;">
                             <div class="preview-bar" style="background: linear-gradient(90deg, rgba(10,6,16,0.95), rgba(10,6,16,0.88)); border-bottom: 1px solid rgba(139,92,246,0.3);"></div>
@@ -1443,7 +1448,7 @@
                         </div>
                     </button>
                     <!-- White / Light -->
-                    <button onclick="applyTheme('white')" data-theme="white"
+                    <button data-theme="white"
                         class="theme-option w-full rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-zinc-200/10 hover:border-zinc-300/30 transition-all cursor-pointer group overflow-hidden">
                         <div class="theme-preview-mini" style="background: #f5f5f7;">
                             <div class="preview-bar" style="background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88)); border-bottom: 1px solid rgba(0,0,0,0.08);"></div>
@@ -3892,6 +3897,38 @@
                 }
                 var mobileMenuEl = document.getElementById('mobile-menu');
                 if (mobileMenuEl) mobileMenuEl.classList.add('hidden');
+            });
+        }
+
+        // Theme Panel Backdrop — close on tap/click
+        const themeBackdrop = document.getElementById('theme-backdrop-click');
+        if (themeBackdrop) {
+            themeBackdrop.addEventListener('click', function () {
+                if (typeof window.toggleThemePanel === 'function') {
+                    window.toggleThemePanel();
+                }
+            });
+        }
+
+        // Theme Panel Close Button
+        const themePanelClose = document.getElementById('theme-panel-close');
+        if (themePanelClose) {
+            themePanelClose.addEventListener('click', function () {
+                if (typeof window.toggleThemePanel === 'function') {
+                    window.toggleThemePanel();
+                }
+            });
+        }
+
+        // Theme Options — event delegation (works reliably on mobile)
+        const themeOptionsContainer = document.getElementById('theme-options');
+        if (themeOptionsContainer) {
+            themeOptionsContainer.addEventListener('click', function (e) {
+                var btn = e.target.closest('.theme-option');
+                if (btn && typeof window.applyTheme === 'function') {
+                    var themeName = btn.getAttribute('data-theme');
+                    if (themeName) window.applyTheme(themeName);
+                }
             });
         }
 
