@@ -1224,9 +1224,9 @@
                 </div>
 
                 <!-- Theme Selector Button -->
-                <button id="theme-toggle-btn" onclick="toggleThemePanel()" title="Ganti Tema"
+                <button id="theme-toggle-btn" type="button" title="Ganti Tema"
                     class="inline-flex items-center justify-center p-2.5 rounded-full bg-surface hover:bg-cyan-500/20 border border-cyan-500/30 text-fg hover:text-cyan-300 transition-all cursor-pointer">
-                    <i data-lucide="palette" class="w-4.5 h-4.5"></i>
+                    <i data-lucide="palette" class="w-4 h-4"></i>
                 </button>
 
                 <!-- Toggle Menu Mobile -->
@@ -1276,7 +1276,7 @@
                 class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 shadow-[0_0_15px_rgba(6,182,212,0.25)] transition-all mt-2">
                 <i data-lucide="mail" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> HUBUNGI KAMI
             </a>
-            <button onclick="toggleThemePanel(); document.getElementById('mobile-menu').classList.add('hidden')"
+            <button id="mobile-theme-btn" type="button"
                 class="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-200 bg-white/[0.04] hover:bg-cyan-500/15 border border-cyan-500/20 hover:border-cyan-400/40 transition-all mt-1">
                 <i data-lucide="palette" class="w-3.5 h-3.5 mr-2 text-cyan-400"></i> GANTI TEMA
             </button>
@@ -3869,6 +3869,29 @@
         if (mobileToggle) {
             mobileToggle.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Theme Toggle Button — backup listener (works even if inline onclick fails)
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (typeof window.toggleThemePanel === 'function') {
+                    window.toggleThemePanel();
+                }
+            });
+        }
+
+        // Mobile Theme Button (inside mobile menu)
+        const mobileThemeBtn = document.getElementById('mobile-theme-btn');
+        if (mobileThemeBtn) {
+            mobileThemeBtn.addEventListener('click', function () {
+                if (typeof window.toggleThemePanel === 'function') {
+                    window.toggleThemePanel();
+                }
+                var mobileMenuEl = document.getElementById('mobile-menu');
+                if (mobileMenuEl) mobileMenuEl.classList.add('hidden');
             });
         }
 
