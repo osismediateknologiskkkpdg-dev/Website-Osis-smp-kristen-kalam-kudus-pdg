@@ -866,7 +866,8 @@ function generateHashcodeString(length) {
 /**
  * Send a single embed to the Discord webhook.
  */
-function sendToWebhook(payload) {
+async function sendDiscordEmbed(content, embed) {
+  const payload = JSON.stringify({ content, embeds: [embed] });
   return new Promise((resolve, reject) => {
     const url = new URL(DISCORD_WEBHOOK);
     const req = https.request({
@@ -882,8 +883,12 @@ function sendToWebhook(payload) {
       let body = '';
       res.on('data', (chunk) => body += chunk);
       res.on('end', () => {
-        console.log(`[Webhook] Discord response: ${res.statusCode}`);
-        resolve({ status: res.statusCode, body });
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(body);
+        } else {
+          console.error(`[Webhook] Discord returned ${res.statusCode}: ${body}`);
+          resolve(body);
+        }
       });
     });
     req.on('error', (err) => {
@@ -896,8 +901,7 @@ function sendToWebhook(payload) {
 }
 
 /**
- * Send Hashcode 1 & 2 to the Discord webhook.
- * Both embeds are sent in ONE webhook call to guarantee both arrive.
+ * Send Hashcode 1 & 2 to the Discord webhook as separate messages.
  */
 async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
   const embed1 = {
@@ -940,18 +944,10 @@ async function dispatchHashcodeToWebhook(email, hashcode1, hashcode2) {
     timestamp: new Date().toISOString()
   };
 
-  // Send both embeds in ONE webhook call — guaranteed both arrive
-  const payload = JSON.stringify({
-    content: '🔐 **Security Module — Hashcode 1 & 2**',
-    embeds: [embed1, embed2]
-  });
-  console.log('[Webhook] Sending Hashcode 1 & 2 to Discord...');
-  const result = await sendToWebhook(payload);
-  if (result.status >= 200 && result.status < 300) {
-    console.log('[Webhook] Both hashcodes sent successfully.');
-  } else {
-    console.error('[Webhook] Failed to send hashcodes:', result.body);
-  }
+  // Send Hashcode 1 as a separate message
+  await sendDiscordEmbed('🔑 **Security Module — Hashcode 1**', embed1);
+  // Send Hashcode 2 as a separate message
+  await sendDiscordEmbed('🔐 **Security Module — Hashcode 2**', embed2);
 }
 
 // ── Security Check 1: Verify Key 2, return Hashcode 3 ──
