@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "review_1788338557021_0b1dd7d9",
+    "userId": "usr_1788337608601_f89865",
+    "rating": 4,
+    "message": "skibidi",
+    "createdAt": "2026-09-02T08:42:37.021Z",
+    "updatedAt": "2026-09-02T08:42:37.021Z"
+  }
+]
