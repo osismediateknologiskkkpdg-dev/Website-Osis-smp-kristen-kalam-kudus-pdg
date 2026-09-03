@@ -3880,9 +3880,9 @@
                 setTheme(name, { animate: true, autoClose: true });
             };
 
-            // Keyboard shortcut: Ctrl+Shift+T to cycle themes
+            // Keyboard shortcut: Shift+T to cycle themes
             document.addEventListener('keydown', function (e) {
-                if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+                if (e.shiftKey && (e.key === 'T' || e.key === 't') && !e.ctrlKey && !e.metaKey && !e.altKey) {
                     e.preventDefault();
                     const currentIdx = THEME_ORDER.indexOf(current);
                     const nextIdx = (currentIdx + 1) % THEME_ORDER.length;
