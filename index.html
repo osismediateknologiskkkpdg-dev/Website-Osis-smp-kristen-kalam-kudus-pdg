@@ -511,10 +511,28 @@
             }
         }
 
-        /* Modal containers — safe area insets for iOS */
-        #preview-modal, #auth-modal, #profile-modal, #public-profile-modal, #review-detail-modal {
-            padding-left: calc(12px + env(safe-area-inset-left, 0px));
-            padding-right: calc(12px + env(safe-area-inset-right, 0px));
+        /* Modal containers — match nav_bar width on mobile */
+        @media (max-width: 639px) {
+            #preview-modal, #auth-modal, #profile-modal, #public-profile-modal, #review-detail-modal {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            #auth-modal > div {
+                max-width: none;
+                width: 100%;
+            }
+            #profile-modal > div {
+                max-width: none;
+                width: 100%;
+            }
+            #public-profile-modal > div {
+                max-width: none;
+                width: 100%;
+            }
+            #review-detail-modal > div {
+                max-width: none;
+                width: 100%;
+            }
         }
 
         /* Navbar theme toggle button */
