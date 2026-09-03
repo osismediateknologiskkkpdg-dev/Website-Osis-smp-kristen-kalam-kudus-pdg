@@ -30,7 +30,7 @@ const app = express();
 // MODULE 01 — CONFIGURATION AND APPLICATION MIDDLEWARE
 // =============================================================================
 
-const DEFAULT_AVATAR_URL = 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Untitled%20design%20(1).png';
+const DEFAULT_AVATAR_URL = 'https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Default%20Avatar.png';
 const USER_FILE = 'User_data.json';
 const REVIEW_FILE = 'Review_osis.json';
 const MASTER_ADMIN_EMAIL = 'osismediateknologiskkkpdg@gmail.com';
