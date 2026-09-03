@@ -52,5 +52,17 @@
     "updatedAt": "2026-09-02T08:45:35.313Z",
     "lastDisplayNameChangedAt": "2026-09-02T08:44:35.353Z",
     "lastUsernameChangedAt": "2026-09-02T08:44:35.353Z"
+  },
+  {
+    "id": "usr_1788399745616_7f1846",
+    "email": "gbnpro28@gmail.com",
+    "username": "gbnpro28",
+    "displayName": "gbnpro28",
+    "avatarUrl": "https://raw.githubusercontent.com/osismediateknologiskkkpdg-dev/Image-OSIS/refs/heads/main/Default%20Avatar.png",
+    "bio": "",
+    "passwordHash": "$2a$10$I7nwTjpDFS4FBzr3nhvPfeHikYaFlPwtddyXgLpGhttKSQ0YSuXc.",
+    "role": "USER",
+    "createdAt": "2026-09-03T01:42:25.726Z",
+    "verified": true
   }
 ]
