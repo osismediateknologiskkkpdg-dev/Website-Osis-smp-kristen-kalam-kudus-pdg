@@ -411,7 +411,7 @@ function authenticateAdminToken(req, res, next) {
 // MODULE 05 — PUBLIC, AUTHENTICATION, AND ACCOUNT PROFILE ROUTES
 // =============================================================================
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../index.html')));
+app.get(['/', '/api/index', '/index'], (req, res) => res.sendFile(path.join(__dirname, '../index.html')));
 app.get(['/api/health', '/health'], (req, res) => res.json({ status: 'online', timestamp: new Date().toISOString() }));
 
 app.get(['/api/usernames/:username/availability', '/usernames/:username/availability'], async (req, res, next) => {
